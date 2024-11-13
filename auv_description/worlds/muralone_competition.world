@@ -1,0 +1,147 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="muralone_underwater">
+
+    <!-- Base Gazebo plugins -->
+    <plugin
+        filename="gz-sim-physics-system"
+        name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+        filename="gz-sim-user-commands-system"
+        name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+        filename="gz-sim-scene-broadcaster-system"
+        name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- IMU plugin manages all IMU sensors -->
+    <plugin filename="libgz-sim-imu-system.so"
+            name="gz::sim::systems::Imu">
+    </plugin>
+
+    <!-- Buoyancy plugin manages buoyancy for all models -->
+    <plugin
+        filename="gz-sim-buoyancy-system"
+        name="gz::sim::systems::Buoyancy">
+      <!-- Fluid density is 1 (air) above 0 and 1000 (water) below 0 -->
+      <graded_buoyancy>
+        <default_density>1000</default_density>
+        <density_change>
+          <above_depth>0</above_depth>
+          <density>1</density>
+        </density_change>
+      </graded_buoyancy>
+      <!-- Enable by model name -->
+      <enable>muralone</enable>
+    </plugin>
+
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+
+    <include>
+      <uri>model://pool</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://muralone</uri>
+      <pose>5 -11.7 -0.18 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://axes</uri>
+      <pose>0 0 0.1 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://starting_zone</uri>
+      <pose>5 -11.7 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://gate</uri>
+      <pose>2.5 -3 -0.45 0 0 0</pose>
+    </include>
+
+
+    <include>
+      <uri>model://orange_flare</uri>
+      <pose>3 -7 -2.25 0 0 0</pose>
+    </include>
+
+
+    <include>
+      <uri>model://blue_flare</uri>
+      <pose>15 0 -2.75 0 0 0</pose>
+    </include>
+
+
+    <include>
+      <uri>model://red_flare</uri>
+      <pose>15 1.5 -2.75 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://yellow_flare</uri>
+      <pose>15 3 -2.75 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://mat</uri>
+      <pose>0 11.25 -1.99 0 0 0</pose>
+    </include>
+
+
+    <model name="red_bucket_1">
+      <pose>-3 11.25 -1.99 0 0 0</pose>
+      <include>
+        <uri>model://red_bucket</uri>
+      </include>
+    </model>
+
+
+    <model name="red_bucket_2">
+    <pose>-1 11.25 -1.99 0 0 0</pose>
+      <include>
+        <uri>model://red_bucket</uri>
+      </include>
+    </model>
+
+    <include>
+      <uri>model://blue_bucket</uri>
+      <pose>1 11.25 -1.99 0 0 0</pose>
+    </include>
+
+    <model name="red_bucket_3">
+    <pose>3 11.25 -1.99 0 0 0</pose>
+      <include>
+        <uri>model://red_bucket</uri>
+      </include>
+    </model>
+
+    <model name="quali_1">
+      <pose>-16 6 -0.4 0 0 0</pose>
+      <include>
+        <uri>model://qualification_gate</uri>
+      </include>
+    </model>
+
+    <model name="quali_2">
+      <pose>-16 0 -0.4 0 0 0</pose>
+      <include>
+        <uri>model://qualification_gate</uri>
+      </include>
+    </model>
+
+    <model name="quali_3">
+      <pose>-16 -6 -0.4 0 0 0</pose>
+      <include>
+        <uri>model://qualification_gate</uri>
+      </include>
+    </model>
+
+  </world>
+</sdf>
