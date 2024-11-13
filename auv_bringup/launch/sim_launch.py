@@ -20,8 +20,8 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'world',
-            default_value='muralone_pool',
-            choices=['muralone_pool', 'competition', 'underwater'],
+            default_value='pool',
+            choices=['pool', 'competition', 'underwater'],
             description='World to load into Gazebo'
         ),
         SetLaunchConfiguration(name='world_file', 

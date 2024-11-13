@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <world name="muralone_underwater">
+  <world name="underwater">
 
     <!-- Base Gazebo plugins -->
     <plugin
@@ -34,7 +34,7 @@
         </density_change>
       </graded_buoyancy>
       <!-- Enable by model name -->
-      <enable>muralone</enable>
+      <enable>auv</enable>
     </plugin>
 
     <include>
@@ -42,13 +42,13 @@
     </include>
 
     <include>
-      <uri>model://pool</uri>
-      <pose>0 0 0 0 0 0</pose>
+      <uri>model://sand_heightmap</uri>
+      <pose>0 7 -10 0 0 0</pose>
     </include>
 
     <include>
-      <uri>model://muralone</uri>
-      <pose>0 0 -0.18 0 0 0</pose>
+      <uri>model://auv</uri>
+      <pose>0 0 -2 0 0 0</pose>
     </include>
 
     <include>

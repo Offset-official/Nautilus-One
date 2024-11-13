@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <world name="muralone_underwater">
+  <world name="competition">
 
     <!-- Base Gazebo plugins -->
     <plugin
@@ -34,7 +34,7 @@
         </density_change>
       </graded_buoyancy>
       <!-- Enable by model name -->
-      <enable>muralone</enable>
+      <enable>auv</enable>
     </plugin>
 
     <include>
@@ -47,7 +47,7 @@
     </include>
 
     <include>
-      <uri>model://muralone</uri>
+      <uri>model://auv</uri>
       <pose>5 -11.7 -0.18 0 0 0</pose>
     </include>
 
