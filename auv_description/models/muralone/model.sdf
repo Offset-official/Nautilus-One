@@ -1,0 +1,319 @@
+<sdf version='1.9'>
+  <model name='muralone'>
+    <link name='base_link'>
+      <inertial>
+        <pose>0.0 0.0 0.011 0 0 0</pose>
+        <mass>10.0</mass>
+        <inertia>
+          <ixx>0.099</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.178</iyy>
+          <iyz>0</iyz>
+          <izz>0.269</izz>
+      </inertia>
+      </inertial>
+      <!-- Collision volume * fluid_density == displaced mass, used by BuoyancyPlugin -->
+      <collision name="base_link_collision">
+        <pose>0.0 0.0 0.08 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.457 0.338 0.065</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.941174984 0.941174984 0.941174984 1</diffuse>
+          <ambient>0.941174984 0.941174984 0.941174984 1</ambient>
+        </material>
+      </visual>
+      <!-- IMU sensor gyro and accel data will be sent to ArduSub -->
+      <sensor name="imu_sensor" type="imu">
+        <!-- Transform from the Gazebo body frame (x-forward, y-left, z-up)
+             to the ArduPilot body frame (x-forward, y-right, z-down) -->
+        <pose>0 0 0 3.142 0 0</pose>
+        <always_on>1</always_on>
+        <update_rate>1000.0</update_rate>
+      </sensor>
+    </link>
+    <!-- Hydrodynamics plugin -->
+    <plugin
+        filename="gz-sim-hydrodynamics-system"
+        name="gz::sim::systems::Hydrodynamics">
+      <link_name>base_link</link_name>
+      <water_density>998.0</water_density>
+      <!-- Added mass: -->
+      <xDotU>0</xDotU>
+      <yDotV>0</yDotV>
+      <zDotW>0</zDotW>
+      <kDotP>0</kDotP>
+      <mDotQ>0</mDotQ>
+      <nDotR>0</nDotR>
+      <!-- First order stability derivative: -->
+      <xU>0</xU>
+      <yV>0</yV>
+      <zW>0</zW>
+      <kP>0</kP>
+      <mQ>0</mQ>
+      <nR>0</nR>
+      <!-- Second order stability derivative: -->
+      <xUabsU>-33.732</xUabsU>
+      <yVabsV>-54.16</yVabsV>
+      <zWabsW>-73.225</zWabsW>
+      <kPabsP>-3.992</kPabsP>
+      <mQabsQ>-3.992</mQabsQ>
+      <nRabsR>-3.992</nRabsR>
+    </plugin>
+  <joint name='thruster_1_joint' type='revolute'>
+      <pose relative_to='base_link'>0.10761999999999999 -0.43753999999999998 0.080000000000000002 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>thruster_1</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='thruster_1'>
+      <pose relative_to='thruster_1_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-1.2202999999999999e-07 0.012703000000000001 -9.803899999999999e-07 0 0 0</pose>
+        <mass>0.0079001000000000002</mass>
+        <inertia>
+          <ixx>2.2531000000000001e-06</ixx>
+          <ixy>-1.6611e-11</ixy>
+          <ixz>4.9965000000000003e-10</ixz>
+          <iyy>3.2816999999999999e-06</iyy>
+          <iyz>1.9692e-11</iyz>
+          <izz>2.2523999999999998e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='thruster_1_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_1.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='thruster_1_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_1.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='thruster_2_joint' type='revolute'>
+      <pose relative_to='base_link'>-0.10761999999999999 -0.43753999999999998 0.080000000000000002 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>thruster_2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='thruster_2'>
+      <pose relative_to='thruster_2_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-2.5591000000000002e-06 0.012699999999999999 2.4545999999999998e-07 0 0 0</pose>
+        <mass>0.0078949999999999992</mass>
+        <inertia>
+          <ixx>2.2504000000000001e-06</ixx>
+          <ixy>2.5519000000000001e-11</ixy>
+          <ixz>4.6165999999999999e-10</ixz>
+          <iyy>3.2791999999999999e-06</iyy>
+          <iyz>1.4283e-11</iyz>
+          <izz>2.2523e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='thruster_2_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_2.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='thruster_2_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_2.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='thruster_3_joint' type='revolute'>
+      <pose relative_to='base_link'>0 -0.069955000000000003 0.047731000000000003 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>thruster_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='thruster_3'>
+      <pose relative_to='thruster_3_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-2.3776999999999999e-07 -1.8733999999999999e-06 0.012699999999999999 0 0 0</pose>
+        <mass>0.0078946999999999993</mass>
+        <inertia>
+          <ixx>2.2521e-06</ixx>
+          <ixy>-2.0276000000000001e-10</ixy>
+          <ixz>4.0690999999999999e-11</ixz>
+          <iyy>2.2504999999999999e-06</iyy>
+          <iyz>4.7325999999999998e-11</iyz>
+          <izz>3.2791999999999999e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='thruster_3_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_3.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='thruster_3_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://muralone/meshes/thruster_3.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <!-- Thruster Plugins -->
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
+      <namespace>muralone</namespace>
+      <joint_name>thruster_1_joint</joint_name>
+      <!-- Reverse spin to balance torque -->
+      <thrust_coefficient>-0.02</thrust_coefficient>
+      <propeller_diameter>0.1</propeller_diameter>
+      <velocity_control>true</velocity_control>
+      <use_angvel_cmd>False</use_angvel_cmd>
+    </plugin>
+
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
+      <namespace>muralone</namespace>
+      <joint_name>thruster_2_joint</joint_name>
+      <thrust_coefficient>0.02</thrust_coefficient>
+      <fluid_density>998.0</fluid_density>
+      <propeller_diameter>0.1</propeller_diameter>
+      <velocity_control>true</velocity_control>
+      <use_angvel_cmd>False</use_angvel_cmd>
+    </plugin>
+
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
+      <namespace>muralone</namespace>
+      <joint_name>thruster_3_joint</joint_name>
+      <thrust_coefficient>0.02</thrust_coefficient>
+      <fluid_density>998.0</fluid_density>
+      <propeller_diameter>0.1</propeller_diameter>
+      <velocity_control>true</velocity_control>
+      <use_angvel_cmd>False</use_angvel_cmd>
+    </plugin>
+
+<plugin name="ArduPilotPlugin" filename="libArduPilotPlugin.so">
+      <!-- Port settings -->
+      <fdm_addr>127.0.0.1</fdm_addr>
+      <fdm_port_in>9002</fdm_port_in>
+      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+      <lock_step>1</lock_step>
+
+      <!-- Transform from the Gazebo body frame (x-forward, y-left, z-up)
+           to the ArduPilot body frame (x-forward, y-right, z-down) -->
+      <modelXYZToAirplaneXForwardZDown>0 0 0 3.142 0 0</modelXYZToAirplaneXForwardZDown>
+
+      <!-- Transform from the Gazebo world frame (ENU)
+           to the ArduPilot world frame (NED) -->
+      <gazeboXYZToNED>0 0 0 3.142 0 1.571</gazeboXYZToNED>
+
+      <!-- Sensors -->
+      <imuName>imu_sensor</imuName>
+
+      <!-- Thrusters -->
+      <control channel="0">
+        <jointName>thruster_1_joint</jointName>
+        <servo_min>1100</servo_min>
+        <servo_max>1900</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/model/muralone/joint/thruster_1_joint/cmd_thrust</cmd_topic>
+        <offset>-0.5</offset>
+        <multiplier>100</multiplier>
+      </control>
+      <control channel="1">
+        <jointName>thruster_2_joint</jointName>
+        <servo_min>1100</servo_min>
+        <servo_max>1900</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/model/muralone/joint/thruster_2_joint/cmd_thrust</cmd_topic>
+        <offset>-0.5</offset>
+        <multiplier>100</multiplier>
+      </control>
+      <control channel="2">
+        <jointName>thruster_3_joint</jointName>
+        <servo_min>1100</servo_min>
+        <servo_max>1900</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/model/muralone/joint/thruster_3_joint/cmd_thrust</cmd_topic>
+        <offset>-0.5</offset>
+        <multiplier>100</multiplier>
+      </control>
+    </plugin>
+  </model>
+</sdf>
