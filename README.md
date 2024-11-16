@@ -1,6 +1,6 @@
 # Offset AUV
 
-Contains collection of ROS2 packages for the AUV developed by team Offset.
+Contains collection of ROS2 packages for the SAUVC competition AUV.
 
 ## Installation 
 
