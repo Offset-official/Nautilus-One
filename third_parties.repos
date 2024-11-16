@@ -4,7 +4,6 @@ repositories:
     url: https://github.com/ros2-gbp/mavlink-gbp-release.git
     version: release/humble/mavlink/2024.10.10-1
 
-repositories:
   mavros:
     type: git
     url: https://github.com/mavlink/mavros.git
