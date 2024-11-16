@@ -8,9 +8,13 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(mavros REQUIRED)
+find_package(mavros_msgs REQUIRED)
 
 set(dependencies
     rclcpp
+    mavros
+    mavros_msgs
 )
 
 add_executable(forward src/forward.cpp)
