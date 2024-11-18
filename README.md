@@ -13,6 +13,7 @@ Install these packages:
 * [vcstool](https://github.com/dirk-thomas/vcstool)
 
 Set `GZ_SIM_SYSTEM_PLUGIN_PATH` environment variable to point to your gazebo ardupilot build folder.
+Set `GZ_VERSION=garden` environment variable as well to ensure correct dependencies are installed.
 
 Configure rosdep (this only needs to be run once)
 
