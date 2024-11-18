@@ -4,7 +4,7 @@ Launch a simulation
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,ExecuteProcess,
+from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,
                             IncludeLaunchDescription, SetLaunchConfiguration)
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, TextSubstitution
 from launch_ros.actions import Node
@@ -43,4 +43,11 @@ def generate_launch_description():
             remappings=[],
             output='screen'
         ),
+
+        Node(
+            package='mavros',
+            executable='mavros_node',
+            parameters=[{'fcu_url':'udp://127.0.0.1:14550@14555?ids=255,240'}],
+            output='screen',
+        ), 
 ])
