@@ -12,6 +12,8 @@ Install these packages:
 * [Rosdep](https://docs.ros.org/en/independent/api/rosdep/html)
 * [vcstool](https://github.com/dirk-thomas/vcstool)
 
+Set `GZ_SIM_SYSTEM_PLUGIN_PATH` environment variable to point to your gazebo ardupilot build folder.
+
 Configure rosdep (this only needs to be run once)
 
 ```bash

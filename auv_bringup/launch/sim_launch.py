@@ -4,7 +4,7 @@ Launch a simulation
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable, 
+from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,ExecuteProcess,
                             IncludeLaunchDescription, SetLaunchConfiguration)
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, TextSubstitution
 from launch_ros.actions import Node
