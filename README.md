@@ -52,4 +52,8 @@ To launch the simulation environment:
 ```bash
 ros2 launch auv_bringup sim_launch.py world:=pool
 ```
-Ensure that the ardupilot gazebo system plugin is added to the system path.
+
+Then launch MAVProxy from the `$ARDUPILOT_HOME` folder.
+```bash
+Tools/autotest/sim_vehicle.py -L RATBeach -v ArduSub -f vectored --model=JSON --out=udp:0.0.0.0:14550 --console
+```
