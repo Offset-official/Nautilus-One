@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include <chrono>
 #include "mavros_msgs/srv/command_bool.hpp"
-#include "mavros_msgs/msg/rc_out.hpp"
+#include "mavros_msgs/msg/override_rc_in.hpp"
 #include <memory>
 
 using namespace std::chrono_literals;
@@ -14,7 +14,7 @@ public:
           default_pwm(1500),
           throttle_pwm(1550)
     {
-        rc_pub_ = this->create_publisher<mavros_msgs::msg::RCOut>("/mavros/rc/out", 10);
+        rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("/mavros/rc/override", 10);
         arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
 
         arm_vehicle(true);
@@ -50,7 +50,7 @@ private:
 
     void set_pwm_value_for_channel(int channel, int pwm_value)
     {
-        auto rc_out_msg = mavros_msgs::msg::RCOut();
+        auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
 
         rc_out_msg.channels = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500};
         rc_out_msg.channels[channel - 1] = pwm_value;
@@ -65,7 +65,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "Reset PWM value back to default (%d)", default_pwm);
     }
 
-    rclcpp::Publisher<mavros_msgs::msg::RCOut>::SharedPtr rc_pub_;
+    rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
     rclcpp::TimerBase::SharedPtr reset_timer_;
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
     const int default_pwm;
