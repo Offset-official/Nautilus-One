@@ -35,7 +35,7 @@ Installing package dependencies
 ```bash
 cd ~/auv_ws
 rosdep install --from-paths src --ignore-src -r -y
-./src/mavros/mavros/scripts/install_geographiclib_datasets.sh
+sudo ./src/mavros/mavros/scripts/install_geographiclib_datasets.sh
 ```
 
 Building the workspace
