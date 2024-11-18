@@ -13,6 +13,7 @@ Install these packages:
 * [vcstool](https://github.com/dirk-thomas/vcstool)
 
 Set `GZ_SIM_SYSTEM_PLUGIN_PATH` environment variable to point to your gazebo ardupilot build folder.
+
 Set `GZ_VERSION=garden` environment variable as well to ensure correct dependencies are installed.
 
 Configure rosdep (this only needs to be run once)
@@ -58,4 +59,13 @@ ros2 launch auv_bringup sim_launch.py world:=pool
 Then launch MAVProxy from the `$ARDUPILOT_HOME` folder.
 ```bash
 Tools/autotest/sim_vehicle.py -L RATBeach -v ArduSub -f vectored --model=JSON --out=udp:0.0.0.0:14550 --console
+```
+
+## Troubleshoot
+
+### Incorrect `EMPY` version
+
+Please run:
+```bash
+pip install empy==3.3.4
 ```
