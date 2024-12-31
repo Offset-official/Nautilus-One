@@ -25,6 +25,8 @@ Please ensure that the following requirements have been met prior to installing 
   Install colcon as well.
   ```
   pip install -U colcon-common-extensions
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+  source ~/.zshrc
   ```
 * [Gazebo Garden 7.1.0](https://gazebosim.org/docs/garden/install)
   Use the following commands:
@@ -83,6 +85,10 @@ Build ArduSub for SITL:
 cd $ARDUPILOT_HOME
 ./waf configure --board sitl
 ./waf sub
+```
+If you get an error here, do 
+```
+pip3 install future
 ```
 
 Add the results of ArduSub build onto the system path:
