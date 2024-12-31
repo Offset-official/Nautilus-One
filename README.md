@@ -81,10 +81,11 @@ source ~/auv_ws/install/setup.zsh
 
 ## Usage
 
+### Manual Control
 To launch the simulation environment:
 
 ```bash
-ros2 launch auv_bringup sim_launch.py world:=pool
+ros2 launch auv_bringup sim_launch.py world:=pool mavros:=False
 ```
 
 Launch MAVProxy in a 2nd Terminal:
@@ -105,6 +106,18 @@ RC channels:
 * RC 3 -- vertical
 * RC 4 -- yaw
 * RC 5 -- forward
+
+### Autonomously move the AUV for 10s
+To launch the simulation environment:
+
+```bash
+ros2 launch auv_bringup sim_launch.py world:=pool
+```
+
+Launch the forward executable in a 2nd Terminal:
+```bash
+ros2 run auv_autonomy forward
+```
 
 ## Packages
 

@@ -9,6 +9,7 @@ from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,
                             IncludeLaunchDescription, SetLaunchConfiguration,ExecuteProcess)
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, TextSubstitution
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -29,6 +30,11 @@ def generate_launch_description():
             default_value='pool',
             choices=['pool', 'competition', 'underwater'],
             description='World to load into Gazebo'
+        ),
+        DeclareLaunchArgument(
+            'mavros',
+            default_value='True',
+            description='Launch mavros?',
         ),
         SetLaunchConfiguration(name='world_file', 
                                value=[LaunchConfiguration('world'), 
@@ -54,12 +60,12 @@ def generate_launch_description():
             arguments=[],
             remappings=[],
             output='screen'
-        ),        Node(
+        ),
+        Node(
             package='mavros',
             executable='mavros_node',
             output='screen',
-            # mavros_node is actually many nodes, so we can't override the name
-            # name='mavros_node',
             parameters=[mavros_params_file],
+            condition=IfCondition(LaunchConfiguration('mavros')),
         ),
 ])
