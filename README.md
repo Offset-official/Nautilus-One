@@ -34,8 +34,21 @@ The project assumes that you are using `zsh` like a sane human.
 
 ## Installation 
 
-Configure rosdep (this only needs to be run once)
+Build ArduSub for SITL:
 
+```bash
+cd $ARDUPILOT_HOME
+./waf configure --board sitl
+./waf sub
+```
+
+Add the results of ArduSub build onto the system path:
+```bash
+echo 'export PATH=$ARDUPILOT_HOME/build/sitl/bin:$PATH' >> ~/.zshrc
+zsh
+```
+
+Configure rosdep (this only needs to be run once)
 ```bash
 sudo rosdep init
 rosdep update
@@ -74,10 +87,24 @@ To launch the simulation environment:
 ros2 launch auv_bringup sim_launch.py world:=pool
 ```
 
-Then launch MAVProxy from the `$ARDUPILOT_HOME` folder.
+Launch MAVProxy in a 2nd Terminal
 ```bash
-Tools/autotest/sim_vehicle.py -L RATBeach -v ArduSub -f vectored --model=JSON --out=udp:0.0.0.0:14550 --console
+mavproxy.py --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --out 127.0.0.1:14550 --out 127.0.0.1:14551 --out udp:0.0.0.0:14550 --console
 ```
+You can use MAVProxy to send commands directly to ArduSub:
+
+```
+arm throttle
+rc 3 1450
+rc 3 1500
+mode alt_hold
+disarm
+```
+
+RC channels:
+* RC 3 -- vertical
+* RC 4 -- yaw
+* RC 5 -- forward
 
 ## Packages
 
