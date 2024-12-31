@@ -21,11 +21,50 @@ plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gaz
 Please ensure that the following requirements have been met prior to installing the project:
 
 * [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
+  Install the base version (ros-humble-ros-base)
 * [Gazebo Garden 7.1.0](https://gazebosim.org/docs/garden/install)
+  Use the following commands:
+  ```
+  sudo apt-get update
+  sudo apt-get install curl lsb-release gnupg
+  ```
+  ```
+  sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+  sudo apt-get update
+  sudo apt-get install gz-garden
+  ```
+  ```
+  apt-get install ros-humble-ros-gzgarden
+  ```
+  
 * [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo)
+  ```
+  sudo apt update
+  sudo apt install libgz-sim7-dev rapidjson-dev
+  sudo apt install libopencv-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl
+  ```
 * [ArduSub](https://ardupilot.org/dev/docs/building-setup-linux.html)
+  ```
+  git clone --recurse-submodules https://github.com/ArduPilot/ardupilot.git
+  ```
+  Modify the below command according to your ardupilot directory location.
+  ```
+  export ARDUPILOT_HOME=~/ardupilot/
+  ```
 * [Rosdep](https://docs.ros.org/en/independent/api/rosdep/html)
+  ```
+  apt-get install python3-rosdep
+  ```
+  
 * [vcstool](https://github.com/dirk-thomas/vcstool)
+  ```
+  sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+  sudo apt install curl # if you haven't already installed curl
+  curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+  sudo apt-get update
+  sudo apt-get install python3-vcstool
+  ```
 
 Set `GZ_SIM_SYSTEM_PLUGIN_PATH` environment variable to path of your `ardupilot_gazebo` plugin build folder.
 Set `GZ_VERSION=garden` environment variable to ensure correct dependencies are installed.
