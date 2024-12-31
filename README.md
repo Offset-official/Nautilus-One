@@ -70,7 +70,7 @@ Please ensure that the following requirements have been met prior to installing 
   ```
   Modify the below command according to your ardupilot directory location.
   ```
-  export ARDUPILOT_HOME=~/ardupilot/
+  echo 'export ARDUPILOT_HOME=~/ardupilot/' >> ~/.zshrc
   ```
 * [Rosdep](https://docs.ros.org/en/independent/api/rosdep/html)
   ```
