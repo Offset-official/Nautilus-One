@@ -17,7 +17,7 @@ def generate_launch_description():
     pkg_auv_bringup = get_package_share_directory('auv_bringup')
     gz_launch_path = PathJoinSubstitution([pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
     gz_model_path = PathJoinSubstitution([pkg_auv_description, 'models'])
-    gz_config_path = PathJoinSubstitution([pkg_auv_bringup, 'config', 'gz_blue.config'])
+    gz_config_path = PathJoinSubstitution([pkg_auv_bringup, 'cfg', 'gz_blue.config'])
     ardusub_params_file = PathJoinSubstitution([pkg_auv_bringup, 'cfg', 'sub.param'])
 
     return LaunchDescription([
