@@ -18,7 +18,7 @@ plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gaz
 
 ## Requirements
 
-Please ensure that the following requirements have been met prior to installing the project
+Please ensure that the following requirements have been met prior to installing the project:
 
 * [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
 * [Gazebo Garden 7.1.0](https://gazebosim.org/docs/garden/install)
@@ -48,13 +48,13 @@ echo 'export PATH=$ARDUPILOT_HOME/build/sitl/bin:$PATH' >> ~/.zshrc
 zsh
 ```
 
-Configure rosdep (this only needs to be run once)
+Configure rosdep (this only needs to be run once):
 ```bash
 sudo rosdep init
 rosdep update
 ```
 
-Preparing the workspace
+Preparing the workspace:
 
 ```bash
 mkdir -p ~/auv_ws/src
@@ -63,7 +63,7 @@ git clone https://github.com/Offset-official/auv_ros2
 vcs import . < auv_ros2/third_parties.repos
 ```
 
-Installing package dependencies
+Installing package dependencies:
 
 ```bash
 cd ~/auv_ws
@@ -71,7 +71,7 @@ rosdep install --from-paths src --ignore-src -r -y
 sudo ./src/mavros/mavros/scripts/install_geographiclib_datasets.sh
 ```
 
-Building the workspace
+Building the workspace:
 
 ```bash
 cd ~/auv_ws
@@ -87,7 +87,7 @@ To launch the simulation environment:
 ros2 launch auv_bringup sim_launch.py world:=pool
 ```
 
-Launch MAVProxy in a 2nd Terminal
+Launch MAVProxy in a 2nd Terminal:
 ```bash
 mavproxy.py --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --out 127.0.0.1:14550 --out 127.0.0.1:14551 --out udp:0.0.0.0:14550 --console
 ```
