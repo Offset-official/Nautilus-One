@@ -76,4 +76,4 @@ Tools/autotest/sim_vehicle.py -L RATBeach -v ArduSub -f vectored --model=JSON --
 
 * [`auv_autonomy` Basic autnomous functions](auv_autonomy)
 * [`auv_bringup` Launch files](auv_bringup)
-* [`auv_description` Launch files](auv_description)
+* [`auv_description` SDF files](auv_description)
