@@ -31,8 +31,8 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
-                'gz_args': [PathJoinSubstitution([pkg_auv_description, 'worlds',
-                                                  LaunchConfiguration('world_file')])],
+                'gz_args': ['-r -v4 ',
+                            PathJoinSubstitution([pkg_auv_description, 'worlds',LaunchConfiguration('world_file')])],
                 'on_exit_shutdown': 'True'
             }.items(),
         ),
@@ -43,11 +43,4 @@ def generate_launch_description():
             remappings=[],
             output='screen'
         ),
-
-        Node(
-            package='mavros',
-            executable='mavros_node',
-            parameters=[{'fcu_url':'udp://127.0.0.1:14550@14555?ids=255,240'}],
-            output='screen',
-        ), 
 ])
