@@ -23,7 +23,9 @@ Please ensure that the following requirements have been met prior to installing 
 * [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
   Install the base version (ros-humble-ros-base)
   Install colcon as well.
-  ```pip install -U colcon-common-extensions```
+  ```
+  pip install -U colcon-common-extensions
+  ```
 * [Gazebo Garden 7.1.0](https://gazebosim.org/docs/garden/install)
   Use the following commands:
   ```
