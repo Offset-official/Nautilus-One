@@ -89,7 +89,18 @@ Please ensure that the following requirements have been met prior to installing 
   sudo apt-get update
   sudo apt-get install python3-vcstool
   ```
-  
+* [mavproxy](https://ardupilot.org/mavproxy/)
+  ```
+  sudo apt-get install python3-dev python3-opencv python3-wxgtk4.0 python3-pip python3-matplotlib python3-lxml python3-pygame
+  pip3 install PyYAML mavproxy --user
+  zsh
+  ```
+* [mavros and mavlink](https://github.com/mavlink/mavros)
+  ```
+  sudo apt-get install ros-humble-mavros ros-humble-mavros-extras
+  wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh
+  ./install_geographiclib_datasets.sh
+  ```
 The project assumes that you are using `zsh` like a sane human.
 
 ## Installation 
@@ -124,7 +135,6 @@ Preparing the workspace: (only once)
 mkdir -p ~/auv_ws/src
 cd ~/auv_ws/src
 git clone https://github.com/Offset-official/auv_ros2
-vcs import . < auv_ros2/third_parties.repos
 ```
 
 Installing package dependencies: (only once)
@@ -132,7 +142,6 @@ Installing package dependencies: (only once)
 ```bash
 cd ~/auv_ws
 rosdep install --from-paths src --ignore-src -r -y
-sudo ./src/mavros/mavros/scripts/install_geographiclib_datasets.sh
 ```
 
 Building the workspace: (anytime we write packages)
