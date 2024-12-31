@@ -43,6 +43,9 @@ Please ensure that the following requirements have been met prior to installing 
   ```
   apt-get install ros-humble-ros-gzgarden
   ```
+  ```
+  echo 'export GZ_VERSION=garden' >> ~/.zshrc
+  ```
   
 * [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo)
   ```
