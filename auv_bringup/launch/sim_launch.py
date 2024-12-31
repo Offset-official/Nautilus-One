@@ -1,5 +1,7 @@
 """
-Launch a simulation
+Launch a simulation.
+
+Includes Gazebo, ArduSub, MAVROS
 """
 
 from ament_index_python.packages import get_package_share_directory
@@ -19,6 +21,7 @@ def generate_launch_description():
     gz_model_path = PathJoinSubstitution([pkg_auv_description, 'models'])
     gz_config_path = PathJoinSubstitution([pkg_auv_bringup, 'cfg', 'gz_blue.config'])
     ardusub_params_file = PathJoinSubstitution([pkg_auv_bringup, 'cfg', 'sub.param'])
+    mavros_params_file =  PathJoinSubstitution([pkg_auv_bringup, 'params', 'sim_mavros_params.yaml'])
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -51,5 +54,12 @@ def generate_launch_description():
             arguments=[],
             remappings=[],
             output='screen'
+        ),        Node(
+            package='mavros',
+            executable='mavros_node',
+            output='screen',
+            # mavros_node is actually many nodes, so we can't override the name
+            # name='mavros_node',
+            parameters=[mavros_params_file],
         ),
 ])
