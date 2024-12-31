@@ -26,6 +26,7 @@ endif()
 install(DIRECTORY
   launch
   cfg
+  params
   DESTINATION share/${PROJECT_NAME}/
 )
 

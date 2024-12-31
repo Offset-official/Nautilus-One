@@ -52,8 +52,10 @@ private:
     {
         auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
 
-        rc_out_msg.channels = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500};
-        rc_out_msg.channels[channel - 1] = pwm_value;
+        rc_out_msg.channels = {1500, 1500, 1500, 1500, 1800, 1500, 1500, 1500};
+        //rc_out_msg.set__channels( {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500});
+
+        rc_out_msg.channels[channel - 1] = 1550;
 
         rc_pub_->publish(rc_out_msg);
         RCLCPP_INFO(this->get_logger(), "Set PWM value %d for channel %d", pwm_value, channel);
