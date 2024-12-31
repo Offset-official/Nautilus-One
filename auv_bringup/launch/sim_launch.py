@@ -14,8 +14,10 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
     pkg_auv_description = get_package_share_directory('auv_description')
+    pkg_auv_bringup = get_package_share_directory('auv_bringup')
     gz_launch_path = PathJoinSubstitution([pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
     gz_model_path = PathJoinSubstitution([pkg_auv_description, 'models'])
+    gz_config_path = PathJoinSubstitution([pkg_auv_bringup, 'config', 'gz_blue.config'])
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -32,6 +34,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
                 'gz_args': ['-r -v4 ',
+                            '--gui-config ',gz_config_path,' ',
                             PathJoinSubstitution([pkg_auv_description, 'worlds',LaunchConfiguration('world_file')])],
                 'on_exit_shutdown': 'True'
             }.items(),
