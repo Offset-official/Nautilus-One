@@ -5,7 +5,7 @@ Launch a simulation
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,
-                            IncludeLaunchDescription, SetLaunchConfiguration)
+                            IncludeLaunchDescription, SetLaunchConfiguration,ExecuteProcess)
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, TextSubstitution
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -18,6 +18,7 @@ def generate_launch_description():
     gz_launch_path = PathJoinSubstitution([pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
     gz_model_path = PathJoinSubstitution([pkg_auv_description, 'models'])
     gz_config_path = PathJoinSubstitution([pkg_auv_bringup, 'config', 'gz_blue.config'])
+    ardusub_params_file = PathJoinSubstitution([pkg_auv_bringup, 'cfg', 'sub.param'])
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -30,6 +31,11 @@ def generate_launch_description():
                                value=[LaunchConfiguration('world'), 
                                       TextSubstitution(text='.world')]),
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_model_path),
+        ExecuteProcess(
+            cmd=['ardusub', '-S', '-w', '-M', 'JSON', '--defaults', ardusub_params_file,
+                 '-I0', '--home', '33.810313,-118.39386700000001,0.0,0'],
+            output='screen',
+        ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
