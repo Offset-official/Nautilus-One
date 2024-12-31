@@ -7,10 +7,17 @@
 Contains collection of [ROS2](https://www.ros.org/) packages that provide AUV functionality targeted 
 towards the SAUVC 2025 competition for **Nautilus One**.
 
+Nautilus One uses [ArduSub](http://www.ardusub.com/) as the flight controller and
+[mavros](https://github.com/mavlink/mavros) as the GCS.
+
 ![Nautlius One Gazebo](images/nautilus_one.png)
 
+Nautilus One runs in [Gazebo Garden](https://gazebosim.org/docs/garden/getstarted/) using the standard buoyancy, 
+hydrodynamics and thruster
+plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo).
 
 ## Requirements
+
 Please ensure that the following requirements have been met prior to installing the project
 
 * [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
@@ -74,6 +81,6 @@ Tools/autotest/sim_vehicle.py -L RATBeach -v ArduSub -f vectored --model=JSON --
 
 ## Packages
 
-* [`auv_autonomy` Basic autnomous functions](auv_autonomy)
+* [`auv_autonomy` Basic autonomous functions](auv_autonomy)
 * [`auv_bringup` Launch files](auv_bringup)
 * [`auv_description` SDF files](auv_description)
