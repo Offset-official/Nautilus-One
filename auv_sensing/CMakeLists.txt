@@ -51,8 +51,8 @@ add_executable(yolo_inference_server src/yolo_inference_server.cpp)
 ament_target_dependencies(yolo_inference_server ${dependencies})
 
 # Link the generated service and message interfaces
-rosidl_target_interfaces(yolo_inference_server
-  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(yolo_inference_server "${cpp_typesupport_target}") 
 
 # Install the executable
 install(
