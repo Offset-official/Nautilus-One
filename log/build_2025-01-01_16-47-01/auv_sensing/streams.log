@@ -1,0 +1,24 @@
+[0.028s] Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+[0.037s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[0.151s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.221s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.240s] -- Added test 'lint_cmake' to check CMake code style
+[0.241s] -- Added test 'xmllint' to check XML markup files
+[0.243s] -- Configuring done
+[0.246s] -- Generating done
+[0.248s] -- Build files have been written to: /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing
+[0.251s] Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+[0.252s] Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing -- -j12 -l12
+[0.295s] Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing -- -j12 -l12
+[0.297s] Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing
+[0.305s] -- Install configuration: ""
+[0.305s] -- Execute custom install script
+[0.306s] [31mCMake Error at ament_cmake_symlink_install/ament_cmake_symlink_install.cmake:100 (message):
+[0.306s]   ament_cmake_symlink_install_directory() can't find
+[0.306s]   '/home/jalan/auv_ws/src/auv_ros2/auv_sensing/models'
+[0.306s] Call Stack (most recent call first):
+[0.306s]   ament_cmake_symlink_install/ament_cmake_symlink_install.cmake:320 (ament_cmake_symlink_install_directory)
+[0.306s]   cmake_install.cmake:46 (include)
+[0.306s] 
+[0.306s] [0m
+[0.309s] Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing

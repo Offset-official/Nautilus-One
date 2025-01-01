@@ -1,0 +1,6 @@
+Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing -- -j12 -l12
+Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing -- -j12 -l12
+Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing
+Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/jalan/auv_ws/src/auv_ros2/build/auv_sensing

@@ -1,0 +1,28 @@
+[0.022s] Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+[0.093s] -- The C compiler identification is GNU 11.4.0
+[0.159s] -- The CXX compiler identification is GNU 11.4.0
+[0.166s] -- Detecting C compiler ABI info
+[0.244s] -- Detecting C compiler ABI info - done
+[0.251s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.251s] -- Detecting C compile features
+[0.251s] -- Detecting C compile features - done
+[0.255s] -- Detecting CXX compiler ABI info
+[0.340s] -- Detecting CXX compiler ABI info - done
+[0.351s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.352s] -- Detecting CXX compile features
+[0.352s] -- Detecting CXX compile features - done
+[0.355s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[0.547s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.621s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.706s] [31mCMake Error at /opt/ros/humble/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:53 (message):
+[0.706s]   ament_package_xml() package name 'auv_sensing' in '/package.xml' does not
+[0.706s]   match current PROJECT_NAME 'auv_description'.  You must call project() with
+[0.706s]   the same package name before.
+[0.706s] Call Stack (most recent call first):
+[0.706s]   /opt/ros/humble/share/ament_cmake_auto/cmake/ament_auto_find_build_dependencies.cmake:42 (ament_package_xml)
+[0.706s]   CMakeLists.txt:6 (ament_auto_find_build_dependencies)
+[0.706s] 
+[0.706s] [0m
+[0.706s] -- Configuring incomplete, errors occurred!
+[0.707s] See also "/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing/CMakeFiles/CMakeOutput.log".
+[0.715s] Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
