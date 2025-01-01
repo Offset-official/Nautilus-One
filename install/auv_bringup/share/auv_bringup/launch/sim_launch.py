@@ -1,1 +1,0 @@
-/home/jalan/auv_ws/src/auv_ros2/auv_bringup/launch/sim_launch.py

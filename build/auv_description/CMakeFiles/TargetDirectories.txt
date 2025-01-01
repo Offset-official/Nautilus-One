@@ -1,9 +1,0 @@
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/uninstall.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/auv_description_uninstall.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/test.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/edit_cache.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/rebuild_cache.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/list_install_components.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/install.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/install/local.dir
-/home/jalan/auv_ws/src/auv_ros2/build/auv_description/CMakeFiles/install/strip.dir
