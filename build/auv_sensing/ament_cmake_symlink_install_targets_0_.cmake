@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing/sense" "TARGETS" "sense" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "lib/auv_sensing")

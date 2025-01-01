@@ -1,0 +1,186 @@
+[0.110s] DEBUG:colcon:Command line arguments: ['/home/jalan/.local/bin/colcon', 'build', '--symlink-install']
+[0.110s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=12, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x767dd1be0d00>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x767dd1be0640>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x767dd1be0640>>)
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.224s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/jalan/auv_ws/src/auv_ros2'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extensions ['ignore', 'ignore_ament_install']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extension 'ignore'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extension 'ignore_ament_install'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extensions ['colcon_pkg']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extension 'colcon_pkg'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extensions ['colcon_meta']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extension 'colcon_meta'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extensions ['ros']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(auv_autonomy) by extension 'ros'
+[0.237s] DEBUG:colcon.colcon_core.package_identification:Package 'auv_autonomy' with type 'ros.ament_cmake' and name 'auv_autonomy'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extension 'ignore'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extension 'ignore_ament_install'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extensions ['colcon_pkg']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extension 'colcon_pkg'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extensions ['colcon_meta']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extension 'colcon_meta'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extensions ['ros']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(auv_bringup) by extension 'ros'
+[0.238s] DEBUG:colcon.colcon_core.package_identification:Package 'auv_bringup' with type 'ros.ament_cmake' and name 'auv_bringup'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extensions ['ignore', 'ignore_ament_install']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extension 'ignore'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extension 'ignore_ament_install'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extensions ['colcon_pkg']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extension 'colcon_pkg'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extensions ['colcon_meta']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extension 'colcon_meta'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extensions ['ros']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_description) by extension 'ros'
+[0.239s] DEBUG:colcon.colcon_core.package_identification:Package 'auv_description' with type 'ros.ament_cmake' and name 'auv_description'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extensions ['ignore', 'ignore_ament_install']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extension 'ignore'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extension 'ignore_ament_install'
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extensions ['colcon_pkg']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extension 'colcon_pkg'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extensions ['colcon_meta']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extension 'colcon_meta'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extensions ['ros']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(auv_sensing) by extension 'ros'
+[0.240s] DEBUG:colcon.colcon_core.package_identification:Package 'auv_sensing' with type 'ros.ament_cmake' and name 'auv_sensing'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['ignore', 'ignore_ament_install']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'ignore'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'ignore_ament_install'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['colcon_pkg']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'colcon_pkg'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['colcon_meta']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'colcon_meta'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['ros']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'ros'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['cmake', 'python']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'cmake'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'python'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extensions ['python_setup_py']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(images) by extension 'python_setup_py'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.241s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.241s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.241s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.241s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.241s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_args' from command line to 'None'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_target' from command line to 'None'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_clean_cache' from command line to 'False'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_clean_first' from command line to 'False'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'cmake_force_configure' from command line to 'False'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'ament_cmake_args' from command line to 'None'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'catkin_cmake_args' from command line to 'None'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_autonomy' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.259s] DEBUG:colcon.colcon_core.verb:Building package 'auv_autonomy' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jalan/auv_ws/src/auv_ros2/build/auv_autonomy', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy', 'merge_install': False, 'path': '/home/jalan/auv_ws/src/auv_ros2/auv_autonomy', 'symlink_install': True, 'test_result_base': None}
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_args' from command line to 'None'
+[0.259s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_target' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_clean_cache' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_clean_first' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'cmake_force_configure' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'ament_cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'catkin_cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_bringup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.260s] DEBUG:colcon.colcon_core.verb:Building package 'auv_bringup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jalan/auv_ws/src/auv_ros2/build/auv_bringup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jalan/auv_ws/src/auv_ros2/install/auv_bringup', 'merge_install': False, 'path': '/home/jalan/auv_ws/src/auv_ros2/auv_bringup', 'symlink_install': True, 'test_result_base': None}
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_target' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.260s] DEBUG:colcon.colcon_core.verb:Building package 'auv_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jalan/auv_ws/src/auv_ros2/build/auv_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jalan/auv_ws/src/auv_ros2/install/auv_description', 'merge_install': False, 'path': '/home/jalan/auv_ws/src/auv_ros2/auv_description', 'symlink_install': True, 'test_result_base': None}
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_args' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_target' from command line to 'None'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.260s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_clean_cache' from command line to 'False'
+[0.261s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_clean_first' from command line to 'False'
+[0.261s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'cmake_force_configure' from command line to 'False'
+[0.261s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'ament_cmake_args' from command line to 'None'
+[0.261s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'catkin_cmake_args' from command line to 'None'
+[0.261s] Level 5:colcon.colcon_core.verb:set package 'auv_sensing' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.261s] DEBUG:colcon.colcon_core.verb:Building package 'auv_sensing' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing', 'merge_install': False, 'path': '/home/jalan/auv_ws/src/auv_ros2/auv_sensing', 'symlink_install': True, 'test_result_base': None}
+[0.261s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.262s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.262s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jalan/auv_ws/src/auv_ros2/auv_autonomy' with build type 'ament_cmake'
+[0.262s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jalan/auv_ws/src/auv_ros2/auv_autonomy'
+[0.264s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.265s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.265s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.268s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jalan/auv_ws/src/auv_ros2/auv_bringup' with build type 'ament_cmake'
+[0.269s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jalan/auv_ws/src/auv_ros2/auv_bringup'
+[0.269s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.269s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.272s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jalan/auv_ws/src/auv_ros2/auv_description' with build type 'ament_cmake'
+[0.272s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jalan/auv_ws/src/auv_ros2/auv_description'
+[0.272s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.272s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.275s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jalan/auv_ws/src/auv_ros2/auv_sensing' with build type 'ament_cmake'
+[0.275s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jalan/auv_ws/src/auv_ros2/auv_sensing'
+[0.275s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.275s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.285s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_autonomy': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_autonomy -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy
+[0.290s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_bringup': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_bringup -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_bringup
+[0.293s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_description': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_description
+[0.297s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+[0.991s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jalan/auv_ws/src/auv_ros2/build/auv_sensing' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jalan/auv_ws/src/auv_ros2/auv_sensing -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing
+[1.004s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(auv_sensing)
+[1.006s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing' for CMake module files
+[1.006s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing' for CMake config files
+[1.006s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/bin'
+[1.007s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/lib/pkgconfig/auv_sensing.pc'
+[1.009s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/lib/python3.10/site-packages'
+[1.009s] Level 1:colcon.colcon_core.environment:checking '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/bin'
+[1.010s] INFO:colcon.colcon_core.shell:Creating package script '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/auv_sensing/package.ps1'
+[1.011s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/auv_sensing/package.dsv'
+[1.011s] INFO:colcon.colcon_core.shell:Creating package script '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/auv_sensing/package.sh'
+[1.012s] INFO:colcon.colcon_core.shell:Creating package script '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/auv_sensing/package.bash'
+[1.012s] INFO:colcon.colcon_core.shell:Creating package script '/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/auv_sensing/package.zsh'
+[1.013s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jalan/auv_ws/src/auv_ros2/install/auv_sensing/share/colcon-core/packages/auv_sensing)
+[1.662s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.662s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.662s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[1.663s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.672s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.673s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.673s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.700s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.701s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jalan/auv_ws/src/auv_ros2/install/local_setup.ps1'
+[1.703s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jalan/auv_ws/src/auv_ros2/install/_local_setup_util_ps1.py'
+[1.706s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jalan/auv_ws/src/auv_ros2/install/setup.ps1'
+[1.707s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jalan/auv_ws/src/auv_ros2/install/local_setup.sh'
+[1.708s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jalan/auv_ws/src/auv_ros2/install/_local_setup_util_sh.py'
+[1.708s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jalan/auv_ws/src/auv_ros2/install/setup.sh'
+[1.710s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jalan/auv_ws/src/auv_ros2/install/local_setup.bash'
+[1.710s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jalan/auv_ws/src/auv_ros2/install/setup.bash'
+[1.711s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jalan/auv_ws/src/auv_ros2/install/local_setup.zsh'
+[1.711s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jalan/auv_ws/src/auv_ros2/install/setup.zsh'

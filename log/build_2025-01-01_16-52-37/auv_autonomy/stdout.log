@@ -1,0 +1,20 @@
+[100%] Built target forward
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/lib/auv_autonomy/forward
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/ament_index/resource_index/package_run_dependencies/auv_autonomy
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/ament_index/resource_index/parent_prefix_path/auv_autonomy
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/environment/path.sh
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/environment/path.dsv
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/local_setup.bash
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/local_setup.sh
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/local_setup.zsh
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/local_setup.dsv
+-- Symlinking: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/package.dsv
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/ament_index/resource_index/packages/auv_autonomy
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/cmake/auv_autonomyConfig.cmake
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/cmake/auv_autonomyConfig-version.cmake
+-- Up-to-date symlink: /home/jalan/auv_ws/src/auv_ros2/install/auv_autonomy/share/auv_autonomy/package.xml
