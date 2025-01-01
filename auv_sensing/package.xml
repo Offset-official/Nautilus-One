@@ -3,29 +3,20 @@
 <package format="3">
   <name>auv_sensing</name>
   <version>0.0.0</version>
-  <description>Package for AUV sensing and YOLO inference in C++.</description>
-
-  <maintainer email="subham.jalan@plaksha.edu.in">jalan-subham</maintainer>
+  <description>TODO: Package description</description>
+  <maintainer email="subham.jalan@plaksha.edu.in">Subham Jalan</maintainer>
   <license>TODO: License declaration</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-onnxruntime-pip</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 
-  <member_of_group>rosidl_interface_packages</member_of_group>'
- <!-- Dependencies for custom messages -->
-  <depend>builtin_interfaces</depend>
-  <depend>rclcpp</depend>
-  <depend>mavros</depend>
-  <depend>mavros_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>cv_bridge</depend>
-  <depend>ament_index_cpp</depend>
-  <depend>onnxruntime</depend>
-  <depend>OpenCV</depend>
-
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
-    <build_type>ament_cmake</build_type>
+    <build_type>ament_python</build_type>
   </export>
 </package>
