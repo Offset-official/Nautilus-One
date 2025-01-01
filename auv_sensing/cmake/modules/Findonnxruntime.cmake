@@ -1,7 +1,7 @@
 find_path(ONNXRUNTIME_INCLUDE_DIR onnxruntime_c_api.h 
-          PATHS ~/onnxruntime/onnxruntime-linux-x64-1.4.0/include)
+          PATHS /usr/local/onnxruntime-linux-x64-1.4.0/include/)
 find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime 
-             PATHS ~/onnxruntime/onnxruntime-linux-x64-1.4.0/lib)
+             PATHS /usr/local/onnxruntime-linux-x64-1.4.0/lib/)
 
 if (ONNXRUNTIME_INCLUDE_DIR AND ONNXRUNTIME_LIBRARY)
   set(onnxruntime_FOUND TRUE)

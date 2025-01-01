@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/msg/image.hpp>
-
+#include <ament_index_cpp/get_package_share_directory.hpp>
 // Custom service and message headers generated from .srv and .msg files
 #include "auv_sensing/srv/yolo_inference.hpp"
 #include "auv_sensing/msg/detection.hpp"
@@ -57,9 +57,8 @@ public:
       throw;
     }
 
-    // Get input details
     Ort::AllocatorWithDefaultOptions allocator;
-    input_name_ = session_->GetInputName(0, allocator);
+    // input_name_ = session_->GetInputNameAllocated(0, allocator);
     RCLCPP_INFO(logger_, "Model input name: %s", input_name_.c_str());
 
     // Example for a fixed-size model: (batch, channels, height, width)
@@ -324,7 +323,7 @@ private:
 
   // ONNX Runtime
   std::unique_ptr<Ort::Session> session_;
-  std::string input_name_;
+  std::string input_name_ = "images";
 
   // Logger
   rclcpp::Logger logger_;
@@ -341,7 +340,7 @@ public:
   {
     // Create the YOLO model instance
     // (Adjust path, thresholds, class names, etc. as needed)
-    std::string model_path = "best.onnx";  // Ensure this path is correct
+    const std::string model_path = ament_index_cpp::get_package_share_directory("auv_sensing") + "/models/best.onnx";
     float conf_thres = 0.5f;
     float iou_thres  = 0.5f;
     std::vector<std::string> class_names = {

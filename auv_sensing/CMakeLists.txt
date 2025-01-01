@@ -9,11 +9,6 @@ endif()
 # Append custom CMake modules path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
-# Print CMAKE_MODULE_PATH for debugging
-message(STATUS "CMAKE_MODULE_PATH:")
-foreach(path ${CMAKE_MODULE_PATH})
-  message(STATUS "  -> ${path}")
-endforeach()
 
 # Find build dependencies first
 find_package(ament_cmake REQUIRED)
@@ -25,6 +20,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(mavros REQUIRED)
 find_package(mavros_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(onnxruntime REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -60,11 +56,16 @@ rosidl_target_interfaces(yolo_inference_server
 
 # Install the executable
 install(
-  TARGETS 
-    yolo_inference_server
-  DESTINATION lib/${PROJECT_NAME}
+  TARGETS yolo_inference_server
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
+  
 )
-
+install (
+  DIRECTORY models/
+  DESTINATION share/${PROJECT_NAME}/models
+)
 # Handle testing (optional)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
