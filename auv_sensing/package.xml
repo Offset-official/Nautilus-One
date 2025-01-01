@@ -18,6 +18,7 @@
   <depend>mavros_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
+  <depend>ament_index_cpp</depend>
   <depend>onnxruntime</depend>
   <depend>OpenCV</depend>
 
