@@ -1,1 +1,0 @@
-/home/jalan/auv_ws/src/auv_ros2/build/auv_bringup/ament_cmake_core/auv_bringupConfig.cmake
