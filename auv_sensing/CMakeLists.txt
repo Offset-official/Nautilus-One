@@ -8,16 +8,20 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 set(dependencies
     rclcpp
+    OpenCV 
+    cv_bridge
 )
 
-add_executable(start_camera src/start_camera.cpp)
-ament_target_dependencies(start_camera ${dependencies})
+add_executable(show_camera src/show_camera.cpp)
+ament_target_dependencies(show_camera ${dependencies})
 
 install(TARGETS
-    start_camera
+    show_camera
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
