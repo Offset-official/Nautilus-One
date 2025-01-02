@@ -6,24 +6,24 @@
 class ShowCameraNode : public rclcpp::Node 
 {
     public:
-        ShowCameraNode() : Node("show_camera") 
+        ShowCameraNode(const char* camera_topic) : Node("show_camera") 
         {
             RCLCPP_INFO(this->get_logger(), "Starting node...");
             
             auto topics = this->get_topic_names_and_types();
-            bool topic_exists = topics.find(camera_topic_) != topics.end();
+            bool topic_exists = topics.find(camera_topic) != topics.end();
             if (topic_exists) {
-                RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic_);
+                RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic);
                 RCLCPP_INFO(this->get_logger(), "Start Gazebo to see the camera feed.");
             }
             else {
-                RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic_);
+                RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic);
                 rclcpp::shutdown();
             }
             
             try {
                 subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-                    camera_topic_, 10, std::bind(&ShowCameraNode::image_callback, this, std::placeholders::_1)
+                    camera_topic, 10, std::bind(&ShowCameraNode::image_callback, this, std::placeholders::_1)
                                 );
             }
             catch (rclcpp::exceptions::RCLError& e) {
@@ -46,14 +46,14 @@ class ShowCameraNode : public rclcpp::Node
             }
 
         }
-    const char* camera_topic_ = "/auv_camera/image_raw";
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
  
 };
 
 int main(int argc, char* argv[]) {
+    const char* camera_topic = argv[2];
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<ShowCameraNode>());
+    rclcpp::spin(std::make_shared<ShowCameraNode>(camera_topic));
     rclcpp::shutdown();
     return 0;
 
