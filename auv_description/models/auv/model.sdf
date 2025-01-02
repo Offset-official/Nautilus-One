@@ -47,6 +47,7 @@
 
 
       <sensor name="auv_camera" type="camera">
+        <pose>0.5 2 0 0 0 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
         <always_on>true</always_on>
         <visualize>true</visualize>
         <update_rate>30</update_rate>
