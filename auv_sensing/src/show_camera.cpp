@@ -51,7 +51,7 @@ class ShowCameraNode : public rclcpp::Node
 };
 
 int main(int argc, char* argv[]) {
-    const char* camera_topic = argv[2];
+    const char* camera_topic = argv[1];
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<ShowCameraNode>(camera_topic));
     rclcpp::shutdown();

@@ -17,6 +17,7 @@ def generate_launch_description():
         ),
         Node(
             package="auv_sensing",
-            executable="show_camera"
+            executable="show_camera",
+            arguments=["/auv_camera/image_raw"]
         )
     ])

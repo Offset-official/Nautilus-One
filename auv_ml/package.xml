@@ -6,7 +6,7 @@
   <description>ML for our precious AUV!</description>
   <maintainer email="subham.jalan@plaksha.edu.in">Subham Jalan</maintainer>
   <license>TODO: License declaration</license>
-
+  <depend>auv_interfaces</depend>
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-onnxruntime-pip</exec_depend>
   <exec_depend>python3-opencv</exec_depend>

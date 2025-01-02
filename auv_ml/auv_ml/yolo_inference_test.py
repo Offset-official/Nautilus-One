@@ -14,7 +14,7 @@ class YoloInferenceClient(Node):
 
     def __init__(self):
         super().__init__('yolo_inference_test')
-        self.cli = self.create_client(YoloInference, 'yolo_inference')
+        self.cli = self.create_client(YoloInference, 'yolo_inference_server')
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting...')
         self.req = YoloInference.Request()

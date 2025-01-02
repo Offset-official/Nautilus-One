@@ -6,8 +6,13 @@ Build the packages as before. Then, launch gazebo using the following command:
 ros2 launch auv_bringup sim_launch.py world:=pool` 
 ```
 
-Then, launch the camera.
+To launch just the camera view.
 ```bash
-ros2 launch auv_sensing camera_launch.py
+ros2 launch auv_sensing launch_camera.py
+```
+
+To launch inference with camera view.
+```bash
+ros2 launch auv_sensing launch_inference.py
 ```
 

@@ -246,7 +246,7 @@ class YoloInferenceServer(Node):
         super().__init__('yolo_inference_server')
 
         # Initialize service
-        self.srv = self.create_service(YoloInference, 'yolo_inference', self.handle_inference)
+        self.srv = self.create_service(YoloInference, 'yolo_inference_server', self.handle_inference)
 
         # Get model path
         model_path = get_package_share_directory('auv_ml') + '/models/best.onnx'
