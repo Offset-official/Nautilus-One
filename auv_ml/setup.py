@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 import os 
 from glob import glob 
 
-package_name = 'auv_sensing'
+package_name = 'auv_ml'
 
 setup(
     name=package_name,
@@ -23,8 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'yolo_inference_server = auv_sensing.yolo_inference_server:main',
-            'yolo_inference_test = auv_sensing.yolo_inference_test:main'
+            'yolo_inference_server = auv_ml.yolo_inference_server:main',
+            'yolo_inference_test = auv_ml.yolo_inference_test:main'
         ],
     },
 )
