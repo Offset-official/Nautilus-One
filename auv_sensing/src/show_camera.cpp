@@ -14,6 +14,7 @@ class ShowCameraNode : public rclcpp::Node
             bool topic_exists = topics.find(camera_topic_) != topics.end();
             if (topic_exists) {
                 RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic_);
+                RCLCPP_INFO(this->get_logger(), "Start Gazebo to see the camera feed.");
             }
             else {
                 RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic_);
@@ -34,7 +35,7 @@ class ShowCameraNode : public rclcpp::Node
  
         void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const {
             try {
-                RCLCPP_INFO(this->get_logger(), "Image Received");
+                // RCLCPP_INFO(this->get_logger(), "Image Received");
                 cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
                 cv::imshow("Camera", frame);
                 cv::waitKey(10);
