@@ -4,12 +4,12 @@ Ensure that you use `rosdep` for installing all required packages. If `numpy` gi
 
 Run server:
 ```bash
-ros2 run auv_sensing yolo_inference_server
+ros2 run auv_ml yolo_inference_server
 ```
 
 Run client:
 ```bash
-ros2 run auv_sensing yolo_inference_test <input_img> <output_img>
+ros2 run auv_ml yolo_inference_test <input_img> <output_img>
 ```
 
 

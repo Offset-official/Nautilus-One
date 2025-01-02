@@ -249,7 +249,7 @@ class YoloInferenceServer(Node):
         self.srv = self.create_service(YoloInference, 'yolo_inference', self.handle_inference)
 
         # Get model path
-        model_path = get_package_share_directory('auv_sensing') + '/models/best.onnx'
+        model_path = get_package_share_directory('auv_ml') + '/models/best.onnx'
 
         # Initialize YOLOv8 instance
         self.yolo = YOLOv8(
