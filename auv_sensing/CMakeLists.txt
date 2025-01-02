@@ -10,18 +10,24 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(auv_interfaces REQUIRED)
 
 set(dependencies
     rclcpp
     OpenCV 
     cv_bridge
+    auv_interfaces
 )
 
 add_executable(show_camera src/show_camera.cpp)
+add_executable(infer_camera src/infer_camera.cpp)
+
 ament_target_dependencies(show_camera ${dependencies})
+ament_target_dependencies(infer_camera ${dependencies})
 
 install(TARGETS
     show_camera
+    infer_camera
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
