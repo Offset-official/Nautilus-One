@@ -16,3 +16,5 @@ To launch inference with camera view.
 ros2 launch auv_sensing launch_inference.py
 ```
 
+Currently, the camera is set to a very low FPS to allow synchronous inference.
+
