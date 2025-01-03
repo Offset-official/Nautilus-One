@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>auv_interfaces</name>
+  <version>0.0.1</version>
+  <description>AUV Interfaces for msgs and services</description>
+
+  <maintainer email="subham.jalan@plaksha.edu.in">Subham Jalan</maintainer>
+  <license>Apache License 2.0</license>
+
+<buildtool_depend>ament_cmake_python</buildtool_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <!-- Export messages and services -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
