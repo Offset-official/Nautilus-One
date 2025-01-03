@@ -9,28 +9,37 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(mavros REQUIRED)
+find_package(mavros_msgs REQUIRED)
 
+
+set(dependencies
+    geometry_msgs
+    rclcpp
+    mavros
+    mavros_msgs
+)
 
 add_executable(cmd_vel_publisher src/cmd_vel_publisher.cpp)
-ament_target_dependencies(cmd_vel_publisher rclcpp geometry_msgs)
+ament_target_dependencies(cmd_vel_publisher ${dependencies})
 
-add_executable(twist_to_thruster_subscriber src/twist_to_thruster_subscriber.cpp)
-ament_target_dependencies(twist_to_thruster_subscriber rclcpp geometry_msgs)
+add_executable(twist_to_thrust src/twist_to_thrust.cpp)
+ament_target_dependencies(twist_to_thrust ${dependencies})
 
 target_include_directories(cmd_vel_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_include_directories(twist_to_thruster_subscriber PUBLIC
+target_include_directories(twist_to_thrust PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
 target_compile_features(cmd_vel_publisher PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(twist_to_thruster_subscriber PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(twist_to_thrust PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
   cmd_vel_publisher
-  twist_to_thruster_subscriber
+  twist_to_thrust
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

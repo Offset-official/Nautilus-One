@@ -13,7 +13,7 @@ class CmdVelPublisher : public rclcpp::Node
 {
 public:
   CmdVelPublisher()
-  : Node("twist_publisher"), count_(0)
+  : Node("cmd_vel_publisher"), count_(0)
   {
     publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
     timer_ = this->create_wall_timer(
@@ -24,12 +24,10 @@ private:
   void timer_callback()
   {
     auto twist_message = geometry_msgs::msg::Twist();
-    twist_message.linear.x = 0.0;
-    twist_message.linear.y = 1.0;
-    twist_message.linear.z = 6.0;
-    twist_message.angular.x = 1.1;
-    twist_message.angular.y = 1.4;
-    twist_message.angular.z = 2.0;
+    std::cout << "Enter linear velocities (x y z): ";
+    std::cin >> twist_message.linear.x >> twist_message.linear.y >> twist_message.linear.z;
+    std::cout << "Enter angular velocities (x y z): ";
+    std::cin >> twist_message.angular.x >> twist_message.angular.y >> twist_message.angular.z;
     RCLCPP_INFO(this->get_logger(), "Publishing Twist message: linear=(%f, %f, %f), angular=(%f, %f, %f)",
           twist_message.linear.x, twist_message.linear.y, twist_message.linear.z,
           twist_message.angular.x, twist_message.angular.y, twist_message.angular.z);
