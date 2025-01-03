@@ -19,7 +19,6 @@ set(dependencies
 
 add_executable(forward src/forward.cpp)
 ament_target_dependencies(forward ${dependencies})
-
 install(TARGETS
     forward
     ARCHIVE DESTINATION lib
