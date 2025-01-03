@@ -37,5 +37,6 @@ jobs:
             auv_autonomy
             auv_bringup
             auv_description
+          import-token: ${{ secrets.GITHUB_TOKEN }}
           target-ros2-distro: ${{ matrix.ros_distribution }}
           vcs-repo-file-url: auv_ws/third_parties.repos
