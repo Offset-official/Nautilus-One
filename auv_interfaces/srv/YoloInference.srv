@@ -1,0 +1,9 @@
+# Request
+sensor_msgs/Image image
+
+---
+# Response
+sensor_msgs/Image result_image
+auv_interfaces/Detection[] detections
+bool success
+string error_message

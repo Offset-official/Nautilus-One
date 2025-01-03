@@ -16,68 +16,12 @@ Nautilus One runs in [Gazebo Garden](https://gazebosim.org/docs/garden/getstarte
 hydrodynamics and thruster
 plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo).
 
-## Requirements
+## Pre-requisites
 
-Please ensure that the following requirements have been met prior to installing the project:
-
-* [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
-* [Gazebo Garden 7.1.0](https://gazebosim.org/docs/garden/install)
-* [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo)
-* [ArduSub](https://ardupilot.org/dev/docs/building-setup-linux.html)
-* [Rosdep](https://docs.ros.org/en/independent/api/rosdep/html)
-* [vcstool](https://github.com/dirk-thomas/vcstool)
-
-Set `GZ_SIM_SYSTEM_PLUGIN_PATH` environment variable to path of your `ardupilot_gazebo` plugin build folder.
-Set `GZ_VERSION=garden` environment variable to ensure correct dependencies are installed.
-
+Check out the [installation file](INSTALL.md).
+  
 The project assumes that you are using `zsh` like a sane human.
 
-## Installation 
-
-Build ArduSub for SITL:
-
-```bash
-cd $ARDUPILOT_HOME
-./waf configure --board sitl
-./waf sub
-```
-
-Add the results of ArduSub build onto the system path:
-```bash
-echo 'export PATH=$ARDUPILOT_HOME/build/sitl/bin:$PATH' >> ~/.zshrc
-zsh
-```
-
-Configure rosdep (this only needs to be run once):
-```bash
-sudo rosdep init
-rosdep update
-```
-
-Preparing the workspace:
-
-```bash
-mkdir -p ~/auv_ws/src
-cd ~/auv_ws/src
-git clone https://github.com/Offset-official/auv_ros2
-vcs import . < auv_ros2/third_parties.repos
-```
-
-Installing package dependencies:
-
-```bash
-cd ~/auv_ws
-rosdep install --from-paths src --ignore-src -r -y
-sudo ./src/mavros/mavros/scripts/install_geographiclib_datasets.sh
-```
-
-Building the workspace:
-
-```bash
-cd ~/auv_ws
-colcon build --symlink-install
-source ~/auv_ws/install/setup.zsh
-```
 
 ## Usage
 
@@ -118,6 +62,10 @@ Launch the forward executable in a 2nd Terminal:
 ```bash
 ros2 run auv_autonomy forward
 ```
+
+## Debug
+1. If things don't work, make sure that all the required environment variables are set as given above. Make sure to `zsh`.
+2. Please ensure that you do all of the initialization steps one after the another. Otherwise, things may not work.
 
 ## Packages
 
