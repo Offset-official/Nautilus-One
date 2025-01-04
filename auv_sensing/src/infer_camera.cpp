@@ -26,7 +26,7 @@ class CameraInferenceNode : public rclcpp::Node
             
             try {
                 subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-                    camera_source_topic_, 10, std::bind(&CameraInferenceNode::image_callback, this, std::placeholders::_1)
+                    camera_source_topic_, 1, std::bind(&CameraInferenceNode::image_callback, this, std::placeholders::_1)
                                 );
                 publisher_ = this->create_publisher<sensor_msgs::msg::Image>(
                     camera_pub_topic_, 10
