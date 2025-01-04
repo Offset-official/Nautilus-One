@@ -274,6 +274,7 @@ class YoloInferenceServer(Node):
             YoloInference, "yolo_inference", self.handle_inference
         )
 
+
         # Get model path
         model_path = get_package_share_directory("auv_ml") + "/models/best.onnx"
 

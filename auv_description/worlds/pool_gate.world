@@ -61,6 +61,11 @@
       <uri>model://axes</uri>
       <pose>0 0 0.2 0 0 0</pose>
     </include>
+        <include>
+      <uri>model://gate</uri>
+      <pose>0 6 -0.45 0 0 0</pose>
+    </include>
+
 
   </world>
 </sdf>
