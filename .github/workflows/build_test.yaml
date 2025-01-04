@@ -1,0 +1,42 @@
+name: ROS2 CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  test_environment:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+      matrix:
+        ros_distribution: [humble]
+
+        include:
+          - ros_distribution: humble
+            docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
+
+    container:
+      image: ${{ matrix.docker_image }}
+
+    steps:
+      - run: mkdir auv_ws
+
+      - uses: actions/checkout@v4
+        with:
+          path: auv_ws
+
+      # Note that action-ros-ci will rm -rf ros_ws
+      - uses: ros-tooling/action-ros-ci@0.3.14
+        with:
+          package-name: |
+            auv_autonomy
+            auv_bringup
+            auv_description
+          import-token: ${{ secrets.GITHUB_TOKEN }}
+          target-ros2-distro: ${{ matrix.ros_distribution }}
+          vcs-repo-file-url: auv_ws/third_parties.repos
