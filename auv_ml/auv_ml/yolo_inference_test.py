@@ -52,8 +52,8 @@ class YoloInferenceClient(Node):
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
 
-        if self.future.result() is not None:
-            response = self.future.result()
+        response = self.future.result()
+        if response is not None:
             if response.success:
                 # Convert ROS Image message back to OpenCV image
                 try:
