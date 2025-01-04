@@ -50,7 +50,7 @@
         <pose>0.5 2 0 0 0 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
         <always_on>true</always_on>
         <visualize>true</visualize>
-        <update_rate>2</update_rate>
+        <update_rate>24</update_rate>
         <topic>auv_camera/image_raw</topic>
         <gz_frame_id>camera_rgb_frame</gz_frame_id>
         <camera name="auv_camera">
