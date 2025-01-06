@@ -2,7 +2,6 @@
 
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
 from ament_index_python.packages import get_package_share_directory
 from auv_interfaces.srv import YoloInference
 from auv_interfaces.msg import Detection
@@ -10,6 +9,7 @@ import cv2
 import numpy as np
 import onnxruntime as ort
 from cv_bridge import CvBridge, CvBridgeError
+
 
 class YOLOv8:
     """YOLOv8 object detection model class for handling inference and visualization."""
@@ -30,8 +30,13 @@ class YOLOv8:
         self.logger = logger
 
         self.classes = [
-            "Blue flare", "Blue pail", "Cloth", "Gate", "Red flare", "Red pail",
-            "Yellow flare"
+            "Blue flare",
+            "Blue pail",
+            "Cloth",
+            "Gate",
+            "Red flare",
+            "Red pail",
+            "Yellow flare",
         ]
 
         # Generate a color palette for the classes
@@ -40,7 +45,9 @@ class YOLOv8:
 
         # Initialize ONNX Runtime session
         try:
-            self.session = ort.InferenceSession(self.onnx_model, providers=["CPUExecutionProvider"])
+            self.session = ort.InferenceSession(
+                self.onnx_model, providers=["CPUExecutionProvider"]
+            )
             self.logger.info("ONNX Runtime session successfully created.")
         except Exception as e:
             self.logger.error(f"Failed to create ONNX Runtime session: {e}")
@@ -52,7 +59,9 @@ class YOLOv8:
         self.input_width = self.input_shape[3]
         self.input_height = self.input_shape[2]
         self.logger.info(f"Model input name: {self.input_name}")
-        self.logger.info(f"Model input dimensions: {self.input_width} x {self.input_height}")
+        self.logger.info(
+            f"Model input dimensions: {self.input_width} x {self.input_height}"
+        )
 
         # Initialize CvBridge
         self.bridge = CvBridge()
@@ -83,7 +92,9 @@ class YOLOv8:
         label = f"{self.classes[class_id]}: {score:.2f}"
 
         # Calculate the dimensions of the label text
-        (label_width, label_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        (label_width, label_height), _ = cv2.getTextSize(
+            label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1
+        )
 
         # Calculate the position of the label text
         label_x = x1
@@ -91,14 +102,24 @@ class YOLOv8:
 
         # Draw a filled rectangle as the background for the label text
         cv2.rectangle(
-            img, (int(label_x), int(label_y - label_height)), 
-            (int(label_x + label_width), int(label_y + 0)), 
-            color, cv2.FILLED
+            img,
+            (int(label_x), int(label_y - label_height)),
+            (int(label_x + label_width), int(label_y + 0)),
+            color,
+            cv2.FILLED,
         )
 
         # Draw the label text on the image
-        cv2.putText(img, label, (int(label_x), int(label_y)), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+        cv2.putText(
+            img,
+            label,
+            (int(label_x), int(label_y)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (0, 0, 0),
+            1,
+            cv2.LINE_AA,
+        )
 
     def preprocess(self, cv_image):
         """
@@ -132,14 +153,16 @@ class YOLOv8:
 
     def postprocess(self, input_image, output):
         """
-        Performs post-processing on the model's output to extract bounding boxes, scores, and class IDs.
+        Performs post-processing on the model's output to extract bounding boxes,
+        scores, and class IDs.
 
         Args:
             input_image (numpy.ndarray): The input image.
             output (list): The output of the model.
 
         Returns:
-            tuple: The input image with detections drawn on it and a list of detections.
+            tuple: The input image with detections drawn on it and a list
+            of detections.
         """
         # Transpose and squeeze the output to match the expected shape
         outputs = np.transpose(np.squeeze(output[0]))
@@ -239,27 +262,31 @@ class YOLOv8:
 
         return annotated_image, detections
 
+
 class YoloInferenceServer(Node):
     """ROS 2 Service Server for YOLOv8 Inference."""
 
     def __init__(self):
-        super().__init__('yolo_inference_server')
+        super().__init__("yolo_inference_server")
 
         # Initialize service
-        self.srv = self.create_service(YoloInference, 'yolo_inference', self.handle_inference)
+        self.srv = self.create_service(
+            YoloInference, "yolo_inference", self.handle_inference
+        )
+
 
         # Get model path
-        model_path = get_package_share_directory('auv_ml') + '/models/best.onnx'
+        model_path = get_package_share_directory("auv_ml") + "/models/best.onnx"
 
         # Initialize YOLOv8 instance
         self.yolo = YOLOv8(
             onnx_model=model_path,
             confidence_thres=0.5,
             iou_thres=0.5,
-            logger=self.get_logger()
+            logger=self.get_logger(),
         )
 
-        self.get_logger().info('YOLOv8 Inference Server is ready.')
+        self.get_logger().info("YOLOv8 Inference Server is ready.")
 
     def handle_inference(self, request, response):
         """
@@ -276,7 +303,7 @@ class YoloInferenceServer(Node):
 
         # Convert ROS Image message to OpenCV image
         try:
-            cv_image = bridge.imgmsg_to_cv2(request.image, desired_encoding='bgr8')
+            cv_image = bridge.imgmsg_to_cv2(request.image, desired_encoding="bgr8")
         except CvBridgeError as e:
             self.get_logger().error(f"CvBridge Error: {e}")
             response.success = False
@@ -298,7 +325,7 @@ class YoloInferenceServer(Node):
 
         # Convert annotated image back to ROS Image message
         try:
-            result_image_msg = bridge.cv2_to_imgmsg(annotated_image, encoding='bgr8')
+            result_image_msg = bridge.cv2_to_imgmsg(annotated_image, encoding="bgr8")
         except CvBridgeError as e:
             self.get_logger().error(f"CvBridge Error: {e}")
             response.success = False
@@ -313,9 +340,12 @@ class YoloInferenceServer(Node):
         response.success = True
         response.error_message = ""
 
-        self.get_logger().info(f"Inference completed with {len(detections)} detections.")
+        self.get_logger().info(
+            f"Inference completed with {len(detections)} detections."
+        )
 
         return response
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -323,5 +353,6 @@ def main(args=None):
     rclpy.spin(server)
     rclpy.shutdown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
