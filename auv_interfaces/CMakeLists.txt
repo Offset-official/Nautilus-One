@@ -9,6 +9,7 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Detection.msg"
   "srv/YoloInference.srv"
+  "msg/DetectionArray.msg"
   DEPENDENCIES sensor_msgs std_msgs
 )
 
