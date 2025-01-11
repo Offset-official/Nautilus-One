@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>auv_controller</name>
+  <version>0.0.0</version>
+  <description>auv_controller package provide control algorithms and interfaces to maneuver/control AUV's movement.</description>
+  <maintainer email="this.abhinav26@gmail.com">abhinav</maintainer>
+  <license>I don't want to write a license. please cut me some slack.</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>mavros</depend>
+  <depend>mavros_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
