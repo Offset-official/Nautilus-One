@@ -1,19 +1,18 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>auv_bringup</name>
+  <name>auv_sensing</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="25770025+nikhilhenry@users.noreply.github.com">nikhilhenry</maintainer>
+  <description>Fetches and processes camera feed of the AUV.</description>
+  <maintainer email="subham.jalan@plaksha.edu.in">jalan-subham</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!--
-  extremly tempted to make a fork of the rosdep keys repo to allow this to work
-  <depend>ros-humble-ros-gzgarden</depend>
-  -->
-
+  <depend>rclcpp</depend>
+  <depend>OpenCV</depend>
+  <depend>auv_interfaces</depend>
+  <depend>cv_bridge</depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
