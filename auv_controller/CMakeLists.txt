@@ -23,23 +23,26 @@ set(dependencies
 add_executable(cmd_vel_publisher src/cmd_vel_publisher.cpp)
 ament_target_dependencies(cmd_vel_publisher ${dependencies})
 
-add_executable(twist_to_thrust src/twist_to_thrust.cpp)
-ament_target_dependencies(twist_to_thrust ${dependencies})
+add_executable(base_controller src/base_controller.cpp)
+ament_target_dependencies(base_controller ${dependencies})
+
+
 
 target_include_directories(cmd_vel_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_include_directories(twist_to_thrust PUBLIC
+target_include_directories(base_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
+
 target_compile_features(cmd_vel_publisher PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(twist_to_thrust PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(base_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
   cmd_vel_publisher
-  twist_to_thrust
+  base_controller
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
