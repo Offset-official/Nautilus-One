@@ -33,8 +33,8 @@ mavros:
 
 mavros_node:
   ros__parameters:
-    fcu_url: "upd://192.168.2.2:14550"
-    gcs_url: "udp://@192.168.2.2:14660"
+    fcu_url: "upd://0.0.0.0:14550"
+    gcs_url: "udp://@0.0.0.0:14660"
 mavros/local_position:
   ros__parameters:
     frame_id: "map"  # frame_id of /mavros/local_position/pose, etc.
