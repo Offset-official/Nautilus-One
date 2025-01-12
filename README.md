@@ -72,3 +72,6 @@ ros2 run auv_autonomy forward
 * [`auv_autonomy` Basic autonomous functions](auv_autonomy)
 * [`auv_bringup` Launch files](auv_bringup)
 * [`auv_description` SDF files](auv_description)
+* [`auv_ml` Inference Node](auv_ml)
+* [`auv_interfaces` Interfaces](auv_interfaces)
+* [`auv_sensing` Camera Nodes](auv_sensing)
