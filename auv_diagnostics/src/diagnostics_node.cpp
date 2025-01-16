@@ -1,12 +1,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "mavros_msgs/msg/state.hpp"
 
-class DiagonosticsNode : public rclcpp::Node{
+class DiagnosticsNode : public rclcpp::Node{
     public:
-        DiagonosticsNode() : Node("diagonostics_node"){
+        DiagnosticsNode() : Node("diagnostics_node"){
             state_arm_sub_ = this->create_subscription<mavros_msgs::msg::State>(
                 "/mavros/state", 10, std::bind(&
-            DiagonosticsNode::arm_state_callback, this, std::placeholders::_1));
+            DiagnosticsNode::arm_state_callback, this, std::placeholders::_1));
         }
 
     private:
@@ -23,7 +23,7 @@ class DiagonosticsNode : public rclcpp::Node{
 
 int main(int argc, char **argv){
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<DiagonosticsNode>());
+    rclcpp::spin(std::make_shared<DiagnosticsNode>());
     rclcpp::shutdown();
     return 0;
 }
