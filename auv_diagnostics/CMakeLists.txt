@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(auv_diagonostics)
+project(auv_diagnostics)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -10,24 +10,26 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(mavros REQUIRED)
 find_package(mavros_msgs REQUIRED)
+# find_package(nlohmann_json REQUIRED)
 
 set(dependencies
     rclcpp
     mavros
     mavros_msgs
+    # nlohmann_json
 )
 
-add_executable(diagonostics src/diagonostics_node.cpp)
-ament_target_dependencies(diagonostics ${dependencies})
+add_executable(diagnostics src/diagnostics_node.cpp)
+ament_target_dependencies(diagnostics ${dependencies})
 
-target_include_directories(diagonostics PUBLIC
+target_include_directories(diagnostics PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_compile_features(diagonostics PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(diagnostics PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
-  diagonostics
+  diagnostics
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

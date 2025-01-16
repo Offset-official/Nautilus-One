@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>auv_diagonostics</name>
+  <name>auv_diagnostics</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="naraazanda@todo.todo">naraazanda</maintainer>
@@ -15,6 +15,7 @@
   <depend>rclcpp</depend>
   <depend>mavros</depend>
   <depend>mavros_msgs</depend>
+  <!-- <depend>nlohmann_json</depend> -->
 
   <export>
     <build_type>ament_cmake</build_type>
