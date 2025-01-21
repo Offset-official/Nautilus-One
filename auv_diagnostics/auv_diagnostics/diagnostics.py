@@ -1,9 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import State
-import serial
 import json
-import time
 from std_msgs.msg import String
 
 class AUVDiagnostics(Node):
@@ -27,22 +25,23 @@ class AUVDiagnostics(Node):
 
         self.states_str = ""
 
+        self.timer = self.create_timer(1.0, self.publish_diagnostics)
+
 
     # Log diagnostics message
     def state_callback(self, msg):
         states_json = {
             "armed": msg.armed,
         }
-
-        # Serialize JSON to string
+        # store as JSON string
         self.states_str = json.dumps(states_json)
+        self.get_logger().info(f"Received state: {self.states_str}")
 
-        self.get_logger().info(self.states_str)
-
-    # Publish diagnostics message
-    def publish_callback(self, msg):
-        data = self.states_str.encode('utf-8')
-        self.publisher.publish(data)
+    def publish_diagnostics(self):
+        # create a String message
+        msg = String()
+        msg.data = self.states_str
+        self.publisher.publish(msg)
         
 
 def main(args=None):
