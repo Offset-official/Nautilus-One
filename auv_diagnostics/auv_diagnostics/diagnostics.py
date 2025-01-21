@@ -25,13 +25,13 @@ class AUVDiagnostics(Node):
 
         self.states_str = ""
 
-        self.timer = self.create_timer(1.0, self.publish_diagnostics)
+        self.timer = self.create_timer(2, self.publish_diagnostics)
 
 
     # Log diagnostics message
     def state_callback(self, msg):
         states_json = {
-            "armed": msg.armed,
+            "armed": msg.armed ,
         }
         # store as JSON string
         self.states_str = json.dumps(states_json)
