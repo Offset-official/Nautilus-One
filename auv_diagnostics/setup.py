@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'diagnostics = auv_diagnostics.diagnostics:main'
+            'diagnostics = auv_diagnostics.diagnostics:main',
+            'serial_communication = auv_diagnostics.serial_communication:main',
         ],
     },
 )
