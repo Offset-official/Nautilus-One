@@ -11,7 +11,7 @@ void setup()
   LCD_Clear(0xffff);
   Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, 0, WHITE);
   Paint_Clear(WHITE);
-  // Paint_DrawString_EN(30, 10, "123", &Font24, YELLOW, RED);
+  // Paint_DrawString_EN(30, 10, "D", &Font24, YELLOW, RED);
   // Paint_DrawString_EN(30, 34, "ABC", &Font24, BLUE, CYAN);
   
   
@@ -27,12 +27,29 @@ void setup()
   
   
 
-  Paint_DrawImage(gImage_70X70, 20, 80, 70, 70); 
+  Paint_DrawImage(disarmed, 0, 0, 35, 35); 
   // //Paint_DrawFloatNum (5, 150 ,987.654321,4,  &Font20,    WHITE,   LIGHTGREEN);
 
 }
 void loop()
 {
+  if (Serial.available() > 0){
+    DynamicJsonDocument doc(2048);
+    DeserializationError error = deserializeJson(doc, Serial);
+
+    if (error) {
+      Serial.print("Failed to parse JSON: ");
+      Serial.println(error.f_str());
+      return;
+    }
+
+    // Accessing Data from JSON
+    // const char* arm_status = doc["armed"] ? "A" : "D";
+
+    const char* arm_status = doc["armed"] ? armed : disarmed;
+
+    Paint_DrawImage(arm_status, 0, 0, 35, 35);
+  }
   
 }
 

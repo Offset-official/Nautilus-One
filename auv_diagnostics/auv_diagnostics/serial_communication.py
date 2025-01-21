@@ -2,19 +2,20 @@ import rclpy
 from rclpy.node import Node
 import serial
 import time
-import json
 from std_msgs.msg import String
 
-SERIAL_PORT = '/dev/ttyACM0'
 BAUD_RATE = 9600
 
 class SerialCommunication(Node):
     def __init__(self):
         super().__init__('serial_communication_node')
 
+        self.declare_parameter('serial_port', '/dev/ttyACM0')
+        port = self.get_parameter('serial_port').get_parameter_value().string_value
+
         # Initialize serial communication
         try:
-            self.ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.5)
+            self.ser = serial.Serial(port, BAUD_RATE, timeout=0.5)
             time.sleep(1)
             self.get_logger().info('Serial communication initialized')
         except serial.SerialException:
@@ -30,9 +31,8 @@ class SerialCommunication(Node):
 
     # Send diagnostics message to serial port
     def serial_callback(self, msg):
-        data = json.dumps(msg.data)
-        self.ser.write(data.encode('utf-8') + b'\n')
-        self.get_logger().info('Sent diagnostics message to serial port')
+        self.ser.write(msg.data.encode('utf-8') + b'\n')
+        self.get_logger().info(f"Sent message: {msg.data}")
 
 def main(args=None):
     rclpy.init(args=args)
