@@ -238,3 +238,4 @@ void LCD_DrawPaint(UWORD x, UWORD y, UWORD Color)
 	LCD_SetCursor(x, y);
 	LCD_WriteData_Word(Color); 	    
 }
+
