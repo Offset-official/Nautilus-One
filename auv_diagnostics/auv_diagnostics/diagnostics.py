@@ -58,6 +58,7 @@ class AUVDiagnostics(Node):
             "batteryN": "NA",
             "batteryJ": "NA", 
             "task": "QLFN",
+            "jetson_connection": False,
         }
 
         # Convert to JSON and publish

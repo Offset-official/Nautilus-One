@@ -7,6 +7,8 @@ extern PROGMEM const unsigned char disarmed[];
 extern PROGMEM const unsigned char battery_J[];
 extern PROGMEM const unsigned char battery_N[];
 extern PROGMEM const unsigned char task[];
+extern PROGMEM const unsigned char jetson_nav_conn[];
+extern PROGMEM const unsigned char jetson_nav_conn_not[];
 
 
 #endif
