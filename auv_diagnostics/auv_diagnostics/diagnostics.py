@@ -1,18 +1,28 @@
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import State
+from sensor_msgs.msg import BatteryState 
 import json
 from std_msgs.msg import String
+
 
 class AUVDiagnostics(Node):
     def __init__(self):
         super().__init__('auv_diagnostics_node')
 
         # Subscriber for /mavros/state
-        self.state_sub = self.create_subscription(
+        self.create_subscription(
             State,
             '/mavros/state',
-            self.state_callback,
+            self.navigator_state_callback,
+            10
+        )
+
+        # Subscriber for /mavros/battery
+        self.create_subscription(
+            BatteryState,  # Correct message type
+            '/mavros/battery',
+            self.battery_nav_callback,
             10
         )
 
@@ -23,26 +33,39 @@ class AUVDiagnostics(Node):
             10
         )
 
-        self.states_str = ""
+        # Initializing state variables with defaults
+        self.navigator_state_data = {
+            "armed": False,
+        }
+        self.battery_nav_data = {
+            "percentage": "NA",
+        }
 
         self.timer = self.create_timer(2, self.publish_diagnostics)
 
+    # Callback for /mavros/state
+    def navigator_state_callback(self, msg):
+        self.navigator_state_data["armed"] = msg.armed
 
-    # Log diagnostics message
-    def state_callback(self, msg):
-        states_json = {
-            "armed": msg.armed ,
-        }
-        # store as JSON string
-        self.states_str = json.dumps(states_json)
-        self.get_logger().info(f"Received state: {self.states_str}")
+    # Callback for /mavros/battery
+    def battery_nav_callback(self, msg):
+        self.battery_nav_data["percentage"] = msg.percentage if hasattr(msg, "percentage") else "NA"
 
     def publish_diagnostics(self):
-        # create a String message
+        # Combine state and battery data
+        diagnostics = {
+            "armed": self.navigator_state_data["armed"],
+            "batteryN": "NA",
+            "batteryJ": "NA", 
+            "task": "QLFN",
+        }
+
+        # Convert to JSON and publish
         msg = String()
-        msg.data = self.states_str
+        msg.data = json.dumps(diagnostics)
         self.publisher.publish(msg)
-        
+        self.get_logger().info(f"Published diagnostics: {msg.data}")
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -55,6 +78,7 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
