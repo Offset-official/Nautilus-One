@@ -4,57 +4,50 @@
 #include "image.h"
 #include <ArduinoJson.h>
 
-void setup()
-{
-  Config_Init();
-  LCD_Init();
-  LCD_Clear(0xffff);
-  Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, 0, WHITE);
-  Paint_Clear(WHITE);
-  // Paint_DrawString_EN(30, 10, "D", &Font24, YELLOW, RED);
-  // Paint_DrawString_EN(30, 34, "ABC", &Font24, BLUE, CYAN);
-  
-  
-  // Paint_DrawRectangle(125, 10, 225, 58, RED,  DOT_PIXEL_2X2,DRAW_FILL_EMPTY);
-  // Paint_DrawLine(125, 10, 225, 58, MAGENTA,   DOT_PIXEL_2X2,LINE_STYLE_SOLID);
-  // Paint_DrawLine(225, 10, 125, 58, MAGENTA,   DOT_PIXEL_2X2,LINE_STYLE_SOLID);
-  
-  // Paint_DrawCircle(150,100, 25, BLUE,   DOT_PIXEL_2X2,   DRAW_FILL_EMPTY);
-  // Paint_DrawCircle(180,100, 25, BLACK,  DOT_PIXEL_2X2,   DRAW_FILL_EMPTY);
-  // Paint_DrawCircle(210,100, 25, RED,    DOT_PIXEL_2X2,   DRAW_FILL_EMPTY);
-  // Paint_DrawCircle(165,125, 25, YELLOW, DOT_PIXEL_2X2,   DRAW_FILL_EMPTY);
-  // Paint_DrawCircle(195,125, 25, GREEN,  DOT_PIXEL_2X2,   DRAW_FILL_EMPTY);
-  
-  
+DynamicJsonDocument doc(2048); // Global allocation for JSON parsing
 
-  Paint_DrawImage(disarmed, 0, 0, 35, 35); 
-  // //Paint_DrawFloatNum (5, 150 ,987.654321,4,  &Font20,    WHITE,   LIGHTGREEN);
+void setup() {
+    Config_Init();
+    LCD_Init();
+    LCD_Clear(0xffff); 
+    Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, 0, WHITE);
+    Paint_Clear(WHITE);
 
+    // Initial drawing
+    Paint_DrawImage(disarmed, 0, 0, 35, 35);
 }
-void loop()
-{
-  if (Serial.available() > 0){
-    DynamicJsonDocument doc(2048);
-    DeserializationError error = deserializeJson(doc, Serial);
 
-    if (error) {
-      Serial.print("Failed to parse JSON: ");
-      Serial.println(error.f_str());
-      return;
+void loop() {
+    if (Serial.available() > 0) { // Ensure sufficient data
+        // Parse JSON
+        DeserializationError error = deserializeJson(doc, Serial);
+        if (error) {
+            Serial.print("Failed to parse JSON: ");
+            Serial.println(error.f_str());
+            Serial.flush(); // Clear serial buffer on error
+            return;
+        }
+
+        // Process JSON
+        const unsigned char* arm_status = doc["armed"] ? armed : disarmed;
+        const char* battery_J_val = doc["battery_J"] | "NA";
+        const char* battery_N_val = doc["battery_N"] | "NA";
+        const char* task_val = doc["task"] | "NTSK";
+
+        // Update Display
+        static const unsigned char* last_arm_status = nullptr;
+        if (arm_status != last_arm_status) {
+            Paint_DrawImage(arm_status, 0, 0, 35, 35);
+            last_arm_status = arm_status;
+        }
+
+        Paint_DrawImage(battery_J, 260, 0, 35, 35);
+        Paint_DrawString_EN(290, 12.5, battery_J_val, &Font20, WHITE, BLACK);
+
+        Paint_DrawImage(battery_N, 200, 0, 35, 35);
+        Paint_DrawString_EN(232, 12.5, battery_N_val, &Font20, WHITE, BLACK);
+
+        Paint_DrawImage(task, 3, 202, 35, 35);
+        Paint_DrawString_EN(40, 211, task_val, &Font20, WHITE, BLACK);
     }
-
-    // Accessing Data from JSON
-    // const char* arm_status = doc["armed"] ? "A" : "D";
-
-    const char* arm_status = doc["armed"] ? armed : disarmed;
-
-    Paint_DrawImage(arm_status, 0, 0, 35, 35);
-  }
-  
 }
-
-
-
-/*********************************************************************************************************
-  END FILE
-*********************************************************************************************************/
