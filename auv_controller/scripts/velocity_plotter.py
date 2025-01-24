@@ -88,7 +88,7 @@ def plot_data(node):
             lines_imu[i].set_data(time_data, imu_data[key])
             lines_ref[i].set_data(time_data, ref_data[key])
             axs[i].relim()
-            axs[i].set_ylim(bottom=-2.0, top=2.0)
+            axs[i].set_ylim(bottom=-3.0, top=3.0)
             axs[i].autoscale_view(scalex=True, scaley=True)
         fig.canvas.draw_idle()
         return lines_imu + lines_ref

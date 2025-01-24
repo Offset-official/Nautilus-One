@@ -7,13 +7,13 @@ base_controller:
     # PWM settings
     neutral_pwm: 1500
     pwm_range: 50
-    pwm_deadband: 0
+    pwm_deadband: 10
 
     # PID parameters (using double)
-    pid_kp: 0.95
+    pid_kp: 1.0
     pid_ki: 0.05
-    pid_kd: 0.80
-    integral_clamp: 10.0
+    pid_kd: 0.8
+    integral_clamp: 100.0
 
     # IMU calibration
     imu_surge_bias: 0.10787
@@ -26,7 +26,7 @@ base_controller:
     kalman_initial_value: 0.0
 
     # Thresholds
-    measurement_threshold: 0.0
+    measurement_threshold: 0.05
     angular_threshold: 0.001
 
 

@@ -184,9 +184,11 @@ private:
                     lin_acc_surge, filtered_acc_surge, ang_vel_yaw, velocity_yaw_current);
 
         // Integrate accelerations
-        velocity_surge += filtered_acc_surge * dt;
+        // velocity_surge += filtered_acc_surge * dt;
+
         velocity_yaw = velocity_yaw_current;
-        velocity_surge = std::clamp(velocity_surge, -2.0, 2.0);
+        // velocity_surge = std::clamp(velocity_surge, -2.0, 2.0);
+        velocity_surge = filtered_acc_surge;
         velocity_yaw = velocity_yaw;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();
@@ -194,12 +196,10 @@ private:
         imu_ref_msg.y = velocity_yaw;
         imu_alt_publisher_->publish(imu_ref_msg);
 
-        if (use_pid_) {
-            surge_pwm_ = compute_motor_pwm(target_vel_surge, velocity_surge, 
-                                         error_surge, integral_surge, previous_error_surge, dt);
-            yaw_pwm_ = compute_motor_pwm(target_vel_yaw, velocity_yaw, 
-                                       error_yaw, integral_yaw, previous_error_yaw, dt);
-        }
+        surge_pwm_ = compute_motor_pwm(target_vel_surge, velocity_surge, 
+                                        error_surge, integral_surge, previous_error_surge, dt);
+        yaw_pwm_ = compute_motor_pwm(target_vel_yaw, velocity_yaw, 
+                                    error_yaw, integral_yaw, previous_error_yaw, dt);
 
         // Publish current velocities
         auto velocity_msg = geometry_msgs::msg::Vector3();
@@ -255,8 +255,13 @@ private:
 
     int compute_motor_pwm(double target_vel, double current_vel, 
                          double &error, double &integral, double &previous_error, double dt) {
-        // Calculate the error between the target velocity and the current velocity
+
         error = target_vel - current_vel;
+        
+        if (use_pid_ == 0) {
+            int predicted_pwm = neutral_pwm_ + error * pwm_range_;
+            return std::clamp(predicted_pwm, neutral_pwm_ - pwm_range_, neutral_pwm_ + pwm_range_);
+        }
         
         // If the target velocity and error are above the measurement threshold, update the integral term
         if (std::abs(target_vel) >= measurement_threshold_ && std::abs(error) >= measurement_threshold_) {
@@ -281,6 +286,9 @@ private:
         // Calculate the predicted PWM value by adding the adjustment to the neutral PWM
         int predicted_pwm = neutral_pwm_ + pwm_adjustment;
         
+        RCLCPP_INFO(this->get_logger(),
+                "PID Debug: Error: %.2f, Integral: %.2f, Derivative: %.2f",
+                error, integral, derivative);
         // If the PWM adjustment is within the deadband, set the PWM to neutral
         if (std::abs(pwm_adjustment) < pwm_deadband_) {
             predicted_pwm = neutral_pwm_;
