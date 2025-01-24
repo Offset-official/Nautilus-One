@@ -17,7 +17,7 @@ ros2 run auv_controller cmd_vel_publisher
 
 To run the vel plotter
 
-```python
+```bash
 cd ~/auv_ws/src/auv_ros2/auv_controller/src/
 
 python3 velocity_plotter.py
