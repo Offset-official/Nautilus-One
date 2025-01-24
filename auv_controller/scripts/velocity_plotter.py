@@ -14,60 +14,61 @@ class VelocityPlotter(Node):
         self.subscription_imu = self.create_subscription(
             Vector3, "imu_vel", self.listener_callback_imu, 10
         )
-        self.subscription_control = self.create_subscription(
-            Vector3, "applied_vel", self.listener_callback_control, 10
-        )
         self.subscription_ref = self.create_subscription(
             Twist, "cmd_vel", self.listener_callback_ref, 10
         )
         self.time_data = []
-        self.imu_data = {"x": [], "y": [], "z": []}
-        self.control_data = {"x": [], "y": [], "z": []}
-        self.ref_data = {"x": [], "y": [], "z": []}
+        self.imu_data = {"x": [], "y": []}
+        self.ref_data = {"x": [], "y": []}
         self.start_time = self.get_clock().now()
+
+        # Initialize last known values
+        self.last_imu = {"x": 0.0, "y": 0.0}
+        self.last_ref = {"x": 0.0, "y": 0.0}
 
     def listener_callback_imu(self, msg):
         current_time = (self.get_clock().now() - self.start_time).nanoseconds * 1e-9
         if not self.time_data or current_time > self.time_data[-1]:  # Avoid duplicates
             self.time_data.append(current_time)
-        self.imu_data["x"].append(msg.x)
-        self.imu_data["y"].append(msg.y)
-        self.imu_data["z"].append(msg.z)
-
-    def listener_callback_control(self, msg):
-        self.control_data["x"].append(msg.x)
-        self.control_data["y"].append(msg.y)
-        self.control_data["z"].append(msg.z)
+            # Update last known values
+            self.last_imu["x"] = msg.x
+            self.last_imu["y"] = msg.y
+            # Append to data lists
+            self.imu_data["x"].append(msg.x)
+            self.imu_data["y"].append(msg.y)
+            # Use last known values for other datasets if they haven't been updated
+            self._append_last_values(current_time)
 
     def listener_callback_ref(self, msg):
-        print(msg)
-        self.ref_data["x"].append(msg.linear.y)
-        self.ref_data["y"].append(msg.angular.z)
-        self.ref_data["z"].append(msg.linear.z)
+        current_time = (self.get_clock().now() - self.start_time).nanoseconds * 1e-9
+        self.last_ref["x"] = msg.linear.y
+        self.last_ref["y"] = msg.angular.z
+        if not self.time_data or current_time > self.time_data[-1]:
+            self.time_data.append(current_time)
+            self._append_last_values(current_time)
 
+    def _append_last_values(self, current_time):
+        # Ensure all data lists have the same length as time_data
+        target_length = len(self.time_data)
+
+        for data_list, last_values in [
+            (self.imu_data, self.last_imu),
+            (self.ref_data, self.last_ref),
+        ]:
+            for axis in ["x", "y"]:
+                while len(data_list[axis]) < target_length:
+                    data_list[axis].append(last_values[axis])
 
     def get_data(self):
-        min_length = min(
-            len(self.time_data),
-            len(self.imu_data["x"]),
-            len(self.control_data["x"]),
-            len(self.ref_data["x"]),
-        )
-        return (
-            self.time_data[:min_length],
-            {k: v[:min_length] for k, v in self.imu_data.items()},
-            {k: v[:min_length] for k, v in self.control_data.items()},
-            {k: v[:min_length] for k, v in self.ref_data.items()},
-        )
+        return (self.time_data, self.imu_data, self.ref_data)
 
 
 def plot_data(node):
-    fig, axs = plt.subplots(3, 1, figsize=(8, 12))
-    titles = ["Surge", "Yaw ", "Heave"]
-    colors = ["r", "g", "b"]
+    fig, axs = plt.subplots(2, 1, figsize=(8, 8))
+    titles = ["Surge", "Yaw"]
+    colors = ["r", "g"]
 
     lines_imu = []
-    lines_control = []
     lines_ref = []
 
     for ax, title, color in zip(axs, titles, colors):
@@ -76,24 +77,21 @@ def plot_data(node):
         ax.set_ylabel("Velocity (m/s)")
         ax.grid()
         (line_imu,) = ax.plot([], [], label="IMU", color=color)
-        (line_control,) = ax.plot(
-            [], [], label="Control", linestyle="--", color="orange"
-        )
-        (line_ref,) = ax.plot([], [], label="Reference", linestyle=":", color="blue")
+        (line_ref,) = ax.plot([], [], label="Reference", linestyle=":", color="orange")
         lines_imu.append(line_imu)
-        lines_control.append(line_control)
         lines_ref.append(line_ref)
         ax.legend()
 
     def update(frame):
-        time_data, imu_data, control_data, ref_data = node.get_data()
-        for i, key in enumerate(["x", "y", "z"]):
+        time_data, imu_data, ref_data = node.get_data()
+        for i, key in enumerate(["x", "y"]):
             lines_imu[i].set_data(time_data, imu_data[key])
-            lines_control[i].set_data(time_data, control_data[key])
             lines_ref[i].set_data(time_data, ref_data[key])
             axs[i].relim()
-            axs[i].autoscale_view()
-        return lines_imu + lines_control + lines_ref
+            axs[i].set_ylim(bottom=-2.0, top=2.0)
+            axs[i].autoscale_view(scalex=True, scaley=True)
+        fig.canvas.draw_idle()
+        return lines_imu + lines_ref
 
     ani = FuncAnimation(fig, update, interval=100)
     plt.tight_layout()

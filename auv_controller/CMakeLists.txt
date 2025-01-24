@@ -21,6 +21,8 @@ set(dependencies
     mavros_msgs
 )
 
+
+
 add_executable(cmd_vel_publisher src/cmd_vel_publisher.cpp)
 ament_target_dependencies(cmd_vel_publisher ${dependencies})
 
@@ -43,6 +45,11 @@ install(TARGETS
   cmd_vel_publisher
   base_controller
   DESTINATION lib/${PROJECT_NAME})
+
+install(
+  DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_python_install_package(${PROJECT_NAME})
   # Install Python executables
