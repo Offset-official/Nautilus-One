@@ -23,7 +23,6 @@ def main():
     rclpy.init()
     client = ManipulatorClient()
 
-    # Example command
     arm_status = int(input("Enter arm status (0/1): "))
     end_effector_status = int(input("Enter end effector status (0/1): "))
     future = client.send_command(arm_status, end_effector_status)

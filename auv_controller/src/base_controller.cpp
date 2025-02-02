@@ -10,10 +10,8 @@
 
 using namespace std::chrono_literals;
 
-// KalmanFilter class definition
 class KalmanFilter {
 public:
-// TODO make a plotter to see before and after kalman filter
     // Constructor to initialize the Kalman filter with given parameters
     KalmanFilter(double process_noise, double measurement_noise, double estimated_error, double initial_value)
         : process_noise_(process_noise),
@@ -55,7 +53,8 @@ public:
     BaseController()
         : Node("base_controller"),
           kalman_surge(0.01, 0.5, 1.0, 0.0),
-          kalman_yaw(0.01, 0.5, 1.0, 0.0)
+          kalman_yaw(0.01, 0.5, 1.0, 0.0),
+          kalman_heave(0.01, 0.5, 1.0, 0.0)
     {
         rcl_interfaces::msg::ParameterDescriptor param_desc;
         
@@ -76,6 +75,7 @@ public:
         this->declare_parameter("pid_kd", 0.5, param_desc);
         this->declare_parameter("integral_clamp", 5.0, param_desc);
         this->declare_parameter("imu_surge_bias", 0.10787, param_desc);
+        this->declare_parameter("imu_gravity", 9.81, param_desc);
         this->declare_parameter("kalman_process_noise", 0.01, param_desc);
         this->declare_parameter("kalman_measurement_noise", 0.5, param_desc);
         this->declare_parameter("kalman_estimated_error", 1.0, param_desc);
@@ -92,6 +92,7 @@ public:
         ki_ = this->get_parameter("pid_ki").as_double();
         kd_ = this->get_parameter("pid_kd").as_double();
         imu_surge_bias_ = this->get_parameter("imu_surge_bias").as_double();
+        imu_gravity_ = this->get_parameter("imu_gravity").as_double();
         pwm_deadband_ = this->get_parameter("pwm_deadband").as_int();
         integral_clamp_ = this->get_parameter("integral_clamp").as_double();
         measurement_threshold_ = this->get_parameter("measurement_threshold").as_double();
@@ -106,17 +107,21 @@ public:
 
         kalman_surge = KalmanFilter(k_process_noise, k_measurement_noise, k_estimated_error, k_initial_value);
         kalman_yaw = KalmanFilter(k_process_noise, k_measurement_noise, k_estimated_error, k_initial_value);
+        kalman_heave = KalmanFilter(k_process_noise, k_measurement_noise, k_estimated_error, k_initial_value);
 
         // Set Kalman filter thresholds
         kalman_surge.set_thresholds(measurement_threshold_, angular_threshold_);
         kalman_yaw.set_thresholds(measurement_threshold_, angular_threshold_);
+        kalman_heave.set_thresholds(measurement_threshold_, angular_threshold_);
 
         // Initialize state variables
         velocity_surge = 0.0;
         velocity_yaw = 0.0;
+        velocity_heave = 0.0;
         // velocity_heave = 0.0;
         target_vel_surge = 0.0;
         target_vel_yaw = 0.0;
+        target_vel_heave = 0.0;
         // target_vel_heave = 0.0;
         last_time_ = this->now();
 
@@ -138,7 +143,6 @@ public:
 
         // Set up publishers
         rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("/mavros/rc/override", 10);
-        velocity_publisher_ = this->create_publisher<geometry_msgs::msg::Vector3>("applied_vel", 10);
         imu_alt_publisher_ = this->create_publisher<geometry_msgs::msg::Vector3>("imu_vel", 10);
         
         // Set up arm client
@@ -157,6 +161,7 @@ private:
     void twist_callback(const geometry_msgs::msg::Twist &msg) {
         target_vel_surge = msg.linear.y;
         target_vel_yaw = msg.angular.z;
+        target_vel_heave = msg.linear.z;
     }
 
     void imu_callback(const sensor_msgs::msg::Imu &msg) {
@@ -165,53 +170,56 @@ private:
 
         RCLCPP_INFO(this->get_logger(), 
                     "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f",
-                    msg.linear_acceleration.y, msg.angular_velocity.z, msg.linear_acceleration.z);
+                    msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z);
 
         double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
-        double ang_vel_yaw = -msg.angular_velocity.z;
+        double ang_vel_yaw = - msg.angular_velocity.z;
+        double lin_acc_heave = msg.linear_acceleration.z - imu_gravity_;
 
-        double filtered_acc_surge, velocity_yaw_current;
+        double filtered_acc_surge, filtered_vel_yaw, filtered_acc_heave;
         if (use_kalman_) {
             filtered_acc_surge = kalman_surge.update(lin_acc_surge);
-            velocity_yaw_current = kalman_yaw.update(ang_vel_yaw);
+            filtered_vel_yaw = kalman_yaw.update(ang_vel_yaw);
+            filtered_acc_heave = kalman_heave.update(lin_acc_heave);
         } else {
             filtered_acc_surge = lin_acc_surge;
-            velocity_yaw_current = ang_vel_yaw;
+            filtered_vel_yaw = ang_vel_yaw;
+            filtered_acc_heave = lin_acc_heave;
         }
 
         RCLCPP_INFO(this->get_logger(),
-                    "\nKalman magic \nSurge acc: %.2f->%.2f, Yaw vel %.2f->%.2f",
-                    lin_acc_surge, filtered_acc_surge, ang_vel_yaw, velocity_yaw_current);
+                    "\nKalman magic \nSurge acc: %.2f->%.2f, Yaw vel %.2f->%.2f, Heave acc: %.2f->%.2f",
+                    lin_acc_surge, filtered_acc_surge, ang_vel_yaw, filtered_vel_yaw, lin_acc_heave, filtered_acc_heave);
 
         // Integrate accelerations
         // velocity_surge += filtered_acc_surge * dt;
+        // velocity_heave += filtered_acc_heave * dt;
+        velocity_heave = filtered_acc_heave;
+        velocity_yaw = filtered_vel_yaw;
 
-        velocity_yaw = velocity_yaw_current;
-        // velocity_surge = std::clamp(velocity_surge, -2.0, 2.0);
         velocity_surge = filtered_acc_surge;
         velocity_yaw = velocity_yaw;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();
         imu_ref_msg.x = velocity_surge;
         imu_ref_msg.y = velocity_yaw;
+        imu_ref_msg.z = velocity_heave;
         imu_alt_publisher_->publish(imu_ref_msg);
 
-        surge_pwm_ = compute_motor_pwm(target_vel_surge, velocity_surge, 
+        surge_pwm_ = compute_motor_pwm(target_vel_surge, velocity_surge,
                                         error_surge, integral_surge, previous_error_surge, dt);
         yaw_pwm_ = compute_motor_pwm(target_vel_yaw, velocity_yaw, 
                                     error_yaw, integral_yaw, previous_error_yaw, dt);
+        heave_pwm_ = compute_motor_pwm(target_vel_heave, velocity_heave,
+                                    error_heave, integral_heave, previous_error_heave, dt);
 
         // Publish current velocities
-        auto velocity_msg = geometry_msgs::msg::Vector3();
-        velocity_msg.x = velocity_surge;
-        velocity_msg.y = velocity_yaw;
-        velocity_publisher_->publish(velocity_msg);
 
         RCLCPP_INFO(this->get_logger(),
-                    "\nTarget_vel: [%.2f, %.2f]\nMeasured_vel: [%.2f, %.2f]\nPWM sent to thrusters: [%d, %d]",
-                    target_vel_surge, target_vel_yaw,
-                    velocity_surge, velocity_yaw,
-                    surge_pwm_, yaw_pwm_);
+                    "\nTarget_vel: [%.2f, %.2f, %.2f]\nMeasured_vel: [%.2f, %.2f,%.2f]\nPWM sent to thrusters: [%d, %d,%d]",
+                    target_vel_surge, target_vel_yaw,target_vel_heave,
+                    velocity_surge, velocity_yaw,velocity_heave,
+                    surge_pwm_, yaw_pwm_, heave_pwm_);
 
         last_time_ = current_time;
     }
@@ -221,7 +229,7 @@ private:
         rc_out_msg.channels = {
             static_cast<unsigned short>(neutral_pwm_),
             static_cast<unsigned short>(neutral_pwm_),
-            static_cast<unsigned short>(neutral_pwm_),
+            static_cast<unsigned short>(heave_pwm_),
             static_cast<unsigned short>(yaw_pwm_),
             static_cast<unsigned short>(surge_pwm_),
             static_cast<unsigned short>(neutral_pwm_),
@@ -231,8 +239,8 @@ private:
 
         rc_pub_->publish(rc_out_msg);
         RCLCPP_DEBUG(this->get_logger(),
-                     "Published RC Override: Surge: %d, Yaw: %d",
-                     surge_pwm_, yaw_pwm_);
+                     "Published RC Override: Surge: %d, Yaw: %d, Heave: %d",
+                     surge_pwm_, yaw_pwm_, heave_pwm_);
     }
 
     void arm_vehicle(bool arm) {
@@ -260,13 +268,17 @@ private:
         
         if (use_pid_ == 0) {
             int predicted_pwm = neutral_pwm_ + error * pwm_range_;
+            if (std::abs(error * pwm_range_) < pwm_deadband_) {
+            predicted_pwm = neutral_pwm_;
+            }
             return std::clamp(predicted_pwm, neutral_pwm_ - pwm_range_, neutral_pwm_ + pwm_range_);
         }
         
         // If the target velocity and error are above the measurement threshold, update the integral term
         if (std::abs(target_vel) >= measurement_threshold_ && std::abs(error) >= measurement_threshold_) {
             integral += error * dt;
-        } else {
+        } 
+        else {
             integral = 0.0;
         }
         
@@ -287,8 +299,8 @@ private:
         int predicted_pwm = neutral_pwm_ + pwm_adjustment;
         
         RCLCPP_INFO(this->get_logger(),
-                "PID Debug: Error: %.2f, Integral: %.2f, Derivative: %.2f",
-                error, integral, derivative);
+                "PID Debug: Error: %.2f, Integral: %.2f, Derivative: %.2f, PWM Adjustment: %d",
+                error, integral, derivative, pwm_adjustment);
         // If the PWM adjustment is within the deadband, set the PWM to neutral
         if (std::abs(pwm_adjustment) < pwm_deadband_) {
             predicted_pwm = neutral_pwm_;
@@ -314,11 +326,11 @@ private:
     int heave_pwm_ = 1500;
     int surge_pwm_ = 1500;
     int yaw_pwm_ = 1500;
-    double velocity_surge, velocity_yaw;
-    double target_vel_surge, target_vel_yaw;
-    double error_surge{0}, error_yaw{0};
-    double integral_surge{0}, integral_yaw{0};
-    double previous_error_surge{0}, previous_error_yaw{0};
+    double velocity_surge, velocity_yaw,velocity_heave;
+    double target_vel_surge, target_vel_yaw,target_vel_heave;
+    double error_surge{0}, error_yaw{0}, error_heave{0};
+    double integral_surge{0}, integral_yaw{0},integral_heave{0};
+    double previous_error_surge{0}, previous_error_yaw{0},previous_error_heave{0};
     
     // Time tracking
     rclcpp::Time last_time_;
@@ -326,6 +338,7 @@ private:
     // Kalman filters
     KalmanFilter kalman_surge;
     KalmanFilter kalman_yaw;
+    KalmanFilter kalman_heave;
 
     // Subscriptions
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr twist_subscription_;
@@ -333,7 +346,6 @@ private:
     
     // Publishers
     rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
-    rclcpp::Publisher<geometry_msgs::msg::Vector3>::SharedPtr velocity_publisher_;
     rclcpp::Publisher<geometry_msgs::msg::Vector3>::SharedPtr imu_alt_publisher_;
     
     // Service client
