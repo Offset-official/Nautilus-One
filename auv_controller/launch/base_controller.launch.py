@@ -26,5 +26,11 @@ def generate_launch_description():
                 name="velocity_plotter",
                 output="screen",
             ),
+            Node(
+                package="auv_controller",
+                executable="imu_orientation_plotter.py",
+                name="imu_orientation_plotter",
+                output="screen",
+            ),
         ]
     )
