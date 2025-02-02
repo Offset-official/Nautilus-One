@@ -1,0 +1,7 @@
+# Request
+string arm_status        # "open" or "front"
+string end_effector_status   # "open" or "close"
+---
+# Response
+bool success
+string message

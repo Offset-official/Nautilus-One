@@ -17,7 +17,7 @@ base_controller:
 
     # IMU calibration
     imu_surge_bias: 0.10787
-    # imu_gravity: 9.816
+    imu_gravity: 9.816
 
     # Kalman filter parameters
     kalman_process_noise: 0.05

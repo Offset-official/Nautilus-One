@@ -1,2 +1,0 @@
-string arm_status
-string end_effector_status
