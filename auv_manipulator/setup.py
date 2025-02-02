@@ -11,6 +11,7 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
+        (os.path.join('share', package_name), glob('launch/*launch.[pxy][yma]*')),
         # Include any launch files or other resources if present
         # (os.path.join("share", package_name, "launch"), glob("launch/*.py")),
     ],
@@ -26,7 +27,8 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "manip_controller = auv_manipulator.manip_controller:main",
+            'manipulator_service = auv_manipulator.manipulator_service:main',
+            'manipulator_client = auv_manipulator.manipulator_client:main',
         ],
     },
 )
