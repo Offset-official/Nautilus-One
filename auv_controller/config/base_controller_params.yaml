@@ -2,17 +2,17 @@ base_controller:
   ros__parameters:
   
     use_kalman: 1  # 1 for true, 0 for false
-    use_pid: 1   # 1 for true, 0 for false
+    use_pid: 0  # 1 for true, 0 for false
 
     # PWM settings
     neutral_pwm: 1500
     pwm_range: 50
-    pwm_deadband: 10
+    pwm_deadband: 5
 
     # PID parameters (using double)
-    pid_kp: 1.0
-    pid_ki: 0.05
-    pid_kd: 0.8
+    pid_kp: 1.2
+    pid_ki: 0.3
+    pid_kd: 0.4
     integral_clamp: 100.0
 
     # IMU calibration
@@ -29,6 +29,8 @@ base_controller:
     measurement_threshold: 0.05
     angular_threshold: 0.001
 
+    depth_p_gain: 0.5
+    depth_threshold: 0.1
 
     # Timing
     publish_rate_ms: 100

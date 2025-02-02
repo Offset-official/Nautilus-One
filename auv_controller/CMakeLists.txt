@@ -29,6 +29,9 @@ ament_target_dependencies(cmd_vel_publisher ${dependencies})
 add_executable(base_controller src/base_controller.cpp)
 ament_target_dependencies(base_controller ${dependencies})
 
+add_executable(depth_hold src/depth_hold.cpp)
+ament_target_dependencies(depth_hold ${dependencies})
+
 target_include_directories(cmd_vel_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -37,13 +40,18 @@ target_include_directories(base_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
+target_include_directories(depth_hold PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>)
 
 target_compile_features(cmd_vel_publisher PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(base_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(depth_hold PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
   cmd_vel_publisher
   base_controller
+  depth_hold
   DESTINATION lib/${PROJECT_NAME})
 
 install(

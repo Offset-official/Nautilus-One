@@ -7,7 +7,6 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
     QoSHistoryPolicy,
     QoSDurabilityPolicy,
-    QoSLivelinessPolicy,
 )
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -18,10 +17,12 @@ class VelocityPlotter(Node):
     def __init__(self):
         super().__init__("velocity_plotter")
 
-        # Try different QoS profiles until we find the matching one
-        mavros_qos = QoSProfile(
+        # Define QoS profile for MAVROS
+        sensor_qos = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
             durability=QoSDurabilityPolicy.VOLATILE,
+            history=QoSHistoryPolicy.SYSTEM_DEFAULT,
+            depth=10,
         )
 
         # Regular subscriptions
@@ -32,29 +33,24 @@ class VelocityPlotter(Node):
             Twist, "cmd_vel", self.listener_callback_ref, 10
         )
 
-        # MAVROS subscription with updated QoS
+        # MAVROS subscription with sensor QoS
         self.subscription_mavros = self.create_subscription(
             TwistStamped,
             "mavros/local_position/velocity_local",
             self.listener_callback_mavros,
-            mavros_qos,
+            sensor_qos,
         )
 
         self.time_data = []
-        self.imu_data = {"x": [], "y": []}
-        self.ref_data = {"x": [], "y": []}
-        self.mavros_data = {"x": [], "y": []}
+        self.imu_data = {"x": [], "y": [], "z": []}
+        self.ref_data = {"x": [], "y": [], "z": []}
+        self.mavros_data = {"x": [], "y": [], "z": []}
         self.start_time = self.get_clock().now()
 
         # Initialize last known values
-        self.last_imu = {"x": 0.0, "y": 0.0}
-        self.last_ref = {"x": 0.0, "y": 0.0}
-        self.last_mavros = {"x": 0.0, "y": 0.0}
-
-        # Print debug information about the subscription
-        self.get_logger().info(
-            "Created MAVROS velocity subscription with QoS: %r" % mavros_qos
-        )
+        self.last_imu = {"x": 0.0, "y": 0.0, "z": 0.0}
+        self.last_ref = {"x": 0.0, "y": 0.0, "z": 0.0}
+        self.last_mavros = {"x": 0.0, "y": 0.0, "z": 0.0}
 
     def listener_callback_imu(self, msg):
         current_time = (self.get_clock().now() - self.start_time).nanoseconds * 1e-9
@@ -63,9 +59,11 @@ class VelocityPlotter(Node):
             # Update last known values
             self.last_imu["x"] = msg.x
             self.last_imu["y"] = msg.y
+            self.last_imu["z"] = msg.z
             # Append to data lists
             self.imu_data["x"].append(msg.x)
             self.imu_data["y"].append(msg.y)
+            self.imu_data["z"].append(msg.z)
             # Use last known values for other datasets if they haven't been updated
             self._append_last_values(current_time)
 
@@ -73,6 +71,7 @@ class VelocityPlotter(Node):
         current_time = (self.get_clock().now() - self.start_time).nanoseconds * 1e-9
         self.last_ref["x"] = msg.linear.y
         self.last_ref["y"] = msg.angular.z
+        self.last_ref["z"] = msg.linear.z
         if not self.time_data or current_time > self.time_data[-1]:
             self.time_data.append(current_time)
             self._append_last_values(current_time)
@@ -80,11 +79,11 @@ class VelocityPlotter(Node):
     def listener_callback_mavros(self, msg):
         current_time = (self.get_clock().now() - self.start_time).nanoseconds * 1e-9
         self.last_mavros["x"] = msg.twist.linear.x
-        self.last_mavros["y"] = msg.twist.angular.z
+        self.last_mavros["y"] = -msg.twist.angular.z
+        self.last_mavros["z"] = msg.twist.linear.z
         if not self.time_data or current_time > self.time_data[-1]:
             self.time_data.append(current_time)
             self._append_last_values(current_time)
-            self.get_logger().info("Received MAVROS velocity data")  # Debug log
 
     def _append_last_values(self, current_time):
         # Ensure all data lists have the same length as time_data
@@ -95,7 +94,7 @@ class VelocityPlotter(Node):
             (self.ref_data, self.last_ref),
             (self.mavros_data, self.last_mavros),
         ]:
-            for axis in ["x", "y"]:
+            for axis in ["x", "y", "z"]:
                 while len(data_list[axis]) < target_length:
                     data_list[axis].append(last_values[axis])
 
@@ -104,9 +103,9 @@ class VelocityPlotter(Node):
 
 
 def plot_data(node):
-    fig, axs = plt.subplots(2, 1, figsize=(8, 8))
-    titles = ["Surge", "Yaw"]
-    colors = ["r", "g"]
+    fig, axs = plt.subplots(3, 1, figsize=(8, 8))
+    titles = ["Surge", "Yaw", "Heave"]
+    colors = ["r", "g", "b"]
 
     lines_imu = []
     lines_ref = []
@@ -127,7 +126,7 @@ def plot_data(node):
 
     def update(frame):
         time_data, imu_data, ref_data, mavros_data = node.get_data()
-        for i, key in enumerate(["x", "y"]):
+        for i, key in enumerate(["x", "y", "z"]):
             lines_imu[i].set_data(time_data, imu_data[key])
             lines_ref[i].set_data(time_data, ref_data[key])
             lines_mavros[i].set_data(time_data, mavros_data[key])
