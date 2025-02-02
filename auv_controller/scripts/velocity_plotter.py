@@ -22,10 +22,6 @@ class VelocityPlotter(Node):
         mavros_qos = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
             durability=QoSDurabilityPolicy.VOLATILE,
-            history=QoSHistoryPolicy.KEEP_LAST,
-            liveliness=QoSLivelinessPolicy.AUTOMATIC,
-            deadline=rclpy.duration.Duration(seconds=1.0),
-            liveliness_lease_duration=rclpy.duration.Duration(seconds=1.0),
         )
 
         # Regular subscriptions

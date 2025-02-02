@@ -1,6 +1,6 @@
 # Request
-string arm_status        # "open" or "front"
-string end_effector_status   # "open" or "close"
+int64 arm_status        # "open" or "front"
+int64 end_effector_status   # "open" or "close"
 ---
 # Response
 bool success

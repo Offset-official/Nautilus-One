@@ -24,7 +24,9 @@ def main():
     client = ManipulatorClient()
 
     # Example command
-    future = client.send_command("front", "open")
+    arm_status = int(input("Enter arm status (0/1): "))
+    end_effector_status = int(input("Enter end effector status (0/1): "))
+    future = client.send_command(arm_status, end_effector_status)
 
     rclpy.spin_until_future_complete(client, future)
 
