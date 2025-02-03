@@ -63,6 +63,21 @@ Launch the forward executable in a 2nd Terminal:
 ros2 run auv_autonomy forward
 ```
 
+###
+To launch the cameras connected to jetson
+
+```bash
+ros2 launch usb_cam cameras.launch.py
+```
+
+To check camera feed
+
+```bash
+rviz2
+```
+and add image and choose the correct topic.  
+
+
 ## Debug
 1. If things don't work, make sure that all the required environment variables are set as given above. Make sure to `zsh`.
 2. Please ensure that you do all of the initialization steps one after the another. Otherwise, things may not work.
