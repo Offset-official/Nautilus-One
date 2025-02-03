@@ -45,14 +45,9 @@ class YOLOv8:
         self.model.conf = confidence_thres
         self.model.iou = iou_thres
 
-        # Move model to GPU device=0 and set half precision
-        try:
-            self.model.to("cuda:0")  # device=0
-            self.model.half()        # half precision
-            self.logger.info("Model moved to CUDA:0 with half precision.")
-        except Exception as e:
-            self.logger.error(f"Failed to set device/precision: {e}")
-            raise e
+        # IMPORTANT: Remove direct calls to self.model.to(...) or self.model.half()
+        # when loading a TensorRT *.engine file. Instead, specify 'device' (and optionally 'half')
+        # in self.model.predict(...).
 
         # Our model has only one class: "Gate"
         self.classes = ["Gate"]
@@ -116,11 +111,15 @@ class YOLOv8:
                    annotated_image (numpy.ndarray): The image with bounding boxes drawn.
                    list_of_detections (list): List of auv_interfaces.msg.Detection objects.
         """
-        # Run inference
+        # Run inference on GPU with device=0.
+        # If your TRT engine supports half precision (FP16), you can also specify half=True
+        # Otherwise, remove "half=True".
         results = self.model.predict(
             source=cv_image,
             conf=self.model.conf,
-            iou=self.model.iou
+            iou=self.model.iou,
+            device=0,   # GPU device
+            half=True   # Use FP16 if supported by your TRT engine
         )
 
         annotated_image = cv_image.copy()
@@ -168,13 +167,13 @@ class YoloInferenceServer(Node):
 
         # Initialize service
         self.srv = self.create_service(
-            YoloInference, "yolo_inference", self.handle_inference
+            YoloInference, "yolo_inference_server", self.handle_inference
         )
 
         # Path to your TensorRT engine file, e.g. best.engine
         model_path = get_package_share_directory("auv_ml") + "/models/best.engine"
 
-        # Initialize YOLOv8 instance (single-class: Gate) with device=0 (cuda:0), half=True
+        # Initialize YOLOv8 instance (single-class: Gate)
         self.yolo = YOLOv8(
             engine_path=model_path,
             confidence_thres=0.25,  # Adjust if needed
