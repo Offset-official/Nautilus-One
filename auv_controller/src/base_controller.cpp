@@ -39,7 +39,7 @@ public:
         angular_threshold_ = angular_threshold;
     }
 
-private:
+private:  
     double process_noise_;          
     double measurement_noise_;      
     double estimated_error_;       
@@ -169,8 +169,8 @@ private:
         double dt = (current_time - last_time_).seconds();
 
         RCLCPP_INFO(this->get_logger(), 
-                    "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f",
-                    msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z);
+                    "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f, dt: %.6f",
+                    msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z,dt);
 
         double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
         double ang_vel_yaw = - msg.angular_velocity.z;
@@ -194,11 +194,12 @@ private:
         // Integrate accelerations
         // velocity_surge += filtered_acc_surge * dt;
         // velocity_heave += filtered_acc_heave * dt;
-        velocity_heave = filtered_acc_heave;
-        velocity_yaw = filtered_vel_yaw;
+        // velocity_heave = filtered_acc_heave;
+        // velocity_yaw = filtered_vel_yaw;
 
         velocity_surge = filtered_acc_surge;
         velocity_yaw = velocity_yaw;
+        velocity_heave = filtered_acc_heave;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();
         imu_ref_msg.x = velocity_surge;
