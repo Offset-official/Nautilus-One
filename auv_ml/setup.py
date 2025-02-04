@@ -19,7 +19,9 @@ setup(
     maintainer_email="subham.jalan@plaksha.edu.in",
     description="This package acts as the eyes of the AUV.",
     license="TODO: License declaration",
-    tests_require=["pytest"],
+    extras_require={
+        'test': ['pytest'],  # or other testing dependencies
+    },
     entry_points={
         "console_scripts": [
             "yolo_inference_server = auv_ml.yolo_inference_server:main",
