@@ -29,11 +29,12 @@ mavros:
       - setpoint_position
       - vision_pose
 
+      # --master=udp:0.0.0.0:14550 --out=udp:0.0.0.0:14660
+
 mavros_node:
   ros__parameters:
-    fcu_url: "udp://@0.0.0.0:14660"
-    gcs_url: "udp://@0.0.0.0:14550"
-
+    fcu_url: "upd://0.0.0.0:14550"
+    gcs_url: "udp://@0.0.0.0:14660"
 mavros/local_position:
   ros__parameters:
     frame_id: "map"  # frame_id of /mavros/local_position/pose, etc.

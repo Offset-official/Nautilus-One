@@ -1,14 +1,11 @@
 """
-Launch mavros for real robot.
+Launch a connection to the real robot.
 
 Includes MAVROS
 """
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import (
-    DeclareLaunchArgument,
-)
 from launch.substitutions import (
     PathJoinSubstitution,
     LaunchConfiguration,
@@ -25,17 +22,11 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            DeclareLaunchArgument(
-                "mavros",
-                default_value="True",
-                description="Launch mavros?",
-            ),
             Node(
                 package="mavros",
                 executable="mavros_node",
                 output="screen",
                 parameters=[mavros_params_file],
-                condition=IfCondition(LaunchConfiguration("mavros")),
             ),
         ]
     )
