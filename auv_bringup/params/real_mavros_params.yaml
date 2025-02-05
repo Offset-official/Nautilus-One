@@ -28,6 +28,7 @@ mavros:
       - rc_io
       - setpoint_position
       - vision_pose
+      - vfr_hud
 
       # --master=udp:0.0.0.0:14550 --out=udp:0.0.0.0:14660
 
