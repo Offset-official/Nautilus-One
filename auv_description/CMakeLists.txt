@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(auv_description)
+project(auv_description LANGUAGES CXX)
 
 # find dependencies
 find_package(ament_cmake_auto REQUIRED)
