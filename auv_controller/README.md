@@ -22,3 +22,8 @@ cd ~/auv_ws/src/auv_ros2/auv_controller/src/
 
 python3 velocity_plotter.py
 ```
+
+To change the params
+```bash
+ros2 param set /base_controller pid_ki 2.0 pid_kd 2.0 pid_kp 2.0
+```
