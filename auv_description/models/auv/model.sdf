@@ -47,7 +47,7 @@
 
 
       <sensor name="auv_camera" type="camera">
-        <pose>0.5 2 0 0 0 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
+        <pose>0 0.25 0.25 0 0 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
         <always_on>true</always_on>
         <visualize>true</visualize>
         <update_rate>24</update_rate>
@@ -55,7 +55,7 @@
         <gz_frame_id>camera_rgb_frame</gz_frame_id>
         <camera name="auv_camera">
           <camera_info_topic>auv_camera/camera_info</camera_info_topic>
-          <horizontal_fov>1.047</horizontal_fov>
+          <horizontal_fov>1.39</horizontal_fov>
           <image>
             <width>640</width>
             <height>480</height>

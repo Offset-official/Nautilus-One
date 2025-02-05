@@ -10,6 +10,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Detection.msg"
   "srv/ManipulatorCommand.srv"
   "srv/YoloInference.srv"
+  "msg/DetectionArray.msg"
   DEPENDENCIES sensor_msgs std_msgs
 )
 
