@@ -25,37 +25,44 @@ set(dependencies
 add_executable(base_controller src/base_controller.cpp)
 ament_target_dependencies(base_controller ${dependencies})
 
-add_executable(depth_hold src/depth_hold.cpp)
-ament_target_dependencies(depth_hold ${dependencies})
+add_executable(depth_controller src/depth_controller.cpp)
+ament_target_dependencies(depth_controller ${dependencies})
+add_executable(control_cmd_cli src/control_cmd_cli.cpp)
+ament_target_dependencies(control_cmd_cli ${dependencies})
 
 target_include_directories(base_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
-target_include_directories(depth_hold PUBLIC
+target_include_directories(depth_controller PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>)
+
+target_include_directories(control_cmd_cli PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
 target_compile_features(base_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(depth_hold PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(depth_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(control_cmd_cli PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
   base_controller
-  depth_hold
+  depth_controller
+  control_cmd_cli
   DESTINATION lib/${PROJECT_NAME})
 
-install(
-  DIRECTORY config launch
-  DESTINATION share/${PROJECT_NAME}
-)
+
 
 ament_python_install_package(${PROJECT_NAME})
   # Install Python executables
+
 install(PROGRAMS
   scripts/velocity_plotter.py
   scripts/imu_orientation_plotter.py
   DESTINATION lib/${PROJECT_NAME}
 )
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   set(ament_cmake_copyright_FOUND TRUE)

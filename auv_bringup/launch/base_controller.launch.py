@@ -22,15 +22,22 @@ def generate_launch_description():
             ),
             Node(
                 package="auv_controller",
-                executable="velocity_plotter.py",
-                name="velocity_plotter",
+                executable="depth_controller",
+                name="base_controller",
+                parameters=[params_file],
                 output="screen",
             ),
-            Node(
-                package="auv_controller",
-                executable="imu_orientation_plotter.py",
-                name="imu_orientation_plotter",
-                output="screen",
-            ),
+            # Node(
+            #     package="auv_controller",
+            #     executable="velocity_plotter.py",
+            #     name="velocity_plotter",
+            #     output="screen",
+            # ),
+            # Node(
+            #     package="auv_controller",
+            #     executable="imu_orientation_plotter.py",
+            #     name="imu_orientation_plotter",
+            #     output="screen",
+            # ),
         ]
     )

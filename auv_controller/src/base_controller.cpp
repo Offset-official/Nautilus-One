@@ -7,6 +7,7 @@
 #include "geometry_msgs/msg/vector3.hpp"
 #include "mavros_msgs/srv/command_bool.hpp"
 #include "mavros_msgs/msg/override_rc_in.hpp"
+#include "mavros_msgs/srv/set_mode.hpp"
 
 using namespace std::chrono_literals;
 
@@ -39,7 +40,7 @@ public:
         angular_threshold_ = angular_threshold;
     }
 
-private:
+private:  
     double process_noise_;          
     double measurement_noise_;      
     double estimated_error_;       
@@ -147,10 +148,10 @@ public:
         
         // Set up arm client
         arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
-
+        mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
         // Arm the vehicle
         arm_vehicle(true);
-
+        set_mode("ALT_HOLD");
         // Set up timer
         publish_timer_ = this->create_wall_timer(
             std::chrono::milliseconds(publish_rate), 
@@ -158,6 +159,27 @@ public:
     }
 
 private:
+    void set_mode(const std::string& mode)
+    {
+        if (!mode_client_->wait_for_service(std::chrono::seconds(1))) {
+            RCLCPP_ERROR(this->get_logger(), "Set mode service not available");
+            return;
+        }
+
+        auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+        request->custom_mode = mode;
+
+        auto callback = [this, mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
+            auto result = future.get();
+            if (result->mode_sent) {
+                RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
+            } else {
+                RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
+            }
+        };
+
+        mode_client_->async_send_request(request, callback);
+    }
     void twist_callback(const geometry_msgs::msg::Twist &msg) {
         target_vel_surge = msg.linear.y;
         target_vel_yaw = msg.angular.z;
@@ -169,8 +191,8 @@ private:
         double dt = (current_time - last_time_).seconds();
 
         RCLCPP_INFO(this->get_logger(), 
-                    "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f",
-                    msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z);
+                    "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f, dt: %.6f",
+                    msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z,dt);
 
         double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
         double ang_vel_yaw = - msg.angular_velocity.z;
@@ -194,11 +216,12 @@ private:
         // Integrate accelerations
         // velocity_surge += filtered_acc_surge * dt;
         // velocity_heave += filtered_acc_heave * dt;
-        velocity_heave = filtered_acc_heave;
-        velocity_yaw = filtered_vel_yaw;
+        // velocity_heave = filtered_acc_heave;
+        // velocity_yaw = filtered_vel_yaw;
 
         velocity_surge = filtered_acc_surge;
         velocity_yaw = velocity_yaw;
+        velocity_heave = filtered_acc_heave;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();
         imu_ref_msg.x = velocity_surge;
@@ -350,6 +373,7 @@ private:
     
     // Service client
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
+    rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
     
     // Timer
     rclcpp::TimerBase::SharedPtr publish_timer_;
