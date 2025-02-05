@@ -8,6 +8,7 @@
 #include "mavros_msgs/msg/state.hpp"
 #include "mavros_msgs/srv/set_mode.hpp"
 #include "std_msgs/msg/float64.hpp"
+#include "std_msgs/msg/float32.hpp"
 
 using namespace std::chrono_literals;
 
@@ -32,6 +33,8 @@ public:
         depth_sub_ = this->create_subscription<std_msgs::msg::Float64>(
             "mavros/global_position/rel_alt", 10,
             std::bind(&DepthHold::depth_callback, this, std::placeholders::_1));
+
+        depth_pub_ = this->create_publisher<std_msgs::msg::Float32>("depth", 10);
 
         // Service clients
         mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
@@ -89,8 +92,8 @@ private:
                   << "1. 'manual' - Switch to MANUAL mode\n"
                   << "2. 'stabilize' - Switch to STABILIZE mode\n"
                   << "3. 'depth_hold' - Switch to DEPTH_HOLD mode\n"
-                  << "3. 'depth X' - Set target depth (X in meters)\n"
-                  << "4. 'move' - Input movement velocities\n"
+                  << "4. 'depth X' - Set target depth (X in meters)\n"
+                  << "5. 'move' - Input movement velocities\n"
                   << "Enter command: ";
         
         std::getline(std::cin, command);
@@ -111,7 +114,9 @@ private:
             try {
                 target_depth_ = std::stof(command.substr(6));
                 depth_control_active_ = true;
-                RCLCPP_INFO(this->get_logger(), "Setting target depth to: %.2f meters", target_depth_);
+                auto message = std_msgs::msg::Float32();
+                message.data = target_depth_;
+                depth_pub_->publish(message);
             } catch (const std::exception& e) {
                 RCLCPP_ERROR(this->get_logger(), "Invalid depth command format. Use 'depth X'");
             }
@@ -151,7 +156,7 @@ private:
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr mode_sub_;
     rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr depth_sub_;
     rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
-    
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr depth_pub_;
     std::string current_mode_;
     double target_depth_;
     double current_depth_;
