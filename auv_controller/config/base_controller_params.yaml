@@ -2,7 +2,7 @@ base_controller:
   ros__parameters:
   
     use_kalman: 1  # 1 for true, 0 for false
-    use_pid: 1  # 1 for true, 0 for false
+    use_pid: 0  # 1 for true, 0 for false
 
     # PWM settings
     neutral_pwm: 1500

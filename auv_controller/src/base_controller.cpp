@@ -190,9 +190,16 @@ private:
         auto current_time = this->now();
         double dt = (current_time - last_time_).seconds();
 
+        kp_ = this->get_parameter("pid_kp").as_double();
+        ki_ = this->get_parameter("pid_ki").as_double();
+        kd_ = this->get_parameter("pid_kd").as_double();
+
         RCLCPP_INFO(this->get_logger(), 
                     "Raw IMU \nSurge acc: %.2f, Yaw vel: %.2f, Heave acc: %.2f, dt: %.6f",
                     msg.linear_acceleration.y, - msg.angular_velocity.z, msg.linear_acceleration.z,dt);
+        RCLCPP_INFO(this->get_logger(), 
+                    "P: %f, I: %f, D: %f",
+                    kp_, ki_, kd_);
 
         double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
         double ang_vel_yaw = - msg.angular_velocity.z;
