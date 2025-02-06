@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>OpenCV</depend>
+  <depend>vision_opencv</depend>
   <depend>auv_interfaces</depend>
   <depend>cv_bridge</depend>
   <test_depend>ament_lint_auto</test_depend>

@@ -11,15 +11,15 @@ class ShowCameraNode : public rclcpp::Node
             RCLCPP_INFO(this->get_logger(), "Starting node...");
             
             auto topics = this->get_topic_names_and_types();
-            bool topic_exists = topics.find(camera_topic) != topics.end();
-            if (topic_exists) {
-                RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic);
-                RCLCPP_INFO(this->get_logger(), "Start Gazebo to see the camera feed.");
-            }
-            else {
-                RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic);
-                rclcpp::shutdown();
-            }
+            // bool topic_exists = topics.find(camera_topic) != topics.end();
+            // if (topic_exists) {
+            //     RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic);
+            //     RCLCPP_INFO(this->get_logger(), "Start Gazebo to see the camera feed.");
+            // }
+            // else {
+            //     RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic);
+            //     rclcpp::shutdown();
+            // }
             
             try {
                 subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
