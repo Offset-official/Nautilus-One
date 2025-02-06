@@ -9,3 +9,12 @@ repositories:
     url: https://github.com/mavlink/mavros.git
     version: 2.9.0
 
+  usb_cam:
+    type: git
+    url: https://github.com/ros-drivers/usb_cam
+    version: 0.8.1
+
+  apriltag_ros:
+    type: git
+    url: https://github.com/christianrauch/apriltag_ros
+    version: 3.2.2
