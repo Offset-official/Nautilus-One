@@ -3,6 +3,7 @@
 #include "cv_bridge/cv_bridge.h"
 #include <opencv2/opencv.hpp>
 #include "auv_interfaces/srv/yolo_inference.hpp"
+#include "auv_interfaces/msg/detection_array.hpp"
 
 using namespace std::chrono_literals;
 
@@ -32,6 +33,10 @@ class CameraInferenceNode : public rclcpp::Node
                     camera_pub_topic_, 10
                 );
                 client_ = this->create_client<auv_interfaces::srv::YoloInference>(inference_service_);
+                detectionsPublisher_ = this->create_publisher<auv_interfaces::msg::DetectionArray>(
+                    detections_pub_topic_, 10
+                );
+
             }
             catch (rclcpp::exceptions::RCLError& e) {
                 RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
@@ -42,8 +47,10 @@ class CameraInferenceNode : public rclcpp::Node
     private:
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
+        rclcpp::Publisher<auv_interfaces::msg::DetectionArray>::SharedPtr detectionsPublisher_;
         const char* camera_source_topic_ = "/auv_camera/image_raw";
         const char* camera_pub_topic_ = "/auv_camera/image_inferred";
+        const char* detections_pub_topic_ = "/auv_camera/detections";
         const char* inference_service_ = "yolo_inference_server";
         rclcpp::Client<auv_interfaces::srv::YoloInference>::SharedPtr client_;
 
@@ -68,7 +75,12 @@ class CameraInferenceNode : public rclcpp::Node
                     
                             // auto publishImg = sensor_msgs::msg::Image();
                             auto publishImg = response.get() -> result_image;
+                            auto detections = response.get() -> detections;
+                            auv_interfaces::msg::DetectionArray detectionArrayMsg;
+                            detectionArrayMsg.detections = detections;
+
                             publisher_ -> publish(publishImg);
+                            detectionsPublisher_-> publish(detectionArrayMsg);
                         } else {
                             RCLCPP_ERROR(this->get_logger(), "Failed to call service %s", inference_service_);
                         }
