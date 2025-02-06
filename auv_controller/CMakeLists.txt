@@ -12,6 +12,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(mavros REQUIRED)
 find_package(mavros_msgs REQUIRED)
 
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy REQUIRED)
 
 set(dependencies
     geometry_msgs
@@ -20,27 +22,47 @@ set(dependencies
     mavros_msgs
 )
 
-add_executable(cmd_vel_publisher src/cmd_vel_publisher.cpp)
-ament_target_dependencies(cmd_vel_publisher ${dependencies})
 
-add_executable(twist_to_thrust src/twist_to_thrust.cpp)
-ament_target_dependencies(twist_to_thrust ${dependencies})
+add_executable(base_controller src/base_controller.cpp)
+ament_target_dependencies(base_controller ${dependencies})
 
-target_include_directories(cmd_vel_publisher PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+add_executable(depth_controller src/depth_controller.cpp)
+ament_target_dependencies(depth_controller ${dependencies})
+add_executable(control_cmd_cli src/control_cmd_cli.cpp)
+ament_target_dependencies(control_cmd_cli ${dependencies})
 
-target_include_directories(twist_to_thrust PUBLIC
+target_include_directories(base_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
-target_compile_features(cmd_vel_publisher PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(twist_to_thrust PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_include_directories(depth_controller PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>)
+
+target_include_directories(control_cmd_cli PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>)
+
+target_compile_features(base_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(depth_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(control_cmd_cli PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
-  cmd_vel_publisher
-  twist_to_thrust
+  base_controller
+  depth_controller
+  control_cmd_cli
   DESTINATION lib/${PROJECT_NAME})
+
+
+
+ament_python_install_package(${PROJECT_NAME})
+  # Install Python executables
+
+install(PROGRAMS
+  scripts/velocity_plotter.py
+  scripts/imu_orientation_plotter.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -48,5 +70,6 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
 
 ament_package()
