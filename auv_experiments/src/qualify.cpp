@@ -296,7 +296,7 @@ private:
                 "state=%d | err_x=%.1f err_y=%.1f => surge=%.2f, z=%.2f, yaw=%.4f",
                 movement_state_, error_x, error_y,
                 cmd_vel_msg.linear.x, cmd_vel_msg.linear.z, cmd_vel_msg.angular.z);
-
+    std::swap(cmd_vel_msg.linear.x, cmd_vel_msg.linear.y);
     return cmd_vel_msg;
   }
 
