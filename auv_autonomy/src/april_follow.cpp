@@ -64,7 +64,7 @@ public:
 
     // 3) Timer for control loop (runs every 0.1 seconds)
     timer_ = this->create_wall_timer(
-      1000ms,
+      400ms,
       std::bind(&AprilFollowNode::controlLoop, this)
     );
 
@@ -103,9 +103,9 @@ private:
         // Update the time we last saw the AprilTag
         last_april_tag_time_ = this->now();
 
-        RCLCPP_INFO(this->get_logger(),
-                    "AprilTag ID=%d found at center: (%.2f, %.2f).",
-                    follow_id_, center_x, center_y);
+       // RCLCPP_INFO(this->get_logger(),
+         //           "AprilTag ID=%d found at center: (%.2f, %.2f).",
+           //         follow_id_, center_x, center_y);
 
         found_tag = true;
         break; // Stop after finding the first matching ID
@@ -179,17 +179,17 @@ private:
     float error_y = tag_y - image_center_y; // vertical offset
 
     // Gains (tune these as needed)
-    float kp_yaw   = 0.0005f;  // horizontal alignment (yaw)
-    float kp_heave = -0.005f;  // vertical alignment (z)
+    float kp_yaw   = 0.01f;  // horizontal alignment (yaw)
+    float kp_heave = -0.05f;  // vertical alignment (z)
 
     // Generate commands
     float yaw_cmd = kp_yaw * error_x;
     float z_cmd   = kp_heave * error_y;
 
     // Mild forward speed to move closer
-    float forward_speed = 0.2f;
+    float forward_speed = 0.5f;
 
-    cmd_vel_msg.linear.x  = forward_speed;
+    cmd_vel_msg.linear.y  = forward_speed;
     cmd_vel_msg.linear.z  = z_cmd;
     cmd_vel_msg.angular.z = yaw_cmd;
 
