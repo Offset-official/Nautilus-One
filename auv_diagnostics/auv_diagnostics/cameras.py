@@ -20,16 +20,26 @@ class CompressedImageSubscriber(Node):
             '/usb_cam_1/image_raw/compressed',
             self.image_callback_cam1,
             10)
+
+        self.subscription3 = self.create_subscription(
+            CompressedImage,
+            '/usb_cam_2/image_raw/compressed',
+            self.image_callback_cam2,
+            10)
         
         # Create two windows for displaying camera feeds
         cv2.namedWindow('Camera 0 Feed', cv2.WINDOW_AUTOSIZE)
         cv2.namedWindow('Camera 1 Feed', cv2.WINDOW_AUTOSIZE)
+        cv2.namedWindow('Camera 2 Feed', cv2.WINDOW_AUTOSIZE)
 
     def image_callback_cam0(self, msg):
         self._process_image(msg, 'Camera 0 Feed')
 
     def image_callback_cam1(self, msg):
         self._process_image(msg, 'Camera 1 Feed')
+
+    def image_callback_cam2(self, msg):
+        self._process_image(msg, 'Camera 2 Feed')
 
     def _process_image(self, msg, window_name):
         np_arr = np.frombuffer(msg.data, np.uint8)
