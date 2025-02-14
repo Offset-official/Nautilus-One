@@ -180,7 +180,7 @@ private:
 
     // Gains (tune these as needed)
     float kp_yaw   = 0.01f;  // horizontal alignment (yaw)
-    float kp_heave = -0.05f;  // vertical alignment (z)
+    float kp_heave = 0;  // vertical alignment (z)
 
     // Generate commands
     float yaw_cmd = kp_yaw * error_x;
