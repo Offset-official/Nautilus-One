@@ -21,13 +21,38 @@ set(dependencies
 
 add_executable(show_camera src/show_camera.cpp)
 add_executable(infer_camera src/infer_camera.cpp)
+add_executable(show_camera_url src/show_camera_url.cpp)
+add_executable(show_camera_compressed src/show_camera_compressed.cpp)
+add_executable(show_camera_sdp src/show_camera_sdp.cpp)
+add_executable(republish_sdp src/republish_sdp.cpp)
+add_executable(republish_sdp_camera_info src/republish_sdp_camera_info.cpp)
+add_executable(publish_webcam src/publish_webcam.cpp)
+
+
+
+
 
 ament_target_dependencies(show_camera ${dependencies})
 ament_target_dependencies(infer_camera ${dependencies})
+ament_target_dependencies(show_camera_url ${dependencies})
+ament_target_dependencies(show_camera_compressed ${dependencies})
+ament_target_dependencies(show_camera_sdp ${dependencies})
+ament_target_dependencies(republish_sdp ${dependencies})
+ament_target_dependencies(republish_sdp_camera_info ${dependencies})
+ament_target_dependencies(publish_webcam ${dependencies})
+
+
+
 
 install(TARGETS
     show_camera
     infer_camera
+    show_camera_url
+    show_camera_compressed
+    show_camera_sdp
+    republish_sdp
+    publish_webcam
+    republish_sdp_camera_info
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
