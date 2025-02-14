@@ -58,11 +58,11 @@ public:
           kalman_heave(0.01, 0.5, 1.0, 0.0)
     {
         rcl_interfaces::msg::ParameterDescriptor param_desc;
-        
+
         param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
         this->declare_parameter("use_kalman", 1, param_desc);
         this->declare_parameter("use_pid", 1, param_desc);
-        
+
         // Integer parameters
         this->declare_parameter("neutral_pwm", 1500, param_desc);
         this->declare_parameter("pwm_range", 50, param_desc);
@@ -151,7 +151,6 @@ public:
         mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
         // Arm the vehicle
         arm_vehicle(true);
-        set_mode("ALT_HOLD");
         // Set up timer
         publish_timer_ = this->create_wall_timer(
             std::chrono::milliseconds(publish_rate), 
