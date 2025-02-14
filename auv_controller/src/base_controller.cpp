@@ -65,7 +65,7 @@ public:
 
         // Integer parameters
         this->declare_parameter("neutral_pwm", 1500, param_desc);
-        this->declare_parameter("pwm_range", 50, param_desc);
+        this->declare_parameter("pwm_range", 100, param_desc);
         this->declare_parameter("pwm_deadband", 15, param_desc);
         this->declare_parameter("publish_rate_ms", 100, param_desc);
 
@@ -200,7 +200,7 @@ private:
                     "P: %f, I: %f, D: %f",
                     kp_, ki_, kd_);
 
-        double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
+        double lin_acc_surge = (msg.linear_acceleration.y - imu_surge_bias_);
         double ang_vel_yaw = - msg.angular_velocity.z;
         double lin_acc_heave = msg.linear_acceleration.z - imu_gravity_;
 
@@ -223,10 +223,8 @@ private:
         // velocity_surge += filtered_acc_surge * dt;
         // velocity_heave += filtered_acc_heave * dt;
         // velocity_heave = filtered_acc_heave;
-        // velocity_yaw = filtered_vel_yaw;
-
+        velocity_yaw = filtered_vel_yaw;
         velocity_surge = filtered_acc_surge;
-        velocity_yaw = velocity_yaw;
         velocity_heave = filtered_acc_heave;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();

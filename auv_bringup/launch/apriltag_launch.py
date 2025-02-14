@@ -29,9 +29,5 @@ def generate_launch_description():
                     ('/image_rect','/image_raw')
                 ]
             ),
-            ExecuteProcess(
-                cmd=['ros2', 'topic', 'echo', '/topic_name'],
-                output='screen', 
-            ),
         ]
     )
