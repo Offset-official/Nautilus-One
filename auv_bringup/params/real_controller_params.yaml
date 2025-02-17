@@ -1,7 +1,7 @@
 base_controller:
   ros__parameters:
 
-    use_kalman: 1  # 1 for true, 0 for false
+    use_kalman: 0  # 1 for true, 0 for false
     use_pid: 1  # 1 for true, 0 for false
 
     # PWM settings
@@ -10,9 +10,9 @@ base_controller:
     pwm_deadband: 5
 
     # PID parameters (using double)
-    pid_kp: 1.2
-    pid_ki: 0.3
-    pid_kd: 0.4
+    pid_kp: 1.0
+    pid_ki: 0.1
+    pid_kd: 0.5
     integral_clamp: 100.0
 
     # IMU calibration
