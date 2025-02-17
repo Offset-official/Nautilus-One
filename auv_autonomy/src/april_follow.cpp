@@ -229,12 +229,12 @@ private:
     float yaw_cmd = kp_yaw_ * error_x;
 
     // Forward speed from param
-    cmd_vel_msg.linear.x  = forward_speed_;
+    cmd_vel_msg.linear.y  = forward_speed_;
     cmd_vel_msg.angular.z = yaw_cmd;
 
     RCLCPP_INFO(this->get_logger(),
-                "Tag alignment => err_x=%.1f => forward=%.2f, yaw=%.4f",
-                error_x, cmd_vel_msg.linear.x, cmd_vel_msg.angular.z);
+                "->Tag alignment => err_x=%.1f => forward=%.2f, yaw=%.4f",
+                error_x, cmd_vel_msg.linear.y, cmd_vel_msg.angular.z);
 
     return cmd_vel_msg;
   }
