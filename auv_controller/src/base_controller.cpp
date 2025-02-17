@@ -151,6 +151,7 @@ public:
         mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
         // Arm the vehicle
         arm_vehicle(true);
+        set_mode("ALT_HOLD");
         // Set up timer
         publish_timer_ = this->create_wall_timer(
             std::chrono::milliseconds(publish_rate), 
