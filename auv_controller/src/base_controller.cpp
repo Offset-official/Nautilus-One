@@ -243,6 +243,15 @@ private:
 
         // Publish current velocities
 
+        if (std::fabs(target_vel_surge) < 1e-9 &&
+        std::fabs(target_vel_yaw)   < 1e-9 &&
+        std::fabs(target_vel_heave) < 1e-9)
+    {
+        surge_pwm_ = neutral_pwm_;  // 1500
+        yaw_pwm_   = neutral_pwm_;  // 1500
+        heave_pwm_ = neutral_pwm_;  // 1500
+    }
+
         RCLCPP_INFO(this->get_logger(),
                     "\nTarget_vel: [%.2f, %.2f, %.2f]\nMeasured_vel: [%.2f, %.2f,%.2f]\nPWM sent to thrusters: [%d, %d,%d]",
                     target_vel_surge, target_vel_yaw,target_vel_heave,
