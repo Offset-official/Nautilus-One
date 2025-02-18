@@ -6,7 +6,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 #include "mavros_msgs/srv/command_bool.hpp"
-#include "mavros_msgs/msg/rc_in.hpp"
+#include "mavros_msgs/msg/override_rc_in.hpp"
 #include "mavros_msgs/srv/set_mode.hpp"
 #include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/float32.hpp"
@@ -32,8 +32,8 @@ public:
         this->declare_parameter("yaw_medium_pwm_change", 40, param_desc);
         this->declare_parameter("yaw_high_pwm_change", 50, param_desc);
         
-        this->declare_parameter("heave_low_pwm_change", 30, param_desc);
-        this->declare_parameter("heave_medium_pwm_change", 40, param_desc);
+        this->declare_parameter("heave_low_pwm_change", 50, param_desc);
+        this->declare_parameter("heave_medium_pwm_change", 50, param_desc);
         this->declare_parameter("heave_high_pwm_change", 50, param_desc);
 
         // Velocity threshold parameters
@@ -48,14 +48,14 @@ public:
         this->declare_parameter("yaw_medium_cut_off", 0.5, double_param_desc);
         this->declare_parameter("yaw_high_cut_off", 0.8, double_param_desc);
         
-        this->declare_parameter("heave_low_cut_off", 0.2, double_param_desc);
-        this->declare_parameter("heave_medium_cut_off", 0.5, double_param_desc);
-        this->declare_parameter("heave_high_cut_off", 0.8, double_param_desc);
+        this->declare_parameter("heave_low_cut_off", 0.05, double_param_desc);
+        this->declare_parameter("heave_medium_cut_off", 0.3, double_param_desc);
+        this->declare_parameter("heave_high_cut_off", 0.6, double_param_desc);
 
-        this->declare_parameter("depth_p_gain", 0.5, double_param_desc);
-        this->declare_parameter("depth_threshold", 0.1, double_param_desc);
+        this->declare_parameter("depth_p_gain", 1.0, double_param_desc);
+        this->declare_parameter("depth_threshold", 0.05, double_param_desc);
 
-        this->declare_parameter("publish_rate_ms", 100, param_desc);
+        this->declare_parameter("publish_rate_ms", 50, param_desc);
 
         // Get PWM parameters
         neutral_pwm_ = this->get_parameter("neutral_pwm").as_int();
@@ -113,7 +113,7 @@ public:
             std::bind(&DumbController::target_depth_callback, this, std::placeholders::_1)); // for getting target depth
 
         // Set up publishers
-        rc_pub_ = this->create_publisher<mavros_msgs::msg::RCIn>("/mavros/rc/in", 10);
+        rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("/mavros/rc/override", 10);
         
         // Set up arm client
         arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
@@ -145,6 +145,7 @@ private:
     {
         target_depth_ = static_cast<double>(msg->data);
         depth_reached_ = false;
+        set_mode("MANUAL");
         RCLCPP_INFO(this->get_logger(), "New target depth: %.2f meters", target_depth_);
     }
 
@@ -187,9 +188,10 @@ private:
                         "Target depth %.2f reached", target_depth_);
             target_vel_heave = 0.0;
             depth_reached_ = true;
+            set_mode("ALT_HOLD");
         } else if (!depth_reached_) {
             target_vel_heave = depth_error * p_gain;
-            RCLCPP_DEBUG(this->get_logger(), 
+            RCLCPP_INFO(this->get_logger(), 
                       "Depth control - Current: %.2f, Target: %.2f, Error: %.2f, Command: %.2f",
                       current_depth_, target_depth_, depth_error, target_vel_heave);
         }
@@ -216,9 +218,10 @@ private:
     int calculatePWM(float target_vel,
                     const float high_cut_off, const float medium_cut_off, const float low_cut_off,
                     const int high_pwm_change, const int medium_pwm_change, const int low_pwm_change) {
-        int abs_target = abs(target_vel);
+        float abs_target = abs(target_vel);
         int pwm_change = 0;
         int pwm = 0;
+
         if (abs_target >= high_cut_off) {
             pwm_change = high_pwm_change;
         } else if (abs_target >= medium_cut_off) {
@@ -226,12 +229,12 @@ private:
         } else if (abs_target >= low_cut_off) {
             pwm_change = low_pwm_change;
         }
-        
+
         pwm = neutral_pwm_ + (target_vel >= 0 ? pwm_change : -pwm_change);
         return pwm;
     }
     void publish_rc_override() {
-        auto rc_out_msg = mavros_msgs::msg::RCIn();
+        auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
         rc_out_msg.channels = {
             static_cast<unsigned short>(neutral_pwm_),
             static_cast<unsigned short>(neutral_pwm_),
@@ -309,7 +312,7 @@ private:
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr target_depth_sub_;
     
     // Publishers
-    rclcpp::Publisher<mavros_msgs::msg::RCIn>::SharedPtr rc_pub_;
+    rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
     
     // Service client
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
