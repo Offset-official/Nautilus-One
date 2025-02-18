@@ -20,11 +20,11 @@ class MavlinkDepthPublisher(Node):
         self.get_logger().info("Connected to MAVLink vehicle")
 
         # Start the loop to receive and publish data
-        self.timer = self.create_timer(0.1, self.get_ahrs_data)  # Runs every 100ms
+        self.timer = self.create_timer(0.005, self.get_ahrs_data)  # Runs every 100ms
 
     def get_ahrs_data(self):
         """Fetch AHRS message and publish altitude."""
-        msg = self.connection.recv_match(type="AHRS", blocking=False)
+        msg = self.connection.recv_match(type="AHRS2", blocking=False)
         if msg:
             altitude = msg.altitude  # Extract altitude from AHRS message
             self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
