@@ -53,7 +53,7 @@ public:
         this->declare_parameter("heave_high_cut_off", 0.6, double_param_desc);
 
         this->declare_parameter("depth_p_gain", 1.0, double_param_desc);
-        this->declare_parameter("depth_threshold", 0.05, double_param_desc);
+        this->declare_parameter("depth_threshold", 0.025, double_param_desc);
 
         this->declare_parameter("publish_rate_ms", 50, param_desc);
 
@@ -121,7 +121,8 @@ public:
         
         // Arm the vehicle
         arm_vehicle(true);
-        set_mode("ALT_HOLD");
+        // set_mode("ALT_HOLD");
+        set_mode("MANUAL");
         
         // Set up timer
         publish_timer_ = this->create_wall_timer(
@@ -145,7 +146,6 @@ private:
     {
         target_depth_ = static_cast<double>(msg->data);
         depth_reached_ = false;
-        set_mode("MANUAL");
         RCLCPP_INFO(this->get_logger(), "New target depth: %.2f meters", target_depth_);
     }
 
@@ -188,7 +188,7 @@ private:
                         "Target depth %.2f reached", target_depth_);
             target_vel_heave = 0.0;
             depth_reached_ = true;
-            set_mode("ALT_HOLD");
+            // set_mode("ALT_HOLD");
         } else if (!depth_reached_) {
             target_vel_heave = depth_error * p_gain;
             RCLCPP_INFO(this->get_logger(), 
@@ -196,6 +196,9 @@ private:
                       current_depth_, target_depth_, depth_error, target_vel_heave);
         }
 
+        if (std::abs(depth_error) > threshold){
+            depth_reached_ = false;
+        }
 
         heave_pwm_ = calculatePWM(target_vel_heave,
                     heave_high_cut_off, heave_medium_cut_off, heave_low_cut_off,
