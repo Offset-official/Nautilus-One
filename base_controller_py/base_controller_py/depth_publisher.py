@@ -4,6 +4,7 @@ from std_msgs.msg import Float64
 from pymavlink import mavutil
 
 
+# mavproxy.py --out udp:127.0.0.1:5760 --master udp:0.0.0.0:14550 --console
 class MavlinkDepthPublisher(Node):
     def __init__(self):
         super().__init__("mavlink_depth_publisher")
@@ -19,12 +20,19 @@ class MavlinkDepthPublisher(Node):
         self.connection.wait_heartbeat()
         self.get_logger().info("Connected to MAVLink vehicle")
         self.connection.mav.command_long_send(
-        self.connection.target_system, self.connection.target_component,
-        mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL, 0,
-        mavutil.mavlink.MAVLINK_MSG_ID_AHRS2, # The MAVLink message ID
-        1e6 / 100, # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
-        0, 0, 0, 0, # Unused parameters
-    0)
+            self.connection.target_system,
+            self.connection.target_component,
+            mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
+            0,
+            mavutil.mavlink.MAVLINK_MSG_ID_AHRS2,  # The MAVLink message ID
+            1e6
+            / 100,  # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
+            0,
+            0,
+            0,
+            0,  # Unused parameters
+            0,
+        )
         # Start the loop to receive and publish data
         self.timer = self.create_timer(0.001, self.get_ahrs_data)  # Runs every 100ms
 
