@@ -16,7 +16,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            IncludeLaunchDescription(PythonLaunchDescriptionSource(real_launch_file)),
+            # IncludeLaunchDescription(PythonLaunchDescriptionSource(real_launch_file)),
             Node(
                 package="auv_controller",
                 executable="base_controller",
@@ -24,5 +24,13 @@ def generate_launch_description():
                 parameters=[real_auv_controller_params_file],
                 output="screen",
             ),
+            Node(
+                package="auv_controller",
+                executable="depth_controller",
+                name="depth_controller",
+                parameters=[real_auv_controller_params_file],
+                output="screen",
+            ),
         ]
+
     )

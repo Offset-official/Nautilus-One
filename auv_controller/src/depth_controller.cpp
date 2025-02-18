@@ -26,7 +26,7 @@ public:
         //     std::bind(&DepthControl::current_depth_callback2, this, std::placeholders::_1));            
         
         // Subscriber for target depth
-        target_depth_sub_ = this->create_subscription<std_msgs::msg::Float64>(
+        target_depth_sub_ = this->create_subscription<std_msgs::msg::Float32>(
             "/target_depth", 10,
             std::bind(&DepthControl::target_depth_callback, this, std::placeholders::_1));
 
