@@ -34,7 +34,7 @@ public:
             "mavros/global_position/rel_alt", 10,
             std::bind(&DepthHold::depth_callback, this, std::placeholders::_1));
 
-        depth_pub_ = this->create_publisher<std_msgs::msg::Float32>("depth", 10);
+        depth_pub_ = this->create_publisher<std_msgs::msg::Float32>("/target_depth", 10);
 
         // Service clients
         mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
