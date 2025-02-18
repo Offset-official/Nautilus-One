@@ -20,6 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'depth_publisher = auv_diagnostics.depth_publisher:main'
+
         ],
     },
 )
