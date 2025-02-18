@@ -58,14 +58,14 @@ public:
           kalman_heave(0.01, 0.5, 1.0, 0.0)
     {
         rcl_interfaces::msg::ParameterDescriptor param_desc;
-        
+
         param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
         this->declare_parameter("use_kalman", 1, param_desc);
         this->declare_parameter("use_pid", 1, param_desc);
-        
+
         // Integer parameters
         this->declare_parameter("neutral_pwm", 1500, param_desc);
-        this->declare_parameter("pwm_range", 50, param_desc);
+        this->declare_parameter("pwm_range", 100, param_desc);
         this->declare_parameter("pwm_deadband", 15, param_desc);
         this->declare_parameter("publish_rate_ms", 100, param_desc);
 
@@ -201,7 +201,7 @@ private:
                     "P: %f, I: %f, D: %f",
                     kp_, ki_, kd_);
 
-        double lin_acc_surge = -(msg.linear_acceleration.y - imu_surge_bias_);
+        double lin_acc_surge = (msg.linear_acceleration.y - imu_surge_bias_);
         double ang_vel_yaw = - msg.angular_velocity.z;
         double lin_acc_heave = msg.linear_acceleration.z - imu_gravity_;
 
@@ -224,10 +224,8 @@ private:
         // velocity_surge += filtered_acc_surge * dt;
         // velocity_heave += filtered_acc_heave * dt;
         // velocity_heave = filtered_acc_heave;
-        // velocity_yaw = filtered_vel_yaw;
-
+        velocity_yaw = filtered_vel_yaw;
         velocity_surge = filtered_acc_surge;
-        velocity_yaw = velocity_yaw;
         velocity_heave = filtered_acc_heave;
         // Publish IMU velocities
         auto imu_ref_msg = geometry_msgs::msg::Vector3();
@@ -244,6 +242,15 @@ private:
                                     error_heave, integral_heave, previous_error_heave, dt);
 
         // Publish current velocities
+
+        if (std::fabs(target_vel_surge) < 1e-9 &&
+        std::fabs(target_vel_yaw)   < 1e-9 &&
+        std::fabs(target_vel_heave) < 1e-9)
+    {
+        surge_pwm_ = neutral_pwm_;  // 1500
+        yaw_pwm_   = neutral_pwm_;  // 1500
+        heave_pwm_ = neutral_pwm_;  // 1500
+    }
 
         RCLCPP_INFO(this->get_logger(),
                     "\nTarget_vel: [%.2f, %.2f, %.2f]\nMeasured_vel: [%.2f, %.2f,%.2f]\nPWM sent to thrusters: [%d, %d,%d]",

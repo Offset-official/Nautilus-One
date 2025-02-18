@@ -28,7 +28,7 @@ ament_target_dependencies(base_controller ${dependencies})
 
 add_executable(depth_controller src/depth_controller.cpp)
 ament_target_dependencies(depth_controller ${dependencies})
-add_executable(control_cmd_cli src/control_cmd_cli.cpp)
+add_executable(control_cmd_cli src/cmd_vel_publisher.cpp)
 ament_target_dependencies(control_cmd_cli ${dependencies})
 
 target_include_directories(base_controller PUBLIC
