@@ -28,5 +28,9 @@ def generate_launch_description():
                 output="screen",
                 parameters=[mavros_params_file],
             ),
+            Node(
+                package="auv_diagnostics",
+                executable="depth_publisher"
+            ),
         ]
     )

@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'auv_diagnostics'
+package_name = 'base_controller_py'
 
 setup(
     name=package_name,
@@ -11,19 +11,15 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools', 'pyserial', 'opencv-python', 'numpy'],
+    install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='and-human',
-    maintainer_email='Anshuman Sharma',
+    maintainer='jalan',
+    maintainer_email='subham.jalan@plaksha.edu.in',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'diagnostics = auv_diagnostics.diagnostics:main',
-            'serial_communication = auv_diagnostics.serial_communication:main',
-            'cameras = auv_diagnostics.cameras:main',
-            'depth_publisher = auv_diagnostics.depth_publisher:main'
         ],
     },
 )
