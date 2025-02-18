@@ -28,9 +28,9 @@ public:
         this->declare_parameter("surge_medium_pwm_change", 40, param_desc);
         this->declare_parameter("surge_high_pwm_change", 50, param_desc);
         
-        this->declare_parameter("yaw_low_pwm_change", 30, param_desc);
-        this->declare_parameter("yaw_medium_pwm_change", 40, param_desc);
-        this->declare_parameter("yaw_high_pwm_change", 50, param_desc);
+        this->declare_parameter("yaw_low_pwm_change", 40, param_desc);
+        this->declare_parameter("yaw_medium_pwm_change", 50, param_desc);
+        this->declare_parameter("yaw_high_pwm_change", 60, param_desc);
         
         this->declare_parameter("heave_low_pwm_change", 50, param_desc);
         this->declare_parameter("heave_medium_pwm_change", 50, param_desc);
@@ -218,6 +218,7 @@ private:
                     surge_pwm_, yaw_pwm_, heave_pwm_);
 
     }
+    // TODO add custmized PWM for backward motion
     int calculatePWM(float target_vel,
                     const float high_cut_off, const float medium_cut_off, const float low_cut_off,
                     const int high_pwm_change, const int medium_pwm_change, const int low_pwm_change) {
