@@ -29,8 +29,8 @@ public:
         this->declare_parameter("surge_high_pwm_change", 50, param_desc);
         
         this->declare_parameter("yaw_low_pwm_change", 40, param_desc);
-        this->declare_parameter("yaw_medium_pwm_change", 50, param_desc);
-        this->declare_parameter("yaw_high_pwm_change", 60, param_desc);
+        this->declare_parameter("yaw_medium_pwm_change", 40, param_desc);
+        this->declare_parameter("yaw_high_pwm_change", 40, param_desc);
         
         this->declare_parameter("heave_low_pwm_change", 50, param_desc);
         this->declare_parameter("heave_medium_pwm_change", 50, param_desc);
