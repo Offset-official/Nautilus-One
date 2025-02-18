@@ -9,7 +9,7 @@ class MavlinkDepthPublisher(Node):
         super().__init__("mavlink_depth_publisher")
 
         # Create a publisher on the /depth topic
-        self.publisher_ = self.create_publisher(Float32, "/depth", 10)
+        self.publisher_ = self.create_publisher(Float32, "/current_depth", 5)
 
         # Connect to MAVLink (adjust for your connection type)
         self.connection = mavutil.mavlink_connection("udp:0.0.0.0:14550")  # SITL
@@ -18,13 +18,19 @@ class MavlinkDepthPublisher(Node):
         # Wait for MAVLink heartbeat
         self.connection.wait_heartbeat()
         self.get_logger().info("Connected to MAVLink vehicle")
-
+        self.connection.mav.command_long_send(
+        self.connection.target_system, self.connection.target_component,
+        mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL, 0,
+        mavutil.mavlink.MAVLINK_MSG_ID_AHRS2, # The MAVLink message ID
+        1e6 / 1, # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
+        0, 0, 0, 0, # Unused parameters
+    0)
         # Start the loop to receive and publish data
-        self.timer = self.create_timer(0.1, self.get_ahrs_data)  # Runs every 100ms
+        self.timer = self.create_timer(0.001, self.get_ahrs_data)  # Runs every 100ms
 
     def get_ahrs_data(self):
         """Fetch AHRS message and publish altitude."""
-        msg = self.connection.recv_match(type="AHRS", blocking=False)
+        msg = self.connection.recv_match(type="AHRS2", blocking=False)
         if msg:
             altitude = msg.altitude  # Extract altitude from AHRS message
             self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
@@ -36,7 +42,7 @@ class MavlinkDepthPublisher(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+
     mavlink_depth_publisher = MavlinkDepthPublisher()
     rclpy.spin(mavlink_depth_publisher)
     mavlink_depth_publisher.destroy_node()
