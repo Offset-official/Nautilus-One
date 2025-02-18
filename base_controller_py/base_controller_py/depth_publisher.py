@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 from pymavlink import mavutil
 
 
@@ -9,7 +9,7 @@ class MavlinkDepthPublisher(Node):
         super().__init__("mavlink_depth_publisher")
 
         # Create a publisher on the /depth topic
-        self.publisher_ = self.create_publisher(Float32, "/current_depth", 5)
+        self.publisher_ = self.create_publisher(Float64, "/current_depth", 5)
 
         # Connect to MAVLink (adjust for your connection type)
         self.connection = mavutil.mavlink_connection("udp:0.0.0.0:14550")  # SITL
@@ -22,7 +22,7 @@ class MavlinkDepthPublisher(Node):
         self.connection.target_system, self.connection.target_component,
         mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL, 0,
         mavutil.mavlink.MAVLINK_MSG_ID_AHRS2, # The MAVLink message ID
-        1e6 / 1, # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
+        1e6 / 100, # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
         0, 0, 0, 0, # Unused parameters
     0)
         # Start the loop to receive and publish data
@@ -36,13 +36,13 @@ class MavlinkDepthPublisher(Node):
             self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
 
             # Publish to /depth topic
-            depth_msg = Float32()
+            depth_msg = Float64()
             depth_msg.data = altitude
             self.publisher_.publish(depth_msg)
 
 
 def main(args=None):
-
+    rclpy.init()
     mavlink_depth_publisher = MavlinkDepthPublisher()
     rclpy.spin(mavlink_depth_publisher)
     mavlink_depth_publisher.destroy_node()
