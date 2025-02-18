@@ -23,6 +23,7 @@ setup(
             'diagnostics = auv_diagnostics.diagnostics:main',
             'serial_communication = auv_diagnostics.serial_communication:main',
             'cameras = auv_diagnostics.cameras:main',
+            'depth = auv_diagnostics.depth:main'
         ],
     },
 )
