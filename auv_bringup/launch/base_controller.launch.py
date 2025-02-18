@@ -1,43 +1,28 @@
 from launch import LaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
 from ament_index_python.packages import get_package_share_directory
 import os
 
 
 def generate_launch_description():
-    package_share_dir = get_package_share_directory("auv_controller")
-
-    params_file = os.path.join(
-        package_share_dir, "config", "base_controller_params.yaml"
+    auv_controller_dir = get_package_share_directory("auv_controller")
+    auv_bringup_dir = get_package_share_directory('auv_bringup')
+    real_launch_file = os.path.join(auv_bringup_dir,"launch","real_launch.py")
+    real_auv_controller_params_file = os.path.join(
+        auv_bringup_dir, "params", "real_controller_params.yaml"
     )
 
     return LaunchDescription(
         [
+            IncludeLaunchDescription(PythonLaunchDescriptionSource(real_launch_file)),
             Node(
                 package="auv_controller",
                 executable="base_controller",
                 name="base_controller",
-                parameters=[params_file],
+                parameters=[real_auv_controller_params_file],
                 output="screen",
             ),
-            Node(
-                package="auv_controller",
-                executable="depth_controller",
-                name="base_controller",
-                parameters=[params_file],
-                output="screen",
-            ),
-            # Node(
-            #     package="auv_controller",
-            #     executable="velocity_plotter.py",
-            #     name="velocity_plotter",
-            #     output="screen",
-            # ),
-            # Node(
-            #     package="auv_controller",
-            #     executable="imu_orientation_plotter.py",
-            #     name="imu_orientation_plotter",
-            #     output="screen",
-            # ),
         ]
     )
