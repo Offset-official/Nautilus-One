@@ -1,36 +1,39 @@
 base_controller:
   ros__parameters:
-
-    use_kalman: 0  # 1 for true, 0 for false
-    use_pid: 1  # 1 for true, 0 for false
-
-    # PWM settings
+    # Basic PWM parameters
     neutral_pwm: 1500
-    pwm_range: 50
-    pwm_deadband: 5
-
-    # PID parameters (using double)
-    pid_kp: 1.0
-    pid_ki: 0.1
-    pid_kd: 0.5
-    integral_clamp: 100.0
-
-    # IMU calibration
-    imu_surge_bias: 0.10787
-    imu_gravity: 9.816
-
-    # Kalman filter parameters
-    kalman_process_noise: 0.05
-    kalman_measurement_noise: 0.5
-    kalman_estimated_error: 1.0
-    kalman_initial_value: 0.0
-
-    # Thresholds
-    measurement_threshold: 0.05
-    angular_threshold: 0.001
-
-    depth_p_gain: 0.5
-    depth_threshold: 0.1
-
-    # Timing
     publish_rate_ms: 100
+
+    # Surge PWM changes
+    surge_low_pwm_change: 30
+    surge_medium_pwm_change: 40
+    surge_high_pwm_change: 50
+
+    # Yaw PWM changes
+    yaw_low_pwm_change: 30
+    yaw_medium_pwm_change: 40
+    yaw_high_pwm_change: 50
+
+    # Heave PWM changes
+    heave_low_pwm_change: 30
+    heave_medium_pwm_change: 40
+    heave_high_pwm_change: 50
+
+    # Surge velocity thresholds
+    surge_low_cut_off: 0.2
+    surge_medium_cut_off: 0.5
+    surge_high_cut_off: 0.8
+
+    # Yaw velocity thresholds
+    yaw_low_cut_off: 0.2
+    yaw_medium_cut_off: 0.5
+    yaw_high_cut_off: 0.8
+
+    # Heave velocity thresholds
+    heave_low_cut_off: 0.2
+    heave_medium_cut_off: 0.5
+    heave_high_cut_off: 0.8
+    
+    depth_p_gain: 0.5
+    depth_threshold: 0.05
+

@@ -31,7 +31,7 @@ public:
             std::bind(&DepthHold::mode_callback, this, std::placeholders::_1));
             
         depth_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-            "mavros/global_position/rel_alt", 10,
+            "current_depth", 10,
             std::bind(&DepthHold::depth_callback, this, std::placeholders::_1));
 
         depth_pub_ = this->create_publisher<std_msgs::msg::Float32>("/target_depth", 10);

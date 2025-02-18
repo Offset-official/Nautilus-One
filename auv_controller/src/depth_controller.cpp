@@ -21,9 +21,6 @@ public:
             "/current_depth", 10,
             std::bind(&DepthControl::current_depth_callback1, this, std::placeholders::_1)); // wrong topic, change later. 
 
-        // current_depth_sub_2 = this->create_subscription<mavros_msgs::msg::VfrHud>(
-        //     "mavros/vfr_hud", 10,
-        //     std::bind(&DepthControl::current_depth_callback2, this, std::placeholders::_1));            
         
         // Subscriber for target depth
         target_depth_sub_ = this->create_subscription<std_msgs::msg::Float32>(
@@ -45,10 +42,7 @@ private:
     {
         current_depth_ = msg->data;
     }
-    // void current_depth_callback2(const mavros_msgs::msg::VfrHud::SharedPtr msg)
-    // {
-    //     current_depth_ = msg->altitude;
-    // }    
+
     void target_depth_callback(const std_msgs::msg::Float32::SharedPtr msg)
     {
         target_depth_ = static_cast<double>(msg->data);
@@ -82,6 +76,8 @@ private:
             double p_gain = this->get_parameter("depth_p_gain").as_double();
             cmd_vel.linear.z = depth_error * p_gain;
             
+            // send according to the error in limit tho. 
+
             RCLCPP_DEBUG(this->get_logger(), 
                       "Depth control - Current: %.2f, Target: %.2f, Error: %.2f, Command: %.2f",
                       current_depth_, target_depth_, depth_error, cmd_vel.linear.z);
@@ -91,7 +87,6 @@ private:
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr vel_pub_;
     rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr current_depth_sub_1;
-    // rclcpp::Subscription<mavros_msgs::msg::VfrHud>::SharedPtr current_depth_sub_2;
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr target_depth_sub_;
     rclcpp::TimerBase::SharedPtr timer_;
     
