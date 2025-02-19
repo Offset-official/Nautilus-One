@@ -10,10 +10,12 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
 set(dependencies
     rclcpp
     OpenCV 
     cv_bridge
+    image_transport
 )
 
 add_executable(color_detector src/color_detector.cpp)
