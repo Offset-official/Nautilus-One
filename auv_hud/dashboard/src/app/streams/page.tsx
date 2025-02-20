@@ -83,7 +83,7 @@ export default function VideoStream() {
                 className="rounded-lg w-full"
                 width={640}
                 height={480}
-                unoptimized // Required for dynamic blob images
+                unoptimized
               />
             ) : (
               <p>Waiting for image...</p>
