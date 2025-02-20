@@ -72,6 +72,7 @@ export default function Navbar() {
         <div className="flex space-x-4">
             <Link href="/" className="text-white">Home</Link>
             <Link href="/streams" className="text-white">Streams</Link>
+            <Link href="/params" className="text-white">Params</Link>
         </div>
       </div>
     </nav>
