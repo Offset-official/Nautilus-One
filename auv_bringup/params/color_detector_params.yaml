@@ -1,16 +1,10 @@
 /color_detector:
   ros__parameters:
     # color detection range [h,s,v H,S,V]
-    #hsv_ranges:
-    #  - 20.0
-    #  - 1.0
-    #  - 200.0
-    #  - 60.0
-    #  - 8.0
-    hsv_ranges:
+    red_hsv_ranges:
       - 0.0
       - 0.0
-      - 0.0
-      - 330.5
-      - 42.0
-      - 60.0
+      - 255.0
+      - 20.0
+      - 75.0
+      - 255.0
