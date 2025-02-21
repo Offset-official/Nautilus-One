@@ -30,16 +30,16 @@ private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   image_transport::Subscriber image_sub_;
 
-  // HSV ranges for detection [h - H] [s - S] [v - V]
+  // HSV ranges for detection [h,s,v H,S,V]
   std::vector<double> hsv_filter_ranges_{0, 180, 0, 255, 0, 255};
 
   void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
 
     const float &h = hsv_filter_ranges_[0];
-    const float &H = hsv_filter_ranges_[1];
-    const float &s = hsv_filter_ranges_[2];
-    const float &S = hsv_filter_ranges_[3];
-    const float &v = hsv_filter_ranges_[4];
+    const float &s = hsv_filter_ranges_[1];
+    const float &v = hsv_filter_ranges_[2];
+    const float &H = hsv_filter_ranges_[3];
+    const float &S = hsv_filter_ranges_[4];
     const float &V = hsv_filter_ranges_[5];
 
     cv_bridge::CvImagePtr cv_ptr;
