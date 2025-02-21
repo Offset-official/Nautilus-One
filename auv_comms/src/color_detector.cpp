@@ -16,8 +16,14 @@ class ColorDetector : public rclcpp::Node {
 public:
   ColorDetector() : Node("color_detector") {
 
-    declare_parameter("hsv_ranges", hsv_filter_ranges_);
-    get_parameter("hsv_ranges", hsv_filter_ranges_);
+    declare_parameter("debug", debug_);
+    get_parameter("debug", debug_);
+
+    declare_parameter("min_positive", min_positive);
+    get_parameter("min_positive", min_positive);
+
+    declare_parameter("red_hsv_ranges", red_hsv_filter_ranges_);
+    get_parameter("red_hsv_ranges", red_hsv_filter_ranges_);
 
     image_sub_ = image_transport::create_subscription(
         this, "input_image",
@@ -31,16 +37,19 @@ private:
   image_transport::Subscriber image_sub_;
 
   // HSV ranges for detection [h,s,v H,S,V]
-  std::vector<double> hsv_filter_ranges_{0, 180, 0, 255, 0, 255};
+  std::vector<double> red_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
+  // number of pixels required to classify a correct color detection
+  uint8_t min_positive = 100;
+  bool debug_ = false;
 
   void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
 
-    const float &h = hsv_filter_ranges_[0];
-    const float &s = hsv_filter_ranges_[1];
-    const float &v = hsv_filter_ranges_[2];
-    const float &H = hsv_filter_ranges_[3];
-    const float &S = hsv_filter_ranges_[4];
-    const float &V = hsv_filter_ranges_[5];
+    const float &red_h = red_hsv_filter_ranges_[0];
+    const float &red_s = red_hsv_filter_ranges_[1];
+    const float &red_v = red_hsv_filter_ranges_[2];
+    const float &red_H = red_hsv_filter_ranges_[3];
+    const float &red_S = red_hsv_filter_ranges_[4];
+    const float &red_V = red_hsv_filter_ranges_[5];
 
     cv_bridge::CvImagePtr cv_ptr;
     try {
@@ -54,9 +63,17 @@ private:
 
     cv::Mat1b filtered;
 
-    cv::inRange(img_hsv, cv::Scalar(h, s, v), cv::Scalar(H, S, V), filtered);
-    cv::imshow("filtered_image", filtered);
-    cv::waitKey(1);
+    cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
+                cv::Scalar(red_H, red_S, red_V), filtered);
+
+    auto numPositive = cv::countNonZero(filtered);
+    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
+    if (numPositive >= min_positive)
+      RCLCPP_INFO(this->get_logger(), "Detected red");
+    if (debug_) {
+      cv::imshow("filtered image", filtered);
+      cv::waitKey(1);
+    }
   }
 };
 

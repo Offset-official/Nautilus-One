@@ -11,3 +11,14 @@ To launch the debug detector to identify the correct HSV ranges
 ```bash
 ros2 run auv_comms color_detector_debug --ros-args -r /input_image/compressed:=/image_raw/compressed
 ```
+
+## Color HSV Values
+
+### Red
+
+H Min - 124
+S Min - 0
+V Min - 255
+H Max - 180
+S Max - 3
+V Max - 255

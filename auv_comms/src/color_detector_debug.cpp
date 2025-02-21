@@ -63,6 +63,9 @@ private:
     cv::inRange(img_hsv, cv::Scalar(h_min_, s_min_, v_min_),
                 cv::Scalar(h_max_, s_max_, v_max_), filtered);
 
+    auto numPositive = cv::countNonZero(filtered);
+    RCLCPP_INFO(this->get_logger(),"Num positive: %d",numPositive);
+
     // Display the filtered image
     cv::imshow("Filtered Image", filtered);
     cv::waitKey(1);
