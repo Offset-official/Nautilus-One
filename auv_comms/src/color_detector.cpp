@@ -47,7 +47,7 @@ private:
   std::vector<double> green_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
   std::vector<double> blue_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
   // number of pixels required to classify a correct color detection
-  uint8_t min_positive = 100;
+  uint8_t min_positive = 200;
   bool debug_ = false;
 
   void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
@@ -89,9 +89,8 @@ private:
     cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
                 cv::Scalar(red_H, red_S, red_V), filtered);
     auto numPositive = cv::countNonZero(filtered);
-    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
     if (numPositive >= min_positive)
-      RCLCPP_INFO(this->get_logger(), "Detected red");
+      RCLCPP_INFO(this->get_logger(), "Detected red: %d",min_positive);
     if (debug_) {
       cv::imshow("RED filtered image", filtered);
       cv::waitKey(1);
@@ -101,23 +100,19 @@ private:
     cv::inRange(img_hsv, cv::Scalar(green_h, green_s, green_v),
                 cv::Scalar(green_H, green_S, green_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
     if (numPositive >= min_positive)
-      RCLCPP_INFO(this->get_logger(), "Detected green");
+      RCLCPP_INFO(this->get_logger(), "Detected green: %d",min_positive);
     if (debug_) {
       cv::imshow("GREEN filtered image", filtered);
       cv::waitKey(1);
     }
 
-    return;
-
     // BLUE color detection
     cv::inRange(img_hsv, cv::Scalar(blue_h, blue_s, blue_v),
                 cv::Scalar(blue_H, blue_S, blue_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
     if (numPositive >= min_positive)
-      RCLCPP_INFO(this->get_logger(), "Detected blue");
+      RCLCPP_INFO(this->get_logger(), "Detected blue: %d",min_positive);
     if (debug_) {
       cv::imshow("blue filtered image", filtered);
       cv::waitKey(1);
