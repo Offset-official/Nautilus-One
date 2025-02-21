@@ -25,6 +25,12 @@ public:
     declare_parameter("red_hsv_ranges", red_hsv_filter_ranges_);
     get_parameter("red_hsv_ranges", red_hsv_filter_ranges_);
 
+    declare_parameter("green_hsv_ranges", green_hsv_filter_ranges_);
+    get_parameter("green_hsv_ranges", green_hsv_filter_ranges_);
+
+    declare_parameter("blue_hsv_ranges", blue_hsv_filter_ranges_);
+    get_parameter("blue_hsv_ranges", blue_hsv_filter_ranges_);
+
     image_sub_ = image_transport::create_subscription(
         this, "input_image",
         std::bind(&ColorDetector::image_callback, this, _1), "compressed",
@@ -38,6 +44,8 @@ private:
 
   // HSV ranges for detection [h,s,v H,S,V]
   std::vector<double> red_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
+  std::vector<double> green_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
+  std::vector<double> blue_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
   // number of pixels required to classify a correct color detection
   uint8_t min_positive = 100;
   bool debug_ = false;
@@ -51,6 +59,20 @@ private:
     const float &red_S = red_hsv_filter_ranges_[4];
     const float &red_V = red_hsv_filter_ranges_[5];
 
+    const float &green_h = green_hsv_filter_ranges_[0];
+    const float &green_s = green_hsv_filter_ranges_[1];
+    const float &green_v = green_hsv_filter_ranges_[2];
+    const float &green_H = green_hsv_filter_ranges_[3];
+    const float &green_S = green_hsv_filter_ranges_[4];
+    const float &green_V = green_hsv_filter_ranges_[5];
+
+    const float &blue_h = blue_hsv_filter_ranges_[0];
+    const float &blue_s = blue_hsv_filter_ranges_[1];
+    const float &blue_v = blue_hsv_filter_ranges_[2];
+    const float &blue_H = blue_hsv_filter_ranges_[3];
+    const float &blue_S = blue_hsv_filter_ranges_[4];
+    const float &blue_V = blue_hsv_filter_ranges_[5];
+
     cv_bridge::CvImagePtr cv_ptr;
     try {
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -63,15 +85,41 @@ private:
 
     cv::Mat1b filtered;
 
+    // RED color detection
     cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
                 cv::Scalar(red_H, red_S, red_V), filtered);
-
     auto numPositive = cv::countNonZero(filtered);
     RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
     if (numPositive >= min_positive)
       RCLCPP_INFO(this->get_logger(), "Detected red");
     if (debug_) {
-      cv::imshow("filtered image", filtered);
+      cv::imshow("RED filtered image", filtered);
+      cv::waitKey(1);
+    }
+
+    // GREEN color detection
+    cv::inRange(img_hsv, cv::Scalar(green_h, green_s, green_v),
+                cv::Scalar(green_H, green_S, green_V), filtered);
+    numPositive = cv::countNonZero(filtered);
+    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
+    if (numPositive >= min_positive)
+      RCLCPP_INFO(this->get_logger(), "Detected green");
+    if (debug_) {
+      cv::imshow("GREEN filtered image", filtered);
+      cv::waitKey(1);
+    }
+
+    return;
+
+    // BLUE color detection
+    cv::inRange(img_hsv, cv::Scalar(blue_h, blue_s, blue_v),
+                cv::Scalar(blue_H, blue_S, blue_V), filtered);
+    numPositive = cv::countNonZero(filtered);
+    RCLCPP_DEBUG(this->get_logger(), "Num Positive: %d", numPositive);
+    if (numPositive >= min_positive)
+      RCLCPP_INFO(this->get_logger(), "Detected blue");
+    if (debug_) {
+      cv::imshow("blue filtered image", filtered);
       cv::waitKey(1);
     }
   }
