@@ -89,34 +89,30 @@ private:
     cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
                 cv::Scalar(red_H, red_S, red_V), filtered);
     auto numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive)
+    if (numPositive >= min_positive){
       RCLCPP_INFO(this->get_logger(), "Detected red: %d",min_positive);
-    if (debug_) {
-      cv::imshow("RED filtered image", filtered);
-      cv::waitKey(1);
+        return;
     }
 
     // GREEN color detection
     cv::inRange(img_hsv, cv::Scalar(green_h, green_s, green_v),
                 cv::Scalar(green_H, green_S, green_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive)
+    if (numPositive >= min_positive){
       RCLCPP_INFO(this->get_logger(), "Detected green: %d",min_positive);
-    if (debug_) {
-      cv::imshow("GREEN filtered image", filtered);
-      cv::waitKey(1);
+      return;
     }
 
     // BLUE color detection
     cv::inRange(img_hsv, cv::Scalar(blue_h, blue_s, blue_v),
                 cv::Scalar(blue_H, blue_S, blue_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive)
+    if (numPositive >= min_positive){
       RCLCPP_INFO(this->get_logger(), "Detected blue: %d",min_positive);
-    if (debug_) {
-      cv::imshow("blue filtered image", filtered);
-      cv::waitKey(1);
+      return;
     }
+
+    RCLCPP_INFO(this->get_logger(), "Detected none");
   }
 };
 
