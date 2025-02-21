@@ -25,7 +25,13 @@ The project assumes that you are using `zsh` like a sane human.
 
 ## Usage
 
-### Manual Control
+### Manual Control with the real robot
+Launch MAVProxy when the robot is connected via ethernet.
+```bash
+mavproxy.py --master=udp:0.0.0.0:14550 --out=udp:0.0.0.0:14660
+```
+
+### Manual Control in Sim
 To launch the simulation environment:
 
 ```bash
