@@ -19,11 +19,14 @@ set(dependencies
 )
 
 add_executable(color_detector src/color_detector.cpp)
+add_executable(color_detector_debug src/color_detector_debug.cpp)
 
 ament_target_dependencies(color_detector ${dependencies})
+ament_target_dependencies(color_detector_debug ${dependencies})
 
 install(TARGETS
     color_detector
+    color_detector_debug
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
