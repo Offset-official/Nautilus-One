@@ -1,0 +1,3 @@
+topics:
+  - name: /usb_cam_0/image_raw/compressed
+    type: sensor_msgs/msg/CompressedImage
