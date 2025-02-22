@@ -1,3 +1,4 @@
+#include "auv_interfaces/srv/image_color_detect.hpp"
 #include "cv_bridge/cv_bridge.h"
 #include "image_transport/image_transport.hpp"
 #include "opencv2/opencv.hpp"
@@ -9,16 +10,13 @@
 #include <string>
 
 using std::placeholders::_1;
+using std::placeholders::_2;
 
 using namespace std::chrono_literals;
 
 class ColorDetector : public rclcpp::Node {
 public:
   ColorDetector() : Node("color_detector") {
-
-    declare_parameter("debug", debug_);
-    get_parameter("debug", debug_);
-
     declare_parameter("min_positive", min_positive);
     get_parameter("min_positive", min_positive);
 
@@ -31,16 +29,17 @@ public:
     declare_parameter("blue_hsv_ranges", blue_hsv_filter_ranges_);
     get_parameter("blue_hsv_ranges", blue_hsv_filter_ranges_);
 
-    image_sub_ = image_transport::create_subscription(
-        this, "input_image",
-        std::bind(&ColorDetector::image_callback, this, _1), "compressed",
-        rclcpp::SensorDataQoS().get_rmw_qos_profile());
+    // Declare the service
+    color_detection_service_ =
+        this->create_service<auv_interfaces::srv::ImageColorDetect>(
+            "detect_color",
+            std::bind(&ColorDetector::detect_color_service_callback, this, _1,
+                      _2));
   }
 
 private:
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-  image_transport::Subscriber image_sub_;
+  rclcpp::Service<auv_interfaces::srv::ImageColorDetect>::SharedPtr
+      color_detection_service_;
 
   // HSV ranges for detection [h,s,v H,S,V]
   std::vector<double> red_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
@@ -48,9 +47,14 @@ private:
   std::vector<double> blue_hsv_filter_ranges_{0, 0, 0, 180, 255, 255};
   // number of pixels required to classify a correct color detection
   uint8_t min_positive = 200;
-  bool debug_ = false;
 
-  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
+  // Service callback
+  void detect_color_service_callback(
+      const std::shared_ptr<auv_interfaces::srv::ImageColorDetect::Request>
+          request,
+      std::shared_ptr<auv_interfaces::srv::ImageColorDetect::Response>
+          response) {
+    const auto &msg = request->image;
 
     const float &red_h = red_hsv_filter_ranges_[0];
     const float &red_s = red_hsv_filter_ranges_[1];
@@ -77,42 +81,45 @@ private:
     try {
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
     } catch (cv_bridge::Exception &e) {
-      RCLCPP_ERROR(get_logger(), "cv_bridge exception: %s", e.what());
+      RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
+      response->color = "Error processing image";
+      return;
     };
 
     cv::Mat img_hsv;
     cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV);
 
     cv::Mat1b filtered;
+    std::string detected_color = "none";
 
     // RED color detection
     cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
                 cv::Scalar(red_H, red_S, red_V), filtered);
     auto numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive){
-      RCLCPP_INFO(this->get_logger(), "Detected red: %d",min_positive);
-        return;
+    if (numPositive >= min_positive) {
+      detected_color = "red";
     }
 
     // GREEN color detection
     cv::inRange(img_hsv, cv::Scalar(green_h, green_s, green_v),
                 cv::Scalar(green_H, green_S, green_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive){
-      RCLCPP_INFO(this->get_logger(), "Detected green: %d",min_positive);
-      return;
+    if (numPositive >= min_positive) {
+      detected_color = "green";
     }
 
     // BLUE color detection
     cv::inRange(img_hsv, cv::Scalar(blue_h, blue_s, blue_v),
                 cv::Scalar(blue_H, blue_S, blue_V), filtered);
     numPositive = cv::countNonZero(filtered);
-    if (numPositive >= min_positive){
-      RCLCPP_INFO(this->get_logger(), "Detected blue: %d",min_positive);
-      return;
+    if (numPositive >= min_positive) {
+      detected_color = "blue";
     }
 
-    RCLCPP_INFO(this->get_logger(), "Detected none");
+    // Set the response
+    response->color = detected_color;
+    RCLCPP_INFO(this->get_logger(), "Detected color: %s",
+                detected_color.c_str());
   }
 };
 
