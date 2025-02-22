@@ -8,12 +8,16 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(auv_interfaces REQUIRED)
 set(dependencies
     rclcpp
+    rclcpp_action
+    rclcpp_components
     OpenCV 
     cv_bridge
     image_transport
@@ -22,12 +26,17 @@ set(dependencies
 
 add_executable(color_detector src/color_detector.cpp)
 add_executable(color_detector_debug src/color_detector_debug.cpp)
+add_executable(read_sequence src/read_sequence.cpp)
 
 ament_target_dependencies(color_detector ${dependencies})
 ament_target_dependencies(color_detector_debug ${dependencies})
+ament_target_dependencies(read_sequence ${dependencies})
+
+#rclcpp_components_register_node(action_server PLUGIN "ReadCommSequenceActionServer" EXECUTABLE read_sequence)
 
 install(TARGETS
     color_detector
+    read_sequence
     color_detector_debug
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
