@@ -8,9 +8,10 @@ find_package(rosidl_default_generators REQUIRED)
 # Generate messages and services
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Detection.msg"
+  "msg/DetectionArray.msg"
   "srv/ManipulatorCommand.srv"
   "srv/YoloInference.srv"
-  "msg/DetectionArray.msg"
+  "srv/ImageColorDetect.srv"
   DEPENDENCIES sensor_msgs std_msgs
 )
 
