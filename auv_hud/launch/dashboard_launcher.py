@@ -23,5 +23,13 @@ def generate_launch_description():
             cwd=nextjs_project_dir,
             shell=True,
             output="screen"
+        ),
+
+        # Start rosbag node
+        Node(
+            package='auv_hud',
+            executable='bag_recorder',
+            name='bag_recorder',
+            output='screen'
         )
     ])
