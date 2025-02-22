@@ -3,25 +3,27 @@
 <package format="3">
   <name>auv_hud</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>AUV HUD package for ROS 2</description>
   <maintainer email="69304992+and-human@users.noreply.github.com">naraazanda</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
-
-  <exec_depend>rosbridge_server</exec_depend>
-  <exec_depend>npm</exec_depend>
-  <exec_depend>launch</exec_depend>
-  <exec_depend>launch_ros</exec_depend>
 
   <depend>rclcpp</depend>
   <depend>std_srvs</depend>
   <depend>rosbag2_cpp</depend>
   <depend>rosbag2_storage</depend>
   <depend>yaml-cpp</depend>
+  <depend>rcutils</depend>
+  <depend>ament_index_cpp</depend>
+
+  <exec_depend>rosbridge_server</exec_depend>
+  <exec_depend>npm</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
