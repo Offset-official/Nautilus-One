@@ -5,6 +5,7 @@
 #include "sensor_msgs/msg/compressed_image.hpp"
 #include <functional>
 #include <image_transport/image_transport.hpp>
+#include <chrono>
 #include <memory>
 #include <thread>
 
@@ -32,13 +33,19 @@ public:
         this, "input_image",
         std::bind(&ReadCommSequenceActionServer::image_callback, this, _1), "compressed",
         rclcpp::SensorDataQoS().get_rmw_qos_profile());
+
+    //todo: wait for 1s
   }
 
 private:
   rclcpp_action::Server<ReadCommSequence>::SharedPtr action_server_;
   rclcpp::Client<ImageColorDetect>::SharedPtr color_detect_client_;
   image_transport::Subscriber image_sub_;
-  sensor_msgs::msg::Image::ConstSharedPtr msg_;
+  sensor_msgs::msg::CompressedImage::ConstSharedPtr img_;
+
+  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
+    //img_ = msg;
+  }
 
   rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID &uuid) {
     RCLCPP_INFO(this->get_logger(), "Received goal request");
@@ -53,9 +60,6 @@ private:
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
-  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
-    msg_ = msg;
-  }
 
   void handle_accepted(
       const std::shared_ptr<GoalHandleReadCommSequence> goal_handle) {
@@ -73,6 +77,17 @@ private:
     auto &sequence = feedback->partial_sequence;
     sequence.push_back(0);
     auto result = std::make_shared<ReadCommSequence::Result>();
+
+    auto request = std::make_shared<auv_interfaces::srv::ImageColorDetect::Request>();
+    if(!img_){
+        RCLCPP_ERROR(this->get_logger(),"Action Server Node did not recieve any images");
+        result->sequence = sequence;
+        goal_handle->abort(result);
+        return;
+    }
+    request->image.header = img_->header;
+    request->image.format = img_->format;
+    request->image.data = img_->data;
 
     for (int i = 1; (i < 3) && rclcpp::ok(); ++i) {
       if (goal_handle->is_canceling()) {
