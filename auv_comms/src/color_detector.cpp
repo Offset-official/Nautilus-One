@@ -35,6 +35,8 @@ public:
             "detect_color",
             std::bind(&ColorDetector::detect_color_service_callback, this, _1,
                       _2));
+
+    RCLCPP_INFO(this->get_logger(), "Ready to detect color");
   }
 
 private:
