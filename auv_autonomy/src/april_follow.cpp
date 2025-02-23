@@ -1,6 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
 #include "cv_bridge/cv_bridge.h"
-#include <opencv2/opencv.hpp>
 
 // For publishing velocity commands
 #include <geometry_msgs/msg/twist.hpp>
