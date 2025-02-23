@@ -1,11 +1,10 @@
-#include <rclcpp/rclcpp.hpp>
 #include <opencv2/opencv.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 class ShowCameraSdpNode : public rclcpp::Node
 {
 public:
-  explicit ShowCameraSdpNode(const std::string & sdp_path)
-  : Node("show_camera_sdp")
+  explicit ShowCameraSdpNode(const std::string & sdp_path) : Node("show_camera_sdp")
   {
     // GStreamer pipeline reading from an SDP file via filesrc + sdpdemux
     // Then it buffers, depayloads, parses, decodes H.264, converts color, and hands frames to appsink.
@@ -15,17 +14,17 @@ public:
     //
     // NOTE: The pipeline references only video. If your SDP has audio also, sdpdemux might create multiple pads.
     //       This pipeline focuses on the video pad.
-    
-    pipeline_ =
-      "filesrc location=" + sdp_path + " ! "
-      "sdpdemux ! " 
-      "rtpjitterbuffer latency=0 ! "
-      "rtph264depay ! "
-      "h264parse ! "
-      "avdec_h264 ! "
-      "videoconvert ! "
-      "queue ! "
-      "appsink sync=false";
+
+    pipeline_ = "filesrc location=" + sdp_path +
+                " ! "
+                "sdpdemux ! "
+                "rtpjitterbuffer latency=0 ! "
+                "rtph264depay ! "
+                "h264parse ! "
+                "avdec_h264 ! "
+                "videoconvert ! "
+                "queue ! "
+                "appsink sync=false";
 
     RCLCPP_INFO(this->get_logger(), "Using GStreamer pipeline:\n%s", pipeline_.c_str());
 
@@ -39,9 +38,8 @@ public:
 
     // Create a timer to periodically grab frames
     timer_ = this->create_wall_timer(
-      std::chrono::milliseconds(30), // ~33 fps
-      std::bind(&ShowCameraSdpNode::timerCallback, this)
-    );
+      std::chrono::milliseconds(30),  // ~33 fps
+      std::bind(&ShowCameraSdpNode::timerCallback, this));
   }
 
 private:
@@ -50,7 +48,8 @@ private:
     cv::Mat frame;
     cap_ >> frame;
     if (frame.empty()) {
-      RCLCPP_WARN(this->get_logger(), "Empty frame received; stream may have ended or become unavailable.");
+      RCLCPP_WARN(
+        this->get_logger(), "Empty frame received; stream may have ended or become unavailable.");
       return;
     }
     // Show frame in a window
@@ -63,7 +62,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 

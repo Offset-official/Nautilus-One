@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
 #include "sensor_msgs/msg/camera_info.hpp"
+#include "sensor_msgs/msg/image.hpp"
 
 using namespace std::chrono_literals;
 
@@ -17,17 +17,17 @@ public:
   {
     // Create publishers
     image_publisher_ = this->create_publisher<sensor_msgs::msg::Image>(image_topic, 10);
-    camera_info_publisher_ = this->create_publisher<sensor_msgs::msg::CameraInfo>(camera_info_topic, 10);
+    camera_info_publisher_ =
+      this->create_publisher<sensor_msgs::msg::CameraInfo>(camera_info_topic, 10);
 
     // Create a timer to periodically publish messages (30Hz)
     timer_ = this->create_wall_timer(
       33ms,  // ~30Hz
-      std::bind(&CameraPublisherNode::publishData, this)
-    );
+      std::bind(&CameraPublisherNode::publishData, this));
 
-    RCLCPP_INFO(this->get_logger(), 
-                "Publishing camera data on image topic: '%s' and camera info topic: '%s'",
-                image_topic.c_str(), camera_info_topic.c_str());
+    RCLCPP_INFO(
+      this->get_logger(), "Publishing camera data on image topic: '%s' and camera info topic: '%s'",
+      image_topic.c_str(), camera_info_topic.c_str());
   }
 
 private:
@@ -40,8 +40,8 @@ private:
     image_msg.height = 480;
     image_msg.width = 640;
     image_msg.encoding = "rgb8";
-    image_msg.step = image_msg.width * 3; // 3 bytes per pixel in RGB8
-    image_msg.data.resize(image_msg.height * image_msg.step, 255); // fill with white
+    image_msg.step = image_msg.width * 3;                           // 3 bytes per pixel in RGB8
+    image_msg.data.resize(image_msg.height * image_msg.step, 255);  // fill with white
 
     // Create and populate corresponding CameraInfo
     sensor_msgs::msg::CameraInfo camera_info_msg;
@@ -68,9 +68,10 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
 
   if (argc < 3) {
-    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
-                 "Usage: publish_webcam <image_topic> <camera_info_topic>\n"
-                 "Example: publish_webcam /camera/image_raw /camera/camera_info");
+    RCLCPP_ERROR(
+      rclcpp::get_logger("rclcpp"),
+      "Usage: publish_webcam <image_topic> <camera_info_topic>\n"
+      "Example: publish_webcam /camera/image_raw /camera/camera_info");
     return 1;
   }
   std::string image_topic = argv[1];
