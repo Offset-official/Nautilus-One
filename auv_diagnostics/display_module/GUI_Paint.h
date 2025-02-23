@@ -36,7 +36,8 @@ extern volatile PAINT Paint;
 /**
  * Display Flip
 **/
-typedef enum {
+typedef enum
+{
   MIRROR_NONE = 0x00,
   MIRROR_HORIZONTAL = 0x01,
   MIRROR_VERTICAL = 0x02,
@@ -77,7 +78,8 @@ typedef enum {
 /**
  * The size of the point
 **/
-typedef enum {
+typedef enum
+{
   DOT_PIXEL_1X1 = 1,  // 1 x 1
   DOT_PIXEL_2X2,      // 2 X 2
   DOT_PIXEL_3X3,      // 3 X 3
@@ -92,7 +94,8 @@ typedef enum {
 /**
  * Point size fill style
 **/
-typedef enum {
+typedef enum
+{
   DOT_FILL_AROUND = 1,  // dot pixel 1 x 1
   DOT_FILL_RIGHTUP,     // dot pixel 2 X 2
 } DOT_STYLE;
@@ -101,7 +104,8 @@ typedef enum {
 /**
  * Line style, solid or dashed
 **/
-typedef enum {
+typedef enum
+{
   LINE_STYLE_SOLID = 0,
   LINE_STYLE_DOTTED,
 } LINE_STYLE;
@@ -109,7 +113,8 @@ typedef enum {
 /**
  * Whether the graphic is filled
 **/
-typedef enum {
+typedef enum
+{
   DRAW_FILL_EMPTY = 0,
   DRAW_FILL_FULL,
 } DRAW_FILL;

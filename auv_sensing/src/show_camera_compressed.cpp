@@ -10,7 +10,8 @@
 class ShowCameraCompressedNode : public rclcpp::Node
 {
 public:
-  explicit ShowCameraCompressedNode(const char * camera_topic) : Node("show_camera_compressed")
+  explicit ShowCameraCompressedNode(const char * camera_topic)
+  : Node("show_camera_compressed")
   {
     RCLCPP_INFO(this->get_logger(), "Starting node...");
 

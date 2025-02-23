@@ -45,10 +45,10 @@ private:
   {
     auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
     rc_out_msg.channels = {neutral_pwm, neutral_pwm,
-                           heave_pwm_,  // Channel 3: Heave (up/down)
-                           yaw_pwm_,    // Channel 4: Yaw (rotation)
-                           surge_pwm,   // Channel 5: Surge (forward/backward)
-                           neutral_pwm, neutral_pwm, neutral_pwm};
+      heave_pwm_,                       // Channel 3: Heave (up/down)
+      yaw_pwm_,                         // Channel 4: Yaw (rotation)
+      surge_pwm,                        // Channel 5: Surge (forward/backward)
+      neutral_pwm, neutral_pwm, neutral_pwm};
 
     rc_pub_->publish(rc_out_msg);
     RCLCPP_DEBUG(
@@ -69,7 +69,8 @@ private:
 
     if (
       rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
       if (arm) {
         RCLCPP_INFO(this->get_logger(), "Vehicle armed successfully");
       } else {

@@ -11,7 +11,8 @@ using namespace std::chrono_literals;
 class CameraInferenceNode : public rclcpp::Node
 {
 public:
-  CameraInferenceNode() : Node("infer_camera_node")
+  CameraInferenceNode()
+  : Node("infer_camera_node")
   {
     RCLCPP_INFO(this->get_logger(), "Starting node...");
 

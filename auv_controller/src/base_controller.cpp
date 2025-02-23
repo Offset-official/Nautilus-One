@@ -181,13 +181,13 @@ private:
     request->custom_mode = mode;
 
     auto callback = [this, mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
-      auto result = future.get();
-      if (result->mode_sent) {
-        RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
-      } else {
-        RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
-      }
-    };
+        auto result = future.get();
+        if (result->mode_sent) {
+          RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
+        } else {
+          RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
+        }
+      };
 
     mode_client_->async_send_request(request, callback);
   }
@@ -258,7 +258,8 @@ private:
 
     if (
       std::fabs(target_vel_surge) < 1e-9 && std::fabs(target_vel_yaw) < 1e-9 &&
-      std::fabs(target_vel_heave) < 1e-9) {
+      std::fabs(target_vel_heave) < 1e-9)
+    {
       surge_pwm_ = neutral_pwm_;  // 1500
       yaw_pwm_ = neutral_pwm_;    // 1500
       heave_pwm_ = neutral_pwm_;  // 1500
@@ -279,8 +280,8 @@ private:
     auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
     rc_out_msg.channels = {
       static_cast<unsigned short>(neutral_pwm_), static_cast<unsigned short>(neutral_pwm_),
-      static_cast<unsigned short>(heave_pwm_),   static_cast<unsigned short>(yaw_pwm_),
-      static_cast<unsigned short>(surge_pwm_),   static_cast<unsigned short>(neutral_pwm_),
+      static_cast<unsigned short>(heave_pwm_), static_cast<unsigned short>(yaw_pwm_),
+      static_cast<unsigned short>(surge_pwm_), static_cast<unsigned short>(neutral_pwm_),
       static_cast<unsigned short>(neutral_pwm_), static_cast<unsigned short>(neutral_pwm_)};
 
     rc_pub_->publish(rc_out_msg);
@@ -302,7 +303,8 @@ private:
 
     if (
       rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
       RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully", arm ? "armed" : "disarmed");
     } else {
       RCLCPP_ERROR(this->get_logger(), "Failed to call arm service");
@@ -325,7 +327,8 @@ private:
 
     // If the target velocity and error are above the measurement threshold, update the integral term
     if (
-      std::abs(target_vel) >= measurement_threshold_ && std::abs(error) >= measurement_threshold_) {
+      std::abs(target_vel) >= measurement_threshold_ && std::abs(error) >= measurement_threshold_)
+    {
       integral += error * dt;
     } else {
       integral = 0.0;

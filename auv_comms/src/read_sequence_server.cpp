@@ -66,7 +66,7 @@ private:
   image_transport::Subscriber image_sub_;
   sensor_msgs::msg::Image::ConstSharedPtr img_;
 
-  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & msg) { img_ = msg; }
+  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & msg) {img_ = msg;}
 
   rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID & uuid)
   {

@@ -62,12 +62,13 @@ void Paint_SetMirroring(UBYTE mirror)
 {
   if (
     mirror == MIRROR_NONE || mirror == MIRROR_HORIZONTAL || mirror == MIRROR_VERTICAL ||
-    mirror == MIRROR_ORIGIN) {
+    mirror == MIRROR_ORIGIN)
+  {
     //Debug("mirror image x:%s, y:%s\r\n", (mirror & 0x01) ? "mirror" : "none", ((mirror >> 1) & 0x01) ? "mirror" : "none");
     Paint.Mirror = mirror;
   } else {
     //Debug("mirror should be MIRROR_NONE, MIRROR_HORIZONTAL, \
-        MIRROR_VERTICAL or MIRROR_ORIGIN\r\n");
+    //         MIRROR_VERTICAL or MIRROR_ORIGIN\r\n");
     //exit(0);
   }
 }
@@ -189,7 +190,7 @@ void Paint_DrawPoint(
   if (Dot_FillWay == DOT_FILL_AROUND) {
     for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel - 1; XDir_Num++) {
       for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel - 1; YDir_Num++) {
-        if (Xpoint + XDir_Num - Dot_Pixel < 0 || Ypoint + YDir_Num - Dot_Pixel < 0) break;
+        if (Xpoint + XDir_Num - Dot_Pixel < 0 || Ypoint + YDir_Num - Dot_Pixel < 0) {break;}
         // printf("x = %d, y = %d\r\n", Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel);
         Paint_SetPixel(Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel, Color);
       }
@@ -234,7 +235,7 @@ void Paint_DrawLine(
   int Esp = dx + dy;
   char Dotted_Len = 0;
 
-  for (;;) {
+  for (;; ) {
     Dotted_Len++;
     //Painted dotted line, 2 point is really virtual
     if (Line_Style == LINE_STYLE_DOTTED && Dotted_Len % 3 == 0) {
@@ -245,12 +246,12 @@ void Paint_DrawLine(
       Paint_DrawPoint(Xpoint, Ypoint, Color, Line_width, DOT_STYLE_DFT);
     }
     if (2 * Esp >= dy) {
-      if (Xpoint == Xend) break;
+      if (Xpoint == Xend) {break;}
       Esp += dy;
       Xpoint += XAddway;
     }
     if (2 * Esp <= dx) {
-      if (Ypoint == Yend) break;
+      if (Ypoint == Yend) {break;}
       Esp += dx;
       Ypoint += YAddway;
     }
@@ -337,9 +338,9 @@ void Paint_DrawCircle(
         Paint_DrawPoint(
           X_Center + sCountY, Y_Center + XCurrent, Color, DOT_PIXEL_DFT, DOT_STYLE_DFT);
       }
-      if (Esp < 0)
+      if (Esp < 0) {
         Esp += 4 * XCurrent + 6;
-      else {
+      } else {
         Esp += 10 + 4 * (XCurrent - YCurrent);
         YCurrent--;
       }
@@ -364,9 +365,9 @@ void Paint_DrawCircle(
       Paint_DrawPoint(
         X_Center + YCurrent, Y_Center + XCurrent, Color, Line_width, DOT_STYLE_DFT);  //0
 
-      if (Esp < 0)
+      if (Esp < 0) {
         Esp += 4 * XCurrent + 6;
-      else {
+      } else {
         Esp += 10 + 4 * (XCurrent - YCurrent);
         YCurrent--;
       }
@@ -403,8 +404,9 @@ void Paint_DrawChar(
     for (Column = 0; Column < Font->Width; Column++) {
       //To determine whether the font background color and screen background color is consistent
       if (FONT_BACKGROUND == Color_Background) {  //this process is to speed up the scan
-        if (pgm_read_byte(ptr) & (0x80 >> (Column % 8)))
+        if (pgm_read_byte(ptr) & (0x80 >> (Column % 8))) {
           Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
+        }
       } else {
         if (pgm_read_byte(ptr) & (0x80 >> (Column % 8))) {
           Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
@@ -587,11 +589,12 @@ void Paint_DrawImage(
   int i, j;
   for (j = 0; j < H_Image; j++) {
     for (i = 0; i < W_Image; i++) {
-      if (xStart + i < LCD_WIDTH && yStart + j < LCD_HEIGHT)  //Exceeded part does not display
+      if (xStart + i < LCD_WIDTH && yStart + j < LCD_HEIGHT) { //Exceeded part does not display
         Paint_SetPixel(
           xStart + i, yStart + j,
           (pgm_read_byte(image + j * W_Image * 2 + i * 2 + 1)) << 8 |
             (pgm_read_byte(image + j * W_Image * 2 + i * 2)));
+      }
       //Using arrays is a property of sequential storage, accessing the original array by algorithm
       //j*W_Image*2          Y offset
       //i*2                  X offset

@@ -9,7 +9,8 @@
 class ShowCameraRtspNode : public rclcpp::Node
 {
 public:
-  explicit ShowCameraRtspNode(const std::string & camera_url) : Node("show_camera_rtsp")
+  explicit ShowCameraRtspNode(const std::string & camera_url)
+  : Node("show_camera_rtsp")
   {
     RCLCPP_INFO(this->get_logger(), "Starting node with RTSP URL: %s", camera_url.c_str());
 

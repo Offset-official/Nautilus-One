@@ -54,7 +54,7 @@ private:
     RCLCPP_INFO(this->get_logger(), "Current mode: %s", current_mode_.c_str());
   }
 
-  void depth_callback(const std_msgs::msg::Float64::SharedPtr msg) { current_depth_ = msg->data; }
+  void depth_callback(const std_msgs::msg::Float64::SharedPtr msg) {current_depth_ = msg->data;}
 
   void set_mode(const std::string & mode)
   {
@@ -67,13 +67,13 @@ private:
     request->custom_mode = mode;
 
     auto callback = [this, mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
-      auto result = future.get();
-      if (result->mode_sent) {
-        RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
-      } else {
-        RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
-      }
-    };
+        auto result = future.get();
+        if (result->mode_sent) {
+          RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
+        } else {
+          RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
+        }
+      };
 
     mode_client_->async_send_request(request, callback);
   }

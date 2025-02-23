@@ -17,14 +17,14 @@ public:
     //   4. Depayloads, parses, decodes H.264.
     //   5. Converts to raw frames for appsink, which feeds OpenCV.
     pipeline_ = "filesrc location=" + sdp_path +
-                " ! "
-                "sdpdemux ! "
-                "rtpjitterbuffer latency=0 ! "
-                "rtph264depay ! "
-                "h264parse ! "
-                "avdec_h264 ! "
-                "videoconvert ! "
-                "appsink sync=false";
+      " ! "
+      "sdpdemux ! "
+      "rtpjitterbuffer latency=0 ! "
+      "rtph264depay ! "
+      "h264parse ! "
+      "avdec_h264 ! "
+      "videoconvert ! "
+      "appsink sync=false";
 
     RCLCPP_INFO(this->get_logger(), "Using GStreamer pipeline:\n%s", pipeline_.c_str());
 

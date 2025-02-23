@@ -16,7 +16,8 @@ using namespace std::chrono_literals;
 class ColorDetector : public rclcpp::Node
 {
 public:
-  ColorDetector() : Node("color_detector")
+  ColorDetector()
+  : Node("color_detector")
   {
     declare_parameter("debug", debug_);
     get_parameter("debug", debug_);
@@ -79,7 +80,8 @@ private:
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
     } catch (cv_bridge::Exception & e) {
       RCLCPP_ERROR(get_logger(), "cv_bridge exception: %s", e.what());
-    };
+    }
+    ;
 
     cv::Mat img_hsv;
     cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV);

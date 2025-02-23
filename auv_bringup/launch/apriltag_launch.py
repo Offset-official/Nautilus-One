@@ -11,6 +11,7 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     pkg_auv_bringup = get_package_share_directory("auv_bringup")
     apriltag_params_file = PathJoinSubstitution(
@@ -24,9 +25,7 @@ def generate_launch_description():
                 executable="apriltag_node",
                 output="screen",
                 parameters=[apriltag_params_file],
-                remappings=[
-                    ('/image_rect','/image_raw')
-                ]
+                remappings=[("/image_rect", "/image_raw")],
             ),
         ]
     )

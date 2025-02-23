@@ -20,7 +20,7 @@ setup(
     description="This package acts as the eyes of the AUV.",
     license="TODO: License declaration",
     extras_require={
-        'test': ['pytest'],  # or other testing dependencies
+        "test": ["pytest"],  # or other testing dependencies
     },
     entry_points={
         "console_scripts": [

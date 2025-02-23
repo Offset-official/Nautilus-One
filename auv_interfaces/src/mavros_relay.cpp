@@ -5,7 +5,8 @@
 class MavrosRelay : public rclcpp::Node
 {
 public:
-  MavrosRelay() : Node("mavros_relay"), armed_(false)
+  MavrosRelay()
+  : Node("mavros_relay"), armed_(false)
   {
     // Subscribers to MAVROS topics
     state_sub_ = this->create_subscription<mavros_msgs::msg::State>(
@@ -21,7 +22,7 @@ public:
   }
 
 private:
-  void stateCallback(const mavros_msgs::msg::State::SharedPtr msg) { armed_ = msg->armed; }
+  void stateCallback(const mavros_msgs::msg::State::SharedPtr msg) {armed_ = msg->armed;}
 
   void publishDiagnostics()
   {

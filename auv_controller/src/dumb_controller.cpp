@@ -17,7 +17,8 @@ using namespace std::chrono_literals;
 class DumbController : public rclcpp::Node
 {
 public:
-  DumbController() : Node("dumb_controller")
+  DumbController()
+  : Node("dumb_controller")
   {
     rcl_interfaces::msg::ParameterDescriptor param_desc;
     param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
@@ -167,13 +168,13 @@ private:
     request->custom_mode = mode;
 
     auto callback = [this, mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
-      auto result = future.get();
-      if (result->mode_sent) {
-        RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
-      } else {
-        RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
-      }
-    };
+        auto result = future.get();
+        if (result->mode_sent) {
+          RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s", mode.c_str());
+        } else {
+          RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s", mode.c_str());
+        }
+      };
 
     mode_client_->async_send_request(request, callback);
   }
@@ -250,8 +251,8 @@ private:
     auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
     rc_out_msg.channels = {
       static_cast<unsigned short>(neutral_pwm_), static_cast<unsigned short>(neutral_pwm_),
-      static_cast<unsigned short>(heave_pwm_),   static_cast<unsigned short>(yaw_pwm_),
-      static_cast<unsigned short>(surge_pwm_),   static_cast<unsigned short>(neutral_pwm_),
+      static_cast<unsigned short>(heave_pwm_), static_cast<unsigned short>(yaw_pwm_),
+      static_cast<unsigned short>(surge_pwm_), static_cast<unsigned short>(neutral_pwm_),
       static_cast<unsigned short>(neutral_pwm_), static_cast<unsigned short>(neutral_pwm_)};
 
     rc_pub_->publish(rc_out_msg);
@@ -273,7 +274,8 @@ private:
 
     if (
       rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
       RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully", arm ? "armed" : "disarmed");
     } else {
       RCLCPP_ERROR(this->get_logger(), "Failed to call arm service");

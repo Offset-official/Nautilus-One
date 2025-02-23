@@ -10,7 +10,8 @@ using namespace std::chrono_literals;
 class RCControlNode : public rclcpp::Node
 {
 public:
-  RCControlNode() : Node("rc_node"), default_pwm(1500), throttle_pwm(1550)
+  RCControlNode()
+  : Node("rc_node"), default_pwm(1500), throttle_pwm(1550)
   {
     rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("/mavros/rc/override", 10);
     arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
@@ -36,7 +37,8 @@ private:
 
     if (
       rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
       if (arm) {
         RCLCPP_INFO(this->get_logger(), "Vehicle armed successfully");
       } else {
