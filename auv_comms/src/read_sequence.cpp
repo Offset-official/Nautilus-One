@@ -3,16 +3,19 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "sensor_msgs/msg/compressed_image.hpp"
+#include <chrono>
 #include <functional>
 #include <image_transport/image_transport.hpp>
-#include <chrono>
 #include <memory>
 #include <thread>
+
+using namespace std::chrono;
 
 class ReadCommSequenceActionServer : public rclcpp::Node {
 public:
   using ReadCommSequence = auv_interfaces::action::ReadCommSequence;
-  using GoalHandleReadCommSequence = rclcpp_action::ServerGoalHandle<ReadCommSequence>;
+  using GoalHandleReadCommSequence =
+      rclcpp_action::ServerGoalHandle<ReadCommSequence>;
   using ImageColorDetect = auv_interfaces::srv::ImageColorDetect;
 
   explicit ReadCommSequenceActionServer(
@@ -27,14 +30,36 @@ public:
         std::bind(&ReadCommSequenceActionServer::handle_accepted, this, _1));
 
     this->color_detect_client_ =
-        this->create_client<ImageColorDetect>("image_color_detect_client");
+        this->create_client<ImageColorDetect>("/detect_color");
 
     this->image_sub_ = image_transport::create_subscription(
         this, "input_image",
-        std::bind(&ReadCommSequenceActionServer::image_callback, this, _1), "compressed",
-        rclcpp::SensorDataQoS().get_rmw_qos_profile());
+        std::bind(&ReadCommSequenceActionServer::image_callback, this, _1),
+        "compressed", rclcpp::SensorDataQoS().get_rmw_qos_profile());
 
-    //todo: wait for 1s
+    while (!color_detect_client_->wait_for_service(1s)) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+                     "Interrupted while waiting for the service. Exiting.");
+        return;
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
+                  "/detect_color service not available, waiting again...");
+    }
+
+    rclcpp::Rate loop_rate(1s);
+    while (image_sub_.getNumPublishers() < 1) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(
+            rclcpp::get_logger("rclcpp"),
+            "Interrupted while waiting for the camera publisher. Exiting.");
+        return;
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
+                  "Not recieveing images, waiting again...");
+      loop_rate.sleep();
+    }
+    RCLCPP_INFO(this->get_logger(), "Ready");
   }
 
 private:
@@ -44,7 +69,7 @@ private:
   sensor_msgs::msg::Image::ConstSharedPtr img_;
 
   void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
-      img_ = msg;
+    img_ = msg;
   }
 
   rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID &uuid) {
@@ -59,7 +84,6 @@ private:
     (void)goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
   }
-
 
   void handle_accepted(
       const std::shared_ptr<GoalHandleReadCommSequence> goal_handle) {
@@ -78,12 +102,14 @@ private:
     sequence.push_back(0);
     auto result = std::make_shared<ReadCommSequence::Result>();
 
-    auto request = std::make_shared<auv_interfaces::srv::ImageColorDetect::Request>();
-    if(!img_){
-        RCLCPP_ERROR(this->get_logger(),"Action Server Node did not recieve any images");
-        result->sequence = sequence;
-        goal_handle->abort(result);
-        return;
+    auto request =
+        std::make_shared<auv_interfaces::srv::ImageColorDetect::Request>();
+    if (!img_) {
+      RCLCPP_ERROR(this->get_logger(),
+                   "Action Server Node did not recieve any images");
+      result->sequence = sequence;
+      goal_handle->abort(result);
+      return;
     }
     request->image.header = img_->header;
     request->image.encoding = img_->encoding;
