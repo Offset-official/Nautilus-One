@@ -35,7 +35,6 @@ def generate_launch_description():
                 package="auv_comms",
                 executable="read_sequence_server",
                 output="screen",
-                parameters=[color_detector_params_file],
                 remappings=[("/input_image/compressed", "/image_raw/compressed")],
                 condition=UnlessCondition(LaunchConfiguration("debug")),
             ),
