@@ -4,7 +4,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # Define the bridge arguments directly for Gz Sim
     arguments = [
-        "/auv_camera/image_raw@sensor_msgs/msg/Image@gz.msgs.Image"
+        "/auv_camera_down/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+        "/auv_camera_front/image_raw@sensor_msgs/msg/Image@gz.msgs.Image"
     ]
 
     return LaunchDescription([
@@ -18,6 +19,11 @@ def generate_launch_description():
         Node(
             package="auv_sensing",
             executable="show_camera",
-            arguments=["/auv_camera/image_raw"]
+            arguments=["/auv_camera_down/image_raw"]
+        ),
+        Node(
+            package="auv_sensing",
+            executable="show_camera",
+            arguments=["/auv_camera_front/image_raw"]
         )
     ])

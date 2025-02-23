@@ -46,15 +46,35 @@
       </sensor>
 
 
-      <sensor name="auv_camera" type="camera">
+      <sensor name="auv_camera_front" type="camera">
         <pose>0 0.25 0.25 0 0 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
         <always_on>true</always_on>
         <visualize>true</visualize>
         <update_rate>24</update_rate>
-        <topic>auv_camera/image_raw</topic>
+        <topic>auv_camera_front/image_raw</topic>
         <gz_frame_id>camera_rgb_frame</gz_frame_id>
-        <camera name="auv_camera">
-          <camera_info_topic>auv_camera/camera_info</camera_info_topic>
+        <camera name="auv_camera_front">
+          <camera_info_topic>auv_camera_front/camera_info</camera_info_topic>
+          <horizontal_fov>1.39</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+      </camera>
+      </sensor>
+      <sensor name="auv_camera_down" type="camera">
+        <pose>0 0.25 0.25 0 1.5708 1.5708</pose> <!-- Rotation of 90 degrees (1.5708 radians) around Z -->
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>24</update_rate>
+        <topic>auv_camera_down/image_raw</topic>
+        <gz_frame_id>camera_rgb_frame</gz_frame_id>
+        <camera name="auv_camera_down">
+          <camera_info_topic>auv_camera_down/camera_info</camera_info_topic>
           <horizontal_fov>1.39</horizontal_fov>
           <image>
             <width>640</width>
