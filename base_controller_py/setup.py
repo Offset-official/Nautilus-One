@@ -17,7 +17,6 @@ setup(
     maintainer_email='subham.jalan@plaksha.edu.in',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'depth_publisher = base_controller_py.depth_publisher:main'
