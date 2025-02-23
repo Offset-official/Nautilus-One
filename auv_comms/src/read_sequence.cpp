@@ -119,17 +119,12 @@ private:
     request->image.encoding = img_->encoding;
     request->image.data = img_->data;
 
+    auto detected_color = "";
+
     auto _result = color_detect_client_->async_send_request(request);
-    // Wait for the result.
-//    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
-//                                           _result) ==
-//        rclcpp::FutureReturnCode::SUCCESS) {
- //     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Detected: %s",
-  //                _result.get()->color.c_str());
-   // } else {
-    //  RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
-     //              "Failed to call service add_two_ints");
-    //}
+    _result.wait();
+    detected_color = _result.get()->color.c_str();
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Detected: %s", detected_color);
 
     for (int i = 1; (i < 3) && rclcpp::ok(); ++i) {
       if (goal_handle->is_canceling()) {
