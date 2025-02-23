@@ -7,6 +7,7 @@
 #include <functional>
 #include <image_transport/image_transport.hpp>
 #include <memory>
+#include <string>
 #include <thread>
 
 using namespace std::chrono;
@@ -93,13 +94,25 @@ private:
         .detach();
   }
 
+  int compute_idx_from_color_str(std::string input) {
+    if (input == "red") {
+      return 0; // red flare
+    }
+    if (input == "green") {
+      return 1; // yello flare
+    }
+    if (input == "blue") {
+      return 2; // blue flare
+    }
+    return -1; // none detected
+  }
+
   void execute(const std::shared_ptr<GoalHandleReadCommSequence> goal_handle) {
     RCLCPP_INFO(this->get_logger(), "Executing goal");
     rclcpp::Rate loop_rate(1);
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<ReadCommSequence::Feedback>();
     auto &sequence = feedback->partial_sequence;
-    sequence.push_back(0);
     auto result = std::make_shared<ReadCommSequence::Result>();
 
     auto request =
@@ -119,14 +132,8 @@ private:
     request->image.encoding = img_->encoding;
     request->image.data = img_->data;
 
-    auto detected_color = "";
+    while (sequence.size() != 3) {
 
-    auto _result = color_detect_client_->async_send_request(request);
-    _result.wait();
-    detected_color = _result.get()->color.c_str();
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Detected: %s", detected_color);
-
-    for (int i = 1; (i < 3) && rclcpp::ok(); ++i) {
       if (goal_handle->is_canceling()) {
         result->sequence = sequence;
         goal_handle->canceled(result);
@@ -134,12 +141,22 @@ private:
         return;
       }
 
-      sequence.push_back(i);
-      goal_handle->publish_feedback(feedback);
-      RCLCPP_INFO(this->get_logger(), "Publish feedback");
+      auto _result = color_detect_client_->async_send_request(request);
+      _result.wait();
+      auto detected_color = std::string(_result.get()->color.c_str());
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Detected: %s",
+                  detected_color.c_str());
+      auto idx = compute_idx_from_color_str(detected_color);
 
+      if ((idx != -1) && (sequence.size() == 0 || idx != sequence.back())) {
+        sequence.push_back(idx);
+        goal_handle->publish_feedback(feedback);
+        RCLCPP_INFO(this->get_logger(), "Publish feedback");
+      }
       loop_rate.sleep();
     }
+
+    RCLCPP_INFO(this->get_logger(), "Finished reading all signals");
 
     if (rclcpp::ok()) {
       result->sequence = sequence;
