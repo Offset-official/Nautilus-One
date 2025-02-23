@@ -1,5 +1,7 @@
 # Nautilus One AUV
 
+![build_test workflow](https://github.com/Offset-official/auv_ros2/actions/workflows/build_test.yaml/badge.svg)
+
 > Status: created working gazebol models of the AUV and competition accurate pool world.
 
 > Rulebook Edition :book:: [Rulebook 5.1.4](http://web.archive.org/web/20241231081446/https://sauvc.org/rulebook/)
