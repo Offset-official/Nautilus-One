@@ -25,12 +25,12 @@ set(dependencies
 )
 
 add_executable(color_detector_pub src/color_detector_pub.cpp)
-add_executable(color_detector src/color_detector.cpp)
+add_executable(color_detector_server src/color_detector_server.cpp)
 add_executable(color_detector_debug src/color_detector_debug.cpp)
 add_executable(read_sequence src/read_sequence.cpp)
 
 ament_target_dependencies(color_detector_pub ${dependencies})
-ament_target_dependencies(color_detector ${dependencies})
+ament_target_dependencies(color_detector_server ${dependencies})
 ament_target_dependencies(color_detector_debug ${dependencies})
 ament_target_dependencies(read_sequence ${dependencies})
 
@@ -38,9 +38,9 @@ ament_target_dependencies(read_sequence ${dependencies})
 
 install(TARGETS
     color_detector_pub
-    color_detector
-    read_sequence
+    color_detector_server
     color_detector_debug
+    read_sequence
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
