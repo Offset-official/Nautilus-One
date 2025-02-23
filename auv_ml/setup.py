@@ -13,7 +13,7 @@ setup(
         ("share/" + package_name, ["package.xml"]),
         (os.path.join("share", package_name, "models"), glob("models/*")),
     ],
-    install_requires=["setuptools", "onnxruntime", "opencv-python", "numpy"],
+    install_requires=["setuptools", "onnxruntime", "opencv-python", "numpy", "sort-tracker"],
     zip_safe=True,
     maintainer="Subham Jalan",
     maintainer_email="subham.jalan@plaksha.edu.in",
@@ -24,8 +24,9 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "yolo_inference_server = auv_ml.yolo_inference_server:main",
-            "yolo_inference_test = auv_ml.yolo_inference_test:main",
+            "yolo_inference_server_gate = auv_ml.yolo_inference_server_gate:main",
+            # "yolo_inference_test_gate = auv_ml.yolo_inference_test_gate:main",
+            "yolo_inference_server_bucket = auv_ml.yolo_inference_server_bucket:main",
         ],
     },
 )
