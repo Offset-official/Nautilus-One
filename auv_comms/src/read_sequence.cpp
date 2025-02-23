@@ -41,10 +41,10 @@ private:
   rclcpp_action::Server<ReadCommSequence>::SharedPtr action_server_;
   rclcpp::Client<ImageColorDetect>::SharedPtr color_detect_client_;
   image_transport::Subscriber image_sub_;
-  sensor_msgs::msg::CompressedImage::ConstSharedPtr img_;
+  sensor_msgs::msg::Image::ConstSharedPtr img_;
 
   void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
-    //img_ = msg;
+      img_ = msg;
   }
 
   rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID &uuid) {
@@ -86,7 +86,7 @@ private:
         return;
     }
     request->image.header = img_->header;
-    request->image.format = img_->format;
+    request->image.encoding = img_->encoding;
     request->image.data = img_->data;
 
     for (int i = 1; (i < 3) && rclcpp::ok(); ++i) {
