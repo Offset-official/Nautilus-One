@@ -8,7 +8,7 @@ on:
       - 'main'
 
 jobs:
-  test_environment:
+  build_test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
