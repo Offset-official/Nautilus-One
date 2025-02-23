@@ -7,7 +7,7 @@
 
 using namespace std::chrono_literals;
 
-class RCControlNode : public rclcpp::Nod
+class RCControlNode : public rclcpp::Node
 {
 public:
   RCControlNode()
