@@ -34,8 +34,6 @@ ament_target_dependencies(color_detector_server ${dependencies})
 ament_target_dependencies(color_detector_debug ${dependencies})
 ament_target_dependencies(read_sequence_server ${dependencies})
 
-#rclcpp_components_register_node(action_server PLUGIN "ReadCommSequenceActionServer" EXECUTABLE read_sequence)
-
 install(TARGETS
     color_detector_pub
     color_detector_server
