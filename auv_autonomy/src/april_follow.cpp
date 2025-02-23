@@ -1,11 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
-#include "cv_bridge/cv_bridge.h"
-
-// For publishing velocity commands
 #include <geometry_msgs/msg/twist.hpp>
 #include <apriltag_msgs/msg/april_tag_detection_array.hpp>
-
-// C++ includes
 #include <vector>
 #include <chrono>
 #include <cmath>
