@@ -21,7 +21,13 @@ def generate_launch_description():
         [
             Node(
                 package="auv_comms",
-                executable="color_detector",
+                executable="color_detector_server",
+                output="screen",
+                parameters=[color_detector_params_file],
+            ),
+            Node(
+                package="auv_comms",
+                executable="read_sequence_server",
                 output="screen",
                 parameters=[color_detector_params_file],
                 remappings=[ ('/input_image/compressed','/image_raw/compressed') ]
