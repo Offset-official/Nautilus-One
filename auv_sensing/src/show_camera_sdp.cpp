@@ -4,7 +4,8 @@
 class ShowCameraSdpNode : public rclcpp::Node
 {
 public:
-  explicit ShowCameraSdpNode(const std::string & sdp_path) : Node("show_camera_sdp")
+  explicit ShowCameraSdpNode(const std::string & sdp_path)
+  : Node("show_camera_sdp")
   {
     // GStreamer pipeline reading from an SDP file via filesrc + sdpdemux
     // Then it buffers, depayloads, parses, decodes H.264, converts color, and hands frames to appsink.
@@ -16,15 +17,15 @@ public:
     //       This pipeline focuses on the video pad.
 
     pipeline_ = "filesrc location=" + sdp_path +
-                " ! "
-                "sdpdemux ! "
-                "rtpjitterbuffer latency=0 ! "
-                "rtph264depay ! "
-                "h264parse ! "
-                "avdec_h264 ! "
-                "videoconvert ! "
-                "queue ! "
-                "appsink sync=false";
+      " ! "
+      "sdpdemux ! "
+      "rtpjitterbuffer latency=0 ! "
+      "rtph264depay ! "
+      "h264parse ! "
+      "avdec_h264 ! "
+      "videoconvert ! "
+      "queue ! "
+      "appsink sync=false";
 
     RCLCPP_INFO(this->get_logger(), "Using GStreamer pipeline:\n%s", pipeline_.c_str());
 

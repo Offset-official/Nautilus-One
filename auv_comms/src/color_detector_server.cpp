@@ -18,7 +18,8 @@ using namespace std::chrono_literals;
 class ColorDetector : public rclcpp::Node
 {
 public:
-  ColorDetector() : Node("color_detector")
+  ColorDetector()
+  : Node("color_detector")
   {
     declare_parameter("min_positive", min_positive);
     get_parameter("min_positive", min_positive);
@@ -84,7 +85,8 @@ private:
       RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
       response->color = "Error processing image";
       return;
-    };
+    }
+    ;
 
     cv::Mat img_hsv;
     cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV);

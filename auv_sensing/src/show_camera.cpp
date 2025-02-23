@@ -7,7 +7,8 @@
 class ShowCameraNode : public rclcpp::Node
 {
 public:
-  ShowCameraNode(const char * camera_topic) : Node("show_camera")
+  ShowCameraNode(const char * camera_topic)
+  : Node("show_camera")
   {
     RCLCPP_INFO(this->get_logger(), "Starting node...");
 

@@ -12,7 +12,8 @@ using namespace std::chrono_literals;
 class DepthControl : public rclcpp::Node
 {
 public:
-  DepthControl() : Node("depth_controller"), depth_reached_(false)
+  DepthControl()
+  : Node("depth_controller"), depth_reached_(false)
   {
     // Publisher for velocity commands
     vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);

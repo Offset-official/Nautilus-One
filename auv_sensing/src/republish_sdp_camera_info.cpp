@@ -23,14 +23,14 @@ public:
     //
     // This is the typical minimal-latency pipeline. Adjust if you see excessive jitter or dropped frames.
     pipeline_ = "filesrc location=" + sdp_path +
-                " ! "
-                "sdpdemux ! "
-                "rtpjitterbuffer latency=0 ! "  // minimal latency
-                "rtph264depay ! "
-                "h264parse ! "
-                "avdec_h264 ! "
-                "videoconvert ! "
-                "appsink sync=false";  // ignore clock, push frames immediately
+      " ! "
+      "sdpdemux ! "
+      "rtpjitterbuffer latency=0 ! "            // minimal latency
+      "rtph264depay ! "
+      "h264parse ! "
+      "avdec_h264 ! "
+      "videoconvert ! "
+      "appsink sync=false";            // ignore clock, push frames immediately
 
     RCLCPP_INFO(this->get_logger(), "Using low-latency GStreamer pipeline:\n%s", pipeline_.c_str());
 
@@ -109,7 +109,7 @@ int main(int argc, char ** argv)
 
   if (argc < 4) {
     std::cerr << "Usage: ros2 run <your_package> republish_sdp_low_latency "
-                 "<path_to_sdp_file> <image_topic> <camera_info_topic>\n";
+      "<path_to_sdp_file> <image_topic> <camera_info_topic>\n";
     return 1;
   }
 

@@ -11,7 +11,8 @@ using namespace std::chrono_literals;
 class AprilFollowNode : public rclcpp::Node
 {
 public:
-  AprilFollowNode() : Node("april_follow_node")
+  AprilFollowNode()
+  : Node("april_follow_node")
   {
     RCLCPP_INFO(this->get_logger(), "AprilFollowNode has started.");
 
@@ -27,7 +28,8 @@ public:
 
     // Parameter-change callback
     param_callback_handle_ =
-      this->add_on_set_parameters_callback([this](const std::vector<rclcpp::Parameter> & params) {
+      this->add_on_set_parameters_callback(
+      [this](const std::vector<rclcpp::Parameter> & params) {
         rcl_interfaces::msg::SetParametersResult result;
         result.successful = true;
         result.reason = "success";
@@ -137,28 +139,28 @@ private:
     // We use a simple 2-state FSM:
     switch (state_) {
       case FollowState::WAITING_FOR_TAG: {
-        // Do nothing (stop). We'll switch to FOLLOWING_TAG as soon as
-        // detectionsCallback sees the desired ID.
-        break;
-      }
+          // Do nothing (stop). We'll switch to FOLLOWING_TAG as soon as
+          // detectionsCallback sees the desired ID.
+          break;
+        }
 
       case FollowState::FOLLOWING_TAG: {
-        // Check how long since last tag detection
-        double elapsed_since_tag = (this->now() - last_april_tag_time_).seconds();
+          // Check how long since last tag detection
+          double elapsed_since_tag = (this->now() - last_april_tag_time_).seconds();
 
-        // If we haven't seen the tag for 2 seconds, go back to WAITING_FOR_TAG
-        const double TAG_LOST_THRESHOLD = 2.0;
-        if (elapsed_since_tag >= TAG_LOST_THRESHOLD) {
-          RCLCPP_INFO(
-            this->get_logger(), "Lost AprilTag ID=%d for %.2f s => switching to WAITING_FOR_TAG.",
-            follow_id_, elapsed_since_tag);
-          state_ = FollowState::WAITING_FOR_TAG;
-        } else {
-          // Tag is still "fresh"; align with it
-          cmd_vel_msg = doAprilTagAlignment();
+          // If we haven't seen the tag for 2 seconds, go back to WAITING_FOR_TAG
+          const double TAG_LOST_THRESHOLD = 2.0;
+          if (elapsed_since_tag >= TAG_LOST_THRESHOLD) {
+            RCLCPP_INFO(
+              this->get_logger(), "Lost AprilTag ID=%d for %.2f s => switching to WAITING_FOR_TAG.",
+              follow_id_, elapsed_since_tag);
+            state_ = FollowState::WAITING_FOR_TAG;
+          } else {
+            // Tag is still "fresh"; align with it
+            cmd_vel_msg = doAprilTagAlignment();
+          }
+          break;
         }
-        break;
-      }
     }
 
     // Publish velocity command

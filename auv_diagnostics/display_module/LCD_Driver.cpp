@@ -41,7 +41,7 @@ void LCD_WriteData_Word(UWORD data)
 }
 
 /******************************************************************************
-function:	
+function:
 		Common register initialization
 ******************************************************************************/
 void LCD_Init(void)
@@ -141,7 +141,7 @@ void LCD_Init(void)
 /******************************************************************************
 function:	Set the cursor position
 parameter	:
-	  Xstart: 	Start UWORD x coordinate
+	  Xstart:       Start UWORD x coordinate
 	  Ystart:	Start UWORD y coordinate
 	  Xend  :	End UWORD coordinates
 	  Yend  :	End UWORD coordinatesen
@@ -165,7 +165,7 @@ void LCD_SetWindow(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
 /******************************************************************************
 function:	Settings window
 parameter	:
-	  Xstart: 	Start UWORD x coordinate
+	  Xstart:       Start UWORD x coordinate
 	  Ystart:	Start UWORD y coordinate
 
 ******************************************************************************/
@@ -227,7 +227,7 @@ void LCD_ClearWindow(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD c
 /******************************************************************************
 function: Draw a point
 parameter	:
-	    X	: 	Set the X coordinate
+	    X	:       Set the X coordinate
 	    Y	:	Set the Y coordinate
 	  Color :	Set the color
 ******************************************************************************/

@@ -20,7 +20,8 @@ using namespace std::chrono_literals;
 class ExperimentNode : public rclcpp::Node
 {
 public:
-  ExperimentNode() : Node("experiment_node")
+  ExperimentNode()
+  : Node("experiment_node")
   {
     RCLCPP_INFO(this->get_logger(), "ExperimentNode has started.");
 
@@ -44,7 +45,8 @@ private:
   // -------------------------------------------------------
   // Movement States
   // -------------------------------------------------------
-  enum MovementState {
+  enum MovementState
+  {
     HORIZONTAL_ALIGNMENT = 0,
     VERTICAL_ALIGNMENT = 1,
     FORWARD_SURGE = 2,
@@ -205,61 +207,62 @@ private:
 
     switch (movement_state_) {
       case HORIZONTAL_ALIGNMENT: {
-        // Yaw to fix horizontal offset
-        float yaw_cmd = kp_yaw * error_x;
-        cmd_vel_msg.angular.z = yaw_cmd;
-        // Keep creeping forward a bit
-        cmd_vel_msg.linear.x = 0.2f;
-        cmd_vel_msg.linear.z = 0.0f;
+          // Yaw to fix horizontal offset
+          float yaw_cmd = kp_yaw * error_x;
+          cmd_vel_msg.angular.z = yaw_cmd;
+          // Keep creeping forward a bit
+          cmd_vel_msg.linear.x = 0.2f;
+          cmd_vel_msg.linear.z = 0.0f;
 
-        if (std::fabs(error_x) < x_tolerance) {
-          RCLCPP_INFO(
-            this->get_logger(), "[FSM] Horizontal alignment achieved. Next => VERTICAL_ALIGNMENT.");
-          movement_state_ = getNextState(movement_state_);
+          if (std::fabs(error_x) < x_tolerance) {
+            RCLCPP_INFO(
+              this->get_logger(),
+              "[FSM] Horizontal alignment achieved. Next => VERTICAL_ALIGNMENT.");
+            movement_state_ = getNextState(movement_state_);
+          }
+          break;
         }
-        break;
-      }
       case VERTICAL_ALIGNMENT: {
-        // Use heave to fix vertical offset
-        float z_cmd = kp_heave * error_y;
-        cmd_vel_msg.linear.z = z_cmd;
-        // Keep creeping forward a bit
-        cmd_vel_msg.linear.x = 0.2f;
-        cmd_vel_msg.angular.z = 0.0f;
+          // Use heave to fix vertical offset
+          float z_cmd = kp_heave * error_y;
+          cmd_vel_msg.linear.z = z_cmd;
+          // Keep creeping forward a bit
+          cmd_vel_msg.linear.x = 0.2f;
+          cmd_vel_msg.angular.z = 0.0f;
 
-        if (std::fabs(error_y) < y_tolerance) {
-          RCLCPP_INFO(
-            this->get_logger(), "[FSM] Vertical alignment achieved. Next => FORWARD_SURGE.");
-          movement_state_ = getNextState(movement_state_);
+          if (std::fabs(error_y) < y_tolerance) {
+            RCLCPP_INFO(
+              this->get_logger(), "[FSM] Vertical alignment achieved. Next => FORWARD_SURGE.");
+            movement_state_ = getNextState(movement_state_);
+          }
+          break;
         }
-        break;
-      }
       case FORWARD_SURGE: {
-        // Surge forward
-        cmd_vel_msg.linear.x = 1.0f;
-        cmd_vel_msg.angular.z = 0.0f;
-        cmd_vel_msg.linear.z = 0.0f;
+          // Surge forward
+          cmd_vel_msg.linear.x = 1.0f;
+          cmd_vel_msg.angular.z = 0.0f;
+          cmd_vel_msg.linear.z = 0.0f;
 
-        // If the gate drifts away in x or y, go back to alignment
-        float big_error_threshold = 50.0f;
-        if (std::fabs(error_x) > big_error_threshold) {
-          RCLCPP_INFO(
-            this->get_logger(), "[FSM] Drifted horizontally => back to HORIZONTAL_ALIGNMENT.");
-          movement_state_ = HORIZONTAL_ALIGNMENT;
-        } else if (std::fabs(error_y) > big_error_threshold) {
-          RCLCPP_INFO(
-            this->get_logger(), "[FSM] Drifted vertically => back to VERTICAL_ALIGNMENT.");
-          movement_state_ = VERTICAL_ALIGNMENT;
+          // If the gate drifts away in x or y, go back to alignment
+          float big_error_threshold = 50.0f;
+          if (std::fabs(error_x) > big_error_threshold) {
+            RCLCPP_INFO(
+              this->get_logger(), "[FSM] Drifted horizontally => back to HORIZONTAL_ALIGNMENT.");
+            movement_state_ = HORIZONTAL_ALIGNMENT;
+          } else if (std::fabs(error_y) > big_error_threshold) {
+            RCLCPP_INFO(
+              this->get_logger(), "[FSM] Drifted vertically => back to VERTICAL_ALIGNMENT.");
+            movement_state_ = VERTICAL_ALIGNMENT;
+          }
+          break;
         }
-        break;
-      }
       case LOST_GATE: {
-        // Normally we don't call this function in LOST_GATE,
-        // but if we do, let's just return no movement:
-        cmd_vel_msg.linear.x = 0.0;
-        cmd_vel_msg.angular.z = 0.0;
-        break;
-      }
+          // Normally we don't call this function in LOST_GATE,
+          // but if we do, let's just return no movement:
+          cmd_vel_msg.linear.x = 0.0;
+          cmd_vel_msg.angular.z = 0.0;
+          break;
+        }
     }
 
     // Debug info

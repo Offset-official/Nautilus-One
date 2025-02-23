@@ -1,37 +1,30 @@
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import State
-from sensor_msgs.msg import BatteryState 
+from sensor_msgs.msg import BatteryState
 import json
 from std_msgs.msg import String
 
 
 class AUVDiagnostics(Node):
     def __init__(self):
-        super().__init__('auv_diagnostics_node')
+        super().__init__("auv_diagnostics_node")
 
         # Subscriber for /mavros/state
         self.create_subscription(
-            State,
-            '/mavros/state',
-            self.navigator_state_callback,
-            10
+            State, "/mavros/state", self.navigator_state_callback, 10
         )
 
         # Subscriber for /mavros/battery
         self.create_subscription(
             BatteryState,  # Correct message type
-            '/mavros/battery',
+            "/mavros/battery",
             self.battery_nav_callback,
-            10
+            10,
         )
 
         # Publisher for /diagnostics
-        self.publisher = self.create_publisher(
-            String,
-            '/diagnostics',
-            10
-        )
+        self.publisher = self.create_publisher(String, "/diagnostics", 10)
 
         # Initializing state variables with defaults
         self.navigator_state_data = {
@@ -49,14 +42,16 @@ class AUVDiagnostics(Node):
 
     # Callback for /mavros/battery
     def battery_nav_callback(self, msg):
-        self.battery_nav_data["percentage"] = msg.percentage if hasattr(msg, "percentage") else "NA"
+        self.battery_nav_data["percentage"] = (
+            msg.percentage if hasattr(msg, "percentage") else "NA"
+        )
 
     def publish_diagnostics(self):
         # Combine state and battery data
         diagnostics = {
             "armed": self.navigator_state_data["armed"],
             "batteryN": "NA",
-            "batteryJ": "NA", 
+            "batteryJ": "NA",
             "task": "QLFN",
             "jetson_connection": False,
         }
@@ -81,5 +76,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
