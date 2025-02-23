@@ -10,14 +10,12 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(mavros REQUIRED)
 find_package(mavros_msgs REQUIRED)
-find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(apriltag_msgs REQUIRED)
 set(dependencies
     rclcpp
     mavros
     mavros_msgs
-    OpenCV 
     cv_bridge
     apriltag_msgs
 )
