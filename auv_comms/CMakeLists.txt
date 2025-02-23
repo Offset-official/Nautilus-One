@@ -27,12 +27,12 @@ set(dependencies
 add_executable(color_detector_pub src/color_detector_pub.cpp)
 add_executable(color_detector_server src/color_detector_server.cpp)
 add_executable(color_detector_debug src/color_detector_debug.cpp)
-add_executable(read_sequence src/read_sequence.cpp)
+add_executable(read_sequence_server src/read_sequence_server.cpp)
 
 ament_target_dependencies(color_detector_pub ${dependencies})
 ament_target_dependencies(color_detector_server ${dependencies})
 ament_target_dependencies(color_detector_debug ${dependencies})
-ament_target_dependencies(read_sequence ${dependencies})
+ament_target_dependencies(read_sequence_server ${dependencies})
 
 #rclcpp_components_register_node(action_server PLUGIN "ReadCommSequenceActionServer" EXECUTABLE read_sequence)
 
@@ -40,7 +40,7 @@ install(TARGETS
     color_detector_pub
     color_detector_server
     color_detector_debug
-    read_sequence
+    read_sequence_server
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
