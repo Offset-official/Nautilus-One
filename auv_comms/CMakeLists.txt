@@ -24,10 +24,12 @@ set(dependencies
     auv_interfaces
 )
 
+add_executable(color_detector_pub src/color_detector_pub.cpp)
 add_executable(color_detector src/color_detector.cpp)
 add_executable(color_detector_debug src/color_detector_debug.cpp)
 add_executable(read_sequence src/read_sequence.cpp)
 
+ament_target_dependencies(color_detector_pub ${dependencies})
 ament_target_dependencies(color_detector ${dependencies})
 ament_target_dependencies(color_detector_debug ${dependencies})
 ament_target_dependencies(read_sequence ${dependencies})
@@ -35,6 +37,7 @@ ament_target_dependencies(read_sequence ${dependencies})
 #rclcpp_components_register_node(action_server PLUGIN "ReadCommSequenceActionServer" EXECUTABLE read_sequence)
 
 install(TARGETS
+    color_detector_pub
     color_detector
     read_sequence
     color_detector_debug
