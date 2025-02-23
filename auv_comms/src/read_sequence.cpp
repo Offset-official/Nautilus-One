@@ -111,9 +111,25 @@ private:
       goal_handle->abort(result);
       return;
     }
+
     request->image.header = img_->header;
+    request->image.height = img_->height;
+    request->image.width = img_->width;
+    request->image.step = img_->step;
     request->image.encoding = img_->encoding;
     request->image.data = img_->data;
+
+    auto _result = color_detect_client_->async_send_request(request);
+    // Wait for the result.
+//    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
+//                                           _result) ==
+//        rclcpp::FutureReturnCode::SUCCESS) {
+ //     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Detected: %s",
+  //                _result.get()->color.c_str());
+   // } else {
+    //  RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+     //              "Failed to call service add_two_ints");
+    //}
 
     for (int i = 1; (i < 3) && rclcpp::ok(); ++i) {
       if (goal_handle->is_canceling()) {
