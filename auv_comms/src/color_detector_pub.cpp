@@ -1,21 +1,23 @@
-#include "cv_bridge/cv_bridge.h"
-#include "image_transport/image_transport.hpp"
-#include "opencv2/opencv.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
 
+#include "cv_bridge/cv_bridge.h"
+#include "image_transport/image_transport.hpp"
+#include "opencv2/opencv.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
 using std::placeholders::_1;
 
 using namespace std::chrono_literals;
 
-class ColorDetector : public rclcpp::Node {
+class ColorDetector : public rclcpp::Node
+{
 public:
-  ColorDetector() : Node("color_detector") {
-
+  ColorDetector() : Node("color_detector")
+  {
     declare_parameter("debug", debug_);
     get_parameter("debug", debug_);
 
@@ -32,9 +34,8 @@ public:
     get_parameter("blue_hsv_ranges", blue_hsv_filter_ranges_);
 
     image_sub_ = image_transport::create_subscription(
-        this, "input_image",
-        std::bind(&ColorDetector::image_callback, this, _1), "compressed",
-        rclcpp::SensorDataQoS().get_rmw_qos_profile());
+      this, "input_image", std::bind(&ColorDetector::image_callback, this, _1), "compressed",
+      rclcpp::SensorDataQoS().get_rmw_qos_profile());
   }
 
 private:
@@ -50,33 +51,33 @@ private:
   uint8_t min_positive = 200;
   bool debug_ = false;
 
-  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg) {
+  void image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & msg)
+  {
+    const float & red_h = red_hsv_filter_ranges_[0];
+    const float & red_s = red_hsv_filter_ranges_[1];
+    const float & red_v = red_hsv_filter_ranges_[2];
+    const float & red_H = red_hsv_filter_ranges_[3];
+    const float & red_S = red_hsv_filter_ranges_[4];
+    const float & red_V = red_hsv_filter_ranges_[5];
 
-    const float &red_h = red_hsv_filter_ranges_[0];
-    const float &red_s = red_hsv_filter_ranges_[1];
-    const float &red_v = red_hsv_filter_ranges_[2];
-    const float &red_H = red_hsv_filter_ranges_[3];
-    const float &red_S = red_hsv_filter_ranges_[4];
-    const float &red_V = red_hsv_filter_ranges_[5];
+    const float & green_h = green_hsv_filter_ranges_[0];
+    const float & green_s = green_hsv_filter_ranges_[1];
+    const float & green_v = green_hsv_filter_ranges_[2];
+    const float & green_H = green_hsv_filter_ranges_[3];
+    const float & green_S = green_hsv_filter_ranges_[4];
+    const float & green_V = green_hsv_filter_ranges_[5];
 
-    const float &green_h = green_hsv_filter_ranges_[0];
-    const float &green_s = green_hsv_filter_ranges_[1];
-    const float &green_v = green_hsv_filter_ranges_[2];
-    const float &green_H = green_hsv_filter_ranges_[3];
-    const float &green_S = green_hsv_filter_ranges_[4];
-    const float &green_V = green_hsv_filter_ranges_[5];
-
-    const float &blue_h = blue_hsv_filter_ranges_[0];
-    const float &blue_s = blue_hsv_filter_ranges_[1];
-    const float &blue_v = blue_hsv_filter_ranges_[2];
-    const float &blue_H = blue_hsv_filter_ranges_[3];
-    const float &blue_S = blue_hsv_filter_ranges_[4];
-    const float &blue_V = blue_hsv_filter_ranges_[5];
+    const float & blue_h = blue_hsv_filter_ranges_[0];
+    const float & blue_s = blue_hsv_filter_ranges_[1];
+    const float & blue_v = blue_hsv_filter_ranges_[2];
+    const float & blue_H = blue_hsv_filter_ranges_[3];
+    const float & blue_S = blue_hsv_filter_ranges_[4];
+    const float & blue_V = blue_hsv_filter_ranges_[5];
 
     cv_bridge::CvImagePtr cv_ptr;
     try {
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-    } catch (cv_bridge::Exception &e) {
+    } catch (cv_bridge::Exception & e) {
       RCLCPP_ERROR(get_logger(), "cv_bridge exception: %s", e.what());
     };
 
@@ -86,8 +87,8 @@ private:
     cv::Mat1b filtered;
 
     // RED color detection
-    cv::inRange(img_hsv, cv::Scalar(red_h, red_s, red_v),
-                cv::Scalar(red_H, red_S, red_V), filtered);
+    cv::inRange(
+      img_hsv, cv::Scalar(red_h, red_s, red_v), cv::Scalar(red_H, red_S, red_V), filtered);
     auto numPositive = cv::countNonZero(filtered);
     if (numPositive >= min_positive) {
       RCLCPP_INFO(this->get_logger(), "Detected red: %d", min_positive);
@@ -95,8 +96,9 @@ private:
     }
 
     // GREEN color detection
-    cv::inRange(img_hsv, cv::Scalar(green_h, green_s, green_v),
-                cv::Scalar(green_H, green_S, green_V), filtered);
+    cv::inRange(
+      img_hsv, cv::Scalar(green_h, green_s, green_v), cv::Scalar(green_H, green_S, green_V),
+      filtered);
     numPositive = cv::countNonZero(filtered);
     if (numPositive >= min_positive) {
       RCLCPP_INFO(this->get_logger(), "Detected green: %d", min_positive);
@@ -104,8 +106,8 @@ private:
     }
 
     // BLUE color detection
-    cv::inRange(img_hsv, cv::Scalar(blue_h, blue_s, blue_v),
-                cv::Scalar(blue_H, blue_S, blue_V), filtered);
+    cv::inRange(
+      img_hsv, cv::Scalar(blue_h, blue_s, blue_v), cv::Scalar(blue_H, blue_S, blue_V), filtered);
     numPositive = cv::countNonZero(filtered);
     if (numPositive >= min_positive) {
       RCLCPP_INFO(this->get_logger(), "Detected blue: %d", min_positive);
@@ -116,7 +118,8 @@ private:
   }
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, char * argv[])
+{
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<ColorDetector>());
   rclcpp::shutdown();
