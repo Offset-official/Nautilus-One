@@ -9,7 +9,7 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Detection.msg"
   "msg/DetectionArray.msg"
-  "srv/ManipulatorCommand.srv"
+  "srv/DropperTrigger.srv"
   "srv/YoloInference.srv"
   "srv/ImageColorDetect.srv"
   "action/ReadCommSequence.action"
