@@ -1,3 +1,9 @@
+To execute depth_descent action:
+
+```bash
+ros2 action send_goal /depth_descent auv_interfaces/action/DepthDescent '{target_depth: -0.1}' --feedback
+```
+
 To launch the simulation environment:
 
 ```bash
