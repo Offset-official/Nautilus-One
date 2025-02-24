@@ -2,12 +2,14 @@
 #include <functional>
 #include <memory>
 
+#include "auv_interfaces/action/depth_descent.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 #include "mavros_msgs/msg/override_rc_in.hpp"
 #include "mavros_msgs/srv/command_bool.hpp"
 #include "mavros_msgs/srv/set_mode.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float64.hpp"
