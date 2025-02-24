@@ -13,6 +13,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/YoloInference.srv"
   "srv/ImageColorDetect.srv"
   "action/ReadCommSequence.action"
+  "action/FollowAprilTag.action"
   DEPENDENCIES sensor_msgs std_msgs
 )
 
