@@ -23,33 +23,26 @@ set(dependencies
 )
 
 
-add_executable(base_controller src/base_controller.cpp)
-ament_target_dependencies(base_controller ${dependencies})
+add_executable(dumb_controller src/dumb_controller.cpp)
+ament_target_dependencies(dumb_controller ${dependencies})
 
-add_executable(depth_controller src/depth_controller.cpp)
-ament_target_dependencies(depth_controller ${dependencies})
 add_executable(control_cmd_cli src/control_cmd_cli.cpp)
 ament_target_dependencies(control_cmd_cli ${dependencies})
 
-target_include_directories(base_controller PUBLIC
+target_include_directories(dumb_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
-target_include_directories(depth_controller PUBLIC
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include>)
 
 target_include_directories(control_cmd_cli PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
-target_compile_features(base_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(depth_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(dumb_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(control_cmd_cli PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
-  base_controller
-  depth_controller
+  dumb_controller
   control_cmd_cli
   DESTINATION lib/${PROJECT_NAME})
 
