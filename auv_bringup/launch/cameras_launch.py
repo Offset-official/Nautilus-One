@@ -33,6 +33,3 @@ def generate_launch_description():
             ),
         ]
     )
-
-
-# ros2 run usb_cam usb_cam_node_exe --ros-args --remap __ns:=/usb_cam_1 --params-file ~/auv_ws/src/auv_ros2/usb_cam/config/params_1.yaml

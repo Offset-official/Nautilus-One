@@ -52,7 +52,8 @@ class YOLOv8:
         # Our model has only one class: "Gate"
         self.classes = ["Gate"]
 
-        # For visualization, you can generate or fix a single color (here we do random for demonstration).
+        # For visualization, you can generate or fix a single color
+        # (here we do random for demonstration).
         np.random.seed(42)  # consistent color each run
         self.color_palette = np.random.uniform(0, 255, size=(1, 3))  # only 1 color
 
@@ -118,8 +119,8 @@ class YOLOv8:
             source=cv_image,
             conf=self.model.conf,
             iou=self.model.iou,
-            device=0,   # GPU device
-            half=True   # Use FP16 if supported by your TRT engine
+            device=0,  # GPU device
+            half=True,  # Use FP16 if supported by your TRT engine
         )
 
         annotated_image = cv_image.copy()
@@ -127,7 +128,7 @@ class YOLOv8:
 
         # Each 'results' can have .boxes which contain xyxy, confidence, class
         for result in results:  # Typically just 1 result for a single image
-            if not hasattr(result, 'boxes'):
+            if not hasattr(result, "boxes"):
                 continue
             boxes_data = result.boxes  # A Boxes object from ultralytics
 
@@ -151,9 +152,7 @@ class YOLOv8:
 
                 # Draw the detection
                 self.draw_detections(
-                    annotated_image,
-                    [xyxy[0], xyxy[1], xyxy[2], xyxy[3]],
-                    conf
+                    annotated_image, [xyxy[0], xyxy[1], xyxy[2], xyxy[3]], conf
                 )
 
         return annotated_image, detections
@@ -177,7 +176,7 @@ class YoloInferenceServer(Node):
         self.yolo = YOLOv8(
             engine_path=model_path,
             confidence_thres=0.25,  # Adjust if needed
-            iou_thres=0.5,         # Adjust if needed
+            iou_thres=0.5,  # Adjust if needed
             logger=self.get_logger(),
         )
 
