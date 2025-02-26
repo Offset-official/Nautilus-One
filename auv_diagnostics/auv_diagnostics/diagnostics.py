@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import State
-from sensor_msgs.msg import BatteryState 
+from sensor_msgs.msg import BatteryState
 import json
 from std_msgs.msg import String
 from auv_interfaces.srv import SetColor
@@ -9,21 +9,18 @@ from auv_interfaces.srv import SetColor
 
 class AUVDiagnostics(Node):
     def __init__(self):
-        super().__init__('auv_diagnostics_node')
+        super().__init__("auv_diagnostics_node")
 
         # Subscribers
         self.create_subscription(
-            State,
-            '/mavros/state',
-            self.navigator_state_callback,
-            10
+            State, "/mavros/state", self.navigator_state_callback, 10
         )
 
         self.create_subscription(
             BatteryState,  # Correct message type
-            '/mavros/battery',
+            "/mavros/battery",
             self.battery_nav_callback,
-            10
+            10,
         )
 
         # Services
@@ -58,7 +55,9 @@ class AUVDiagnostics(Node):
 
     # Callback for /mavros/battery
     def battery_nav_callback(self, msg):
-        self.battery_nav_data["percentage"] = msg.percentage if hasattr(msg, "percentage") else "NA"
+        self.battery_nav_data["percentage"] = (
+            msg.percentage if hasattr(msg, "percentage") else "NA"
+        )
 
     def set_color_callback(self, request, response):
         if request.color.lower() == "off" or request.color.startswith("#"):
@@ -76,7 +75,7 @@ class AUVDiagnostics(Node):
         diagnostics = {
             "armed": self.navigator_state_data["armed"],
             "batteryN": "NA",
-            "batteryJ": "NA", 
+            "batteryJ": "NA",
             "task": "QLFN",
             "jetson_connection": False,
             "neopixel_color": self.color
@@ -102,5 +101,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
