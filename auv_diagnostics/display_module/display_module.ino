@@ -9,7 +9,7 @@
 #include <avr/power.h>
 #endif
 #define PIN        6
-#define NUMPIXELS  8
+#define NUMPIXELS  21
 
 
 #define MAX_IMAGE_SIZE (100 * 100 * 2)
