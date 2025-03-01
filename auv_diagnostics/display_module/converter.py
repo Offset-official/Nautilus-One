@@ -2,7 +2,6 @@ import argparse
 import os
 from PIL import Image
 
-
 def convert_to_rgb565(image_path, output_file, width, height, var_name):
     try:
         # Open and validate the image
@@ -53,11 +52,9 @@ def convert_to_rgb565(image_path, output_file, width, height, var_name):
     except Exception as e:
         print(f"Error: {e}")
 
-
 def main():
     parser = argparse.ArgumentParser(
-        description="""Convert an image to RGB565 format, resize it,
-        and generate a C header file with a custom variable name."""
+        description="Convert an image to RGB565 format, resize it, and generate a C header file with a custom variable name."
     )
     parser.add_argument("image_path", help="Path to the input image file")
     parser.add_argument("output_file", help="Path to the output RGB565 binary file")
@@ -67,10 +64,7 @@ def main():
 
     args = parser.parse_args()
 
-    convert_to_rgb565(
-        args.image_path, args.output_file, args.width, args.height, args.var_name
-    )
-
+    convert_to_rgb565(args.image_path, args.output_file, args.width, args.height, args.var_name)
 
 if __name__ == "__main__":
     main()
