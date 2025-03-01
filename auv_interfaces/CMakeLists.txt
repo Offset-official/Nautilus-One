@@ -11,9 +11,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DetectionArray.msg"
   "srv/DropperTrigger.srv"
   "srv/YoloInference.srv"
-  "srv/ImageColorDetect.srv"  
+  "srv/ImageColorDetect.srv"
   "srv/SetColor.srv"
   "action/ReadCommSequence.action"
+  "action/DepthDescent.action"
   DEPENDENCIES sensor_msgs std_msgs
 )
 

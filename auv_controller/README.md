@@ -1,3 +1,15 @@
+To execute depth_descent action:
+
+```bash
+ros2 action send_goal /depth_descent auv_interfaces/action/DepthDescent '{target_depth: -0.1}' --feedback
+```
+
+Remember to launch MAVROS with the depth publisher
+
+```bash
+ros2 launch auv_bringup real_launch.py
+```
+
 To launch the simulation environment:
 
 ```bash
