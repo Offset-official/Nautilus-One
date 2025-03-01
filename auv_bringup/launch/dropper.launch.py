@@ -10,8 +10,8 @@ def generate_launch_description():
                 executable="dropper",
                 name="dropper",
                 parameters=[
-                    {"pulse_pwm": 1540},
-                    {"pulse_duration_ms": 200},  # Set the fixed pulse duration here
+                    {"pulse_pwm": 1580},
+                    {"pulse_duration_ms": 25},  # Set the fixed pulse duration here
                 ],
                 output="screen",
             )

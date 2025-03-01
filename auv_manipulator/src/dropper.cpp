@@ -20,8 +20,8 @@ public:
   {
     // Parameters
     this->declare_parameter("neutral_pwm", 1500);  // Add this parameter
-    this->declare_parameter("pulse_pwm", 1540);
-    this->declare_parameter("pulse_duration_ms", 200);  
+    this->declare_parameter("pulse_pwm", 1550);
+    this->declare_parameter("pulse_duration_ms", 100);  
     
     neutral_pwm_ = this->get_parameter("neutral_pwm").as_int();  // Get from parameter
     pulse_pwm_ = this->get_parameter("pulse_pwm").as_int();
