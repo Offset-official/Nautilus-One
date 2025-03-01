@@ -14,6 +14,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ImageColorDetect.srv"
   "srv/SetColor.srv"
   "action/ReadCommSequence.action"
+  "action/DepthDescent.action"
   DEPENDENCIES sensor_msgs std_msgs
 )
 
