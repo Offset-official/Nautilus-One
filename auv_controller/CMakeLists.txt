@@ -11,6 +11,8 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(mavros REQUIRED)
 find_package(mavros_msgs REQUIRED)
+find_package(auv_interfaces REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
@@ -20,6 +22,8 @@ set(dependencies
     rclcpp
     mavros
     mavros_msgs
+    auv_interfaces
+    rclcpp_action
 )
 
 
