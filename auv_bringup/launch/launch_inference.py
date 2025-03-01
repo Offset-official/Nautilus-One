@@ -4,6 +4,7 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     # Declare launch arguments.
     front_inference_arg = DeclareLaunchArgument(

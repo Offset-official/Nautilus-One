@@ -6,11 +6,13 @@ def generate_launch_description():
         Node(
             package='auv_diagnostics',
             executable='diagnostics',
-            name='auv_diagnostics_node'
+            name='diagnostics',
+            output='screen'
         ),
         Node(
             package='auv_diagnostics',
             executable='serial_communication',
-            name='serial_communication_node'
+            name='serial_communication',
+            output='screen'
         ),
     ])

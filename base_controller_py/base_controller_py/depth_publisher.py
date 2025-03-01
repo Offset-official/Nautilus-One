@@ -25,8 +25,7 @@ class MavlinkDepthPublisher(Node):
             mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
             0,
             mavutil.mavlink.MAVLINK_MSG_ID_AHRS2,  # The MAVLink message ID
-            1e6
-            / 100,  # The interval between two messages in microseconds. Set to -1 to disable and 0 to request default rate.
+            1e6 / 100,  # The interval between two messages in microseconds.
             0,
             0,
             0,
