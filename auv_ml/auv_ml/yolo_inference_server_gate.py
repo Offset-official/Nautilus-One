@@ -104,9 +104,9 @@ class YoloInferenceServer(Node):
     def __init__(self):
         super().__init__("yolo_inference_server")
         self.srv = self.create_service(YoloInference, "yolo_inference_server", self.handle_inference)
-        model_path = get_package_share_directory("auv_ml") + "/models/gate.engine"
+        model_path = get_package_share_directory("auv_ml") + "/models/gate-newest.engine"
         self.yolo = YOLOv8(engine_path=model_path,
-                           confidence_thres=0.25,
+                           confidence_thres=0.4,
                            iou_thres=0.5,
                            logger=self.get_logger())
         self.get_logger().info("YOLOv8 Inference Server (Gate with SORT tracking) is ready.")
