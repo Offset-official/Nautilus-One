@@ -12,6 +12,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ManipulatorCommand.srv"
   "srv/YoloInference.srv"
   "srv/ImageColorDetect.srv"
+  "srv/SetColor.srv"
   "action/ReadCommSequence.action"
   DEPENDENCIES sensor_msgs std_msgs
 )
