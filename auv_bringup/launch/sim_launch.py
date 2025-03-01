@@ -42,7 +42,7 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "world",
                 default_value="pool",
-                choices=["pool", "competition", "underwater", "pool_gate", "competition2"],
+                choices=["pool", "competition", "underwater", "pool_gate", "pool_buckets", "competition2"],
                 description="World to load into Gazebo",
             ),
             DeclareLaunchArgument(
