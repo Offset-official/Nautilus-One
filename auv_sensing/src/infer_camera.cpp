@@ -1,13 +1,14 @@
+#include <opencv2/opencv.hpp>
+
+#include "auv_interfaces/msg/detection_array.hpp"
+#include "auv_interfaces/srv/yolo_inference.hpp"
+#include "cv_bridge/cv_bridge.h"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "cv_bridge/cv_bridge.h"
-#include <opencv2/opencv.hpp>
-#include "auv_interfaces/srv/yolo_inference.hpp"
-#include "auv_interfaces/msg/detection_array.hpp"
 
 using namespace std::chrono_literals;
 
-class CameraInferenceNode : public rclcpp::Node 
+class CameraInferenceNode : public rclcpp::Node
 {
 public:
   CameraInferenceNode() : Node("infer_camera_node")

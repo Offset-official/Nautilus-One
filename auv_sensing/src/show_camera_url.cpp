@@ -1,10 +1,10 @@
-#include <memory>
-#include <string>
 #include <chrono>
 #include <iostream>
+#include <memory>
+#include <opencv2/opencv.hpp>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include <opencv2/opencv.hpp>
 
 class ShowCameraRtspNode : public rclcpp::Node
 {
@@ -13,7 +13,7 @@ public:
   : Node("show_camera_rtsp")
   {
     RCLCPP_INFO(this->get_logger(), "Starting node with RTSP URL: %s", camera_url.c_str());
-    
+
     // Attempt to open the video capture from the provided RTSP URL
     // You can specify different backends depending on how OpenCV was built:
     // e.g., cap_.open(camera_url, cv::CAP_FFMPEG) or cap_.open(camera_url, cv::CAP_GSTREAMER)
@@ -28,9 +28,8 @@ public:
 
     // Create a timer to periodically read and display frames
     timer_ = this->create_wall_timer(
-      std::chrono::milliseconds(30), // ~33 FPS, adjust as needed
-      std::bind(&ShowCameraRtspNode::timerCallback, this)
-    );
+      std::chrono::milliseconds(30),  // ~33 FPS, adjust as needed
+      std::bind(&ShowCameraRtspNode::timerCallback, this));
   }
 
 private:
@@ -40,7 +39,8 @@ private:
     cap_ >> frame;
 
     if (frame.empty()) {
-      RCLCPP_WARN(this->get_logger(), "Received an empty frame from RTSP stream. Check the camera or URL.");
+      RCLCPP_WARN(
+        this->get_logger(), "Received an empty frame from RTSP stream. Check the camera or URL.");
       return;
     }
 
@@ -54,13 +54,14 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
-int main(int argc, char** argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
   if (argc < 2) {
-    std::cerr << "Usage: show_camera_rtsp <rtsp_url>\n"
-              << "Example: show_camera_rtsp rtsp://user:pass@192.168.x.x:554/Streaming/Channels/1\n";
+    std::cerr
+      << "Usage: show_camera_rtsp <rtsp_url>\n"
+      << "Example: show_camera_rtsp rtsp://user:pass@192.168.x.x:554/Streaming/Channels/1\n";
     return 1;
   }
 
