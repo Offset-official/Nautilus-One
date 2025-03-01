@@ -4,13 +4,14 @@ from mavros_msgs.msg import State
 from sensor_msgs.msg import BatteryState 
 import json
 from std_msgs.msg import String
+from auv_interfaces.srv import SetColor
 
 
 class AUVDiagnostics(Node):
     def __init__(self):
         super().__init__('auv_diagnostics_node')
 
-        # Subscriber for /mavros/state
+        # Subscribers
         self.create_subscription(
             State,
             '/mavros/state',
@@ -18,7 +19,6 @@ class AUVDiagnostics(Node):
             10
         )
 
-        # Subscriber for /mavros/battery
         self.create_subscription(
             BatteryState,  # Correct message type
             '/mavros/battery',
@@ -26,7 +26,14 @@ class AUVDiagnostics(Node):
             10
         )
 
-        # Publisher for /diagnostics
+        # Services
+        self.set_color_service = self.create_service(
+            SetColor,
+            '/set_color',
+            self.set_color_callback
+        )
+
+        # Publishers
         self.publisher = self.create_publisher(
             String,
             '/diagnostics',
@@ -41,6 +48,8 @@ class AUVDiagnostics(Node):
             "percentage": "NA",
         }
 
+        self.color = "off" 
+
         self.timer = self.create_timer(2, self.publish_diagnostics)
 
     # Callback for /mavros/state
@@ -51,6 +60,17 @@ class AUVDiagnostics(Node):
     def battery_nav_callback(self, msg):
         self.battery_nav_data["percentage"] = msg.percentage if hasattr(msg, "percentage") else "NA"
 
+    def set_color_callback(self, request, response):
+        if request.color.lower() == "off" or request.color.startswith("#"):
+            self.color = request.color
+            response.success = True
+            response.message = f"Color set to {request.color}"
+        else:
+            response.success = False
+            response.message = "Invalid color"
+
+        return response
+
     def publish_diagnostics(self):
         # Combine state and battery data
         diagnostics = {
@@ -59,6 +79,7 @@ class AUVDiagnostics(Node):
             "batteryJ": "NA", 
             "task": "QLFN",
             "jetson_connection": False,
+            "neopixel_color": self.color
         }
 
         # Convert to JSON and publish

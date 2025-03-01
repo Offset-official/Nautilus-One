@@ -1,6 +1,7 @@
-#include <rclcpp/rclcpp.hpp>
-#include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
+
+#include <opencv2/opencv.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
 class RepublishSdpNode : public rclcpp::Node
@@ -15,8 +16,8 @@ public:
     //   3. Minimizes latency with rtpjitterbuffer latency=0 (you can adjust).
     //   4. Depayloads, parses, decodes H.264.
     //   5. Converts to raw frames for appsink, which feeds OpenCV.
-    pipeline_ =
-      "filesrc location=" + sdp_path + " ! "
+    pipeline_ = "filesrc location=" + sdp_path +
+      " ! "
       "sdpdemux ! "
       "rtpjitterbuffer latency=0 ! "
       "rtph264depay ! "
@@ -42,8 +43,7 @@ public:
     // Timer callback at ~30fps (adjust as needed)
     timer_ = this->create_wall_timer(
       std::chrono::milliseconds(33),  // ~30 Hz
-      std::bind(&RepublishSdpNode::timerCallback, this)
-    );
+      std::bind(&RepublishSdpNode::timerCallback, this));
   }
 
 private:
@@ -53,7 +53,8 @@ private:
     cap_ >> frame;
 
     if (frame.empty()) {
-      RCLCPP_WARN(this->get_logger(), "Empty frame received. Check if the stream ended or is disconnected.");
+      RCLCPP_WARN(
+        this->get_logger(), "Empty frame received. Check if the stream ended or is disconnected.");
       return;
     }
 
