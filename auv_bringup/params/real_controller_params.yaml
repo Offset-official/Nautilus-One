@@ -1,8 +1,8 @@
-base_controller:
+dumb_controller:
   ros__parameters:
     # Basic PWM parameters
     neutral_pwm: 1500
-    publish_rate_ms: 100
+    publish_rate_ms: 50
 
     # Surge PWM changes
     surge_low_pwm_change: 30
@@ -10,14 +10,14 @@ base_controller:
     surge_high_pwm_change: 50
 
     # Yaw PWM changes
-    yaw_low_pwm_change: 30
+    yaw_low_pwm_change: 40
     yaw_medium_pwm_change: 40
-    yaw_high_pwm_change: 50
+    yaw_high_pwm_change: 40
 
     # Heave PWM changes
-    heave_low_pwm_change: 30
-    heave_medium_pwm_change: 30
-    heave_high_pwm_change: 40
+    heave_low_pwm_change: 70
+    heave_medium_pwm_change: 70
+    heave_high_pwm_change: 70
 
     # Surge velocity thresholds
     surge_low_cut_off: 0.2
@@ -35,5 +35,5 @@ base_controller:
     heave_high_cut_off: 0.6
 
     depth_p_gain: 1.0
-    depth_threshold: 0.05
+    depth_threshold: 0.025
 

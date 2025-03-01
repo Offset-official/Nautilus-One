@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"roslib": "^1.4.1",
+		"express": "^4.21.2"
+	}
+}
