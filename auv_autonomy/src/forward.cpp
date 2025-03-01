@@ -1,8 +1,9 @@
-#include "rclcpp/rclcpp.hpp"
 #include <chrono>
-#include "mavros_msgs/srv/command_bool.hpp"
-#include "mavros_msgs/msg/override_rc_in.hpp"
 #include <memory>
+
+#include "mavros_msgs/msg/override_rc_in.hpp"
+#include "mavros_msgs/srv/command_bool.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 using namespace std::chrono_literals;
 
@@ -10,9 +11,7 @@ class RCControlNode : public rclcpp::Node
 {
 public:
   RCControlNode()
-  : Node("rc_node"),
-    default_pwm(1500),
-    throttle_pwm(1550)
+  : Node("rc_node"), default_pwm(1500), throttle_pwm(1550)
   {
     rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("/mavros/rc/override", 10);
     arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
@@ -36,7 +35,8 @@ private:
 
     auto future = arm_client_->async_send_request(request);
 
-    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
+    if (
+      rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
       rclcpp::FutureReturnCode::SUCCESS)
     {
       if (arm) {

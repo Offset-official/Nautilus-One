@@ -1,5 +1,7 @@
 # Nautilus One AUV
 
+![build_test workflow](https://github.com/Offset-official/auv_ros2/actions/workflows/build_test.yaml/badge.svg?branch=main)
+
 > Status: created working gazebol models of the AUV and competition accurate pool world.
 
 > Rulebook Edition :book:: [Rulebook 5.1.4](http://web.archive.org/web/20241231081446/https://sauvc.org/rulebook/)
@@ -25,7 +27,13 @@ The project assumes that you are using `zsh` like a sane human.
 
 ## Usage
 
-### Manual Control
+### Manual Control with the real robot
+Launch MAVProxy when the robot is connected via ethernet.
+```bash
+mavproxy.py --master=udp:0.0.0.0:14550 --out=udp:0.0.0.0:14660
+```
+
+### Manual Control in Sim
 To launch the simulation environment:
 
 ```bash
