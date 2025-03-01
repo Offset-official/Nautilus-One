@@ -1,0 +1,68 @@
+FROM arm64v8/ros:humble-ros-base
+
+ENV ROS_DISCOVERY_SERVER=127.0.0.1:11811
+
+# Define path to packages list file
+ARG PACKAGES_FILE="pi_packages.list"
+
+RUN mkdir /scripts
+RUN echo '/opt/ros/humble/bin/fastdds discovery --server-id 0' >> /scripts/fastdds-init.sh
+RUN chmod +x /scripts/fastdds-init.sh
+
+RUN apt-get update && apt-get install -y tmux python3-pip
+RUN apt-get update && apt-get install -y ros-humble-demo-nodes-cpp
+RUN apt-get update && apt-get install -y neovim
+
+RUN rosdep update
+
+# Create workspace directory
+RUN mkdir -p /auv_ws/src/auv_ros2
+
+# Create temporary directory for source code
+WORKDIR /tmp/src_temp
+
+# Copy packages.list file first to make use of Docker cache
+COPY ./$PACKAGES_FILE /tmp/$PACKAGES_FILE
+# Copy the source code
+COPY . .
+
+# Read packages from file, ignoring comments and empty lines
+RUN SUBPACKAGES=$(cat /tmp/$PACKAGES_FILE | grep -v '^#' | grep -v '^[[:space:]]*$' | tr '\n' ' ') && \
+    echo "Building packages: $SUBPACKAGES" && \
+    if [ -z "$SUBPACKAGES" ]; then \
+        echo "Error: No packages listed in $PACKAGES_FILE" && \
+        exit 1; \
+    fi && \
+    # Copy package.xml files first for dependency resolution \
+    for pkg in $SUBPACKAGES; do \
+        if [ -d "$pkg" ] && [ -f "$pkg/package.xml" ]; then \
+            echo "Copying package.xml from: $pkg" && \
+            mkdir -p /auv_ws/src/auv_ros2/$pkg && \
+            cp $pkg/package.xml /auv_ws/src/auv_ros2/$pkg/; \
+        else \
+            echo "Warning: No package.xml found in $pkg"; \
+        fi; \
+    done
+
+# Install dependencies based on the package.xml files
+WORKDIR /auv_ws
+RUN rosdep install --from-paths src --ignore-src -r -y
+
+# Now copy the full contents of specified packages
+WORKDIR /tmp/src_temp
+RUN SUBPACKAGES=$(cat /tmp/$PACKAGES_FILE | grep -v '^#' | grep -v '^[[:space:]]*$' | tr '\n' ' ') && \
+    for pkg in $SUBPACKAGES; do \
+        if [ -d "$pkg" ]; then \
+            echo "Copying full package: $pkg" && \
+            cp -r $pkg/* /auv_ws/src/auv_ros2/$pkg/; \
+        fi; \
+    done
+
+# Clean up temporary directory
+RUN rm -rf /tmp/src_temp
+
+WORKDIR /auv_ws
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
+
+
+CMD ["tmux", "new", "-s", "myfastdds", "/scripts/fastdds-init.sh",";","new-window"]
