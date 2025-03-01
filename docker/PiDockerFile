@@ -64,5 +64,7 @@ RUN rm -rf /tmp/src_temp
 WORKDIR /auv_ws
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
 
+# Add source commands to .bashrc
+RUN echo "source /auv_ws/install/setup.bash" >> /root/.bashrc
 
 CMD ["tmux", "new", "-s", "myfastdds", "/scripts/fastdds-init.sh",";","new-window"]
