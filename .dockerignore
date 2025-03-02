@@ -1,0 +1,9 @@
+# Exclude Docker directory to avoid recursive copying
+docker/
+
+# Common files to exclude
+.git/
+*.md
+*.log
+__pycache__/
+*.pyc
