@@ -14,19 +14,24 @@ class MJPEG720pNode(Node):
     def __init__(self):
         super().__init__('mjpeg_720p_publisher')
 
-        # Parameters: device path and camera name
+        # Parameters: device path, camera name, and frame rate
         self.declare_parameter('camera_device', '/dev/video0')
         self.declare_parameter('camera_name', 'mjpeg_720p_cam')
+        self.declare_parameter('frame_rate', 10)
 
         camera_device = self.get_parameter('camera_device').get_parameter_value().string_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
+        frame_rate = self.get_parameter('frame_rate').get_parameter_value().integer_value
+
+        # Log parameters
+        self.get_logger().info(f"Camera device: {camera_device}")
+        self.get_logger().info(f"Camera name: {camera_name}")
+        self.get_logger().info(f"Frame rate: {frame_rate}")
 
         # Topics
         image_topic = f'{camera_name}/image_raw/compressed'
         info_topic = f'{camera_name}/camera_info'
 
-        self.get_logger().info(f"Camera device: {camera_device}")
-        self.get_logger().info(f"Camera name: {camera_name}")
         self.get_logger().info(f"Publishing CompressedImage on: {image_topic}")
         self.get_logger().info(f"Publishing CameraInfo on: {info_topic}")
 
@@ -37,10 +42,10 @@ class MJPEG720pNode(Node):
         # Initialize GStreamer
         Gst.init(None)
 
-        # Use the camera's native MJPEG at 1280×720, 30 fps (assuming it supports that)
+        # Use the camera's native MJPEG at 1280×720 and the specified frame rate
         pipeline_str = (
             f'v4l2src device={camera_device} ! '
-            'image/jpeg,width=1280,height=720,framerate=30/1 ! '
+            f'image/jpeg,width=1280,height=720,framerate={frame_rate}/1 ! '
             'appsink name=appsink emit-signals=true max-buffers=1 drop=true'
         )
         self.get_logger().info(f"GStreamer pipeline: {pipeline_str}")
