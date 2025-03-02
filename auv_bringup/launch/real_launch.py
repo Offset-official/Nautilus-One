@@ -29,5 +29,6 @@ def generate_launch_description():
                 parameters=[mavros_params_file],
             ),
             Node(package="base_controller_py", executable="depth_publisher"),
+            Node(package="base_controller_py", executable="calibrate"),
         ]
     )
