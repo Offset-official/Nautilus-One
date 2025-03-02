@@ -1,0 +1,6 @@
+# Request
+bool enable  # True to enable and store current yaw, False to disable
+---
+# Response
+bool success  # Whether the service call was successful
+string message  # Information about the result
