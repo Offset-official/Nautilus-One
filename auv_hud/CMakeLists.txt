@@ -14,6 +14,7 @@ find_package(rosbag2_storage REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(rosbridge_server REQUIRED)
 
 # Add executable
 add_executable(bag_recorder src/bag_recorder.cpp)

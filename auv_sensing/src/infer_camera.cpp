@@ -27,11 +27,11 @@ public:
 
     RCLCPP_INFO(get_logger(), "Starting node...");
 
-    if (!checkTopicExists(camera_source_topic_)) {
-      RCLCPP_ERROR(get_logger(), "Topic '%s' is not alive. Exiting...", camera_source_topic_.c_str());
-      rclcpp::shutdown();
-      return;
-    }
+    // if (!checkTopicExists(camera_source_topic_)) {
+    //   RCLCPP_ERROR(get_logger(), "Topic '%s' is not alive. Exiting...", camera_source_topic_.c_str());
+    //   rclcpp::shutdown();
+    //   return;
+    // }
 
     RCLCPP_INFO(get_logger(), "Topic '%s' is alive", camera_source_topic_.c_str());
     RCLCPP_INFO(get_logger(), "Start Gazebo to start inference.");
