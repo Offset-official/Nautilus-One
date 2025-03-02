@@ -1,7 +1,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
-#include <sensor_msgs/msg/imu.hpp>
+#include <std_msgs/msg/float64.hpp>
 
 #include <cmath>
 #include <rclcpp/qos.hpp>
@@ -146,14 +146,16 @@ public:
         "/current_depth", 10,
         std::bind(&DumbController::current_depth_callback, this,
                   std::placeholders::_1));
-    rclcpp::QoS qos_profile(10);       // Queue size of 10
-    qos_profile.best_effort();         // Match the BEST_EFFORT reliability
-    qos_profile.durability_volatile(); // Match the VOLATILE durability
-
-    imu_sub_ = this->create_subscription<sensor_msgs::msg::Imu>(
-        "mavros/imu/data",
+                  
+    auto qos_profile = rclcpp::QoS(10)
+      .reliability(rclcpp::ReliabilityPolicy::BestEffort)     // Change from BEST_EFFORT to RELIABLE
+      .durability(rclcpp::DurabilityPolicy::Volatile)       // Keep VOLATILE
+      .liveliness(rclcpp::LivelinessPolicy::Automatic);    // Keep AUTOMATIC
+    
+    compass_sub_ = this->create_subscription<std_msgs::msg::Float64>(
+        "/mavros/global_position/compass_hdg", 
         qos_profile,
-        std::bind(&DumbController::imu_callback, this, std::placeholders::_1));
+        std::bind(&DumbController::compass_callback, this, std::placeholders::_1));
 
     // Set up publishers
     rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>(
@@ -185,8 +187,6 @@ private:
   {
     control_callback();
     publish_rc_override();
-    
-
   }
 
   // Calculate the smallest angle between two yaw values (accounting for wraparound)
@@ -204,15 +204,12 @@ private:
     return diff;
   }
 
-  void imu_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
+  void compass_callback(const std_msgs::msg::Float64::SharedPtr msg)
   {
-    double roll, pitch, yaw;
-    quaternion_to_euler(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w, roll, pitch, yaw);
+    current_yaw_ = msg->data;
     
-    // Store current yaw for use in angle correction
-    current_yaw_ = yaw;
-
-    // RCLCPP_INFO(this->get_logger(), "Roll: %.2f, Pitch: %.2f, Yaw: %.2f", roll, pitch, yaw);
+    RCLCPP_INFO(this->get_logger(), "GOT DATA FROM CAOMPASS");
+    RCLCPP_INFO(this->get_logger(), "Current Heading: %.2f degrees", msg->data);
   }
 
   // Handle the angle correction service call
@@ -236,25 +233,6 @@ private:
                          "Angle correction disabled";
   }
 
-  void quaternion_to_euler(double x, double y, double z, double w, double &roll, double &pitch, double &yaw)
-  {
-    // Roll (x-axis rotation)
-    double sinr_cosp = 2 * (w * x + y * z);
-    double cosr_cosp = 1 - 2 * (x * x + y * y);
-    roll = std::atan2(sinr_cosp, cosr_cosp) * 180.0 / M_PI;
-
-    // Pitch (y-axis rotation)
-    double sinp = 2 * (w * y - z * x);
-    if (std::abs(sinp) >= 1)
-      pitch = std::copysign(90.0, sinp); // Use 90 degrees if out of range
-    else
-      pitch = std::asin(sinp) * 180.0 / M_PI;
-
-    // Yaw (z-axis rotation)
-    double siny_cosp = 2 * (w * z + x * y);
-    double cosy_cosp = 1 - 2 * (y * y + z * z);
-    yaw = std::atan2(siny_cosp, cosy_cosp) * 180.0 / M_PI;
-  }
   void current_depth_callback(const std_msgs::msg::Float64::SharedPtr msg)
   {
     current_depth_ = msg->data;
@@ -338,7 +316,7 @@ void control_callback()
                      surge_medium_pwm_change_, surge_low_pwm_change_);
 
     RCLCPP_INFO(this->get_logger(),
-              "Angle Correction Mode State: %d, Yaw: %.2f", angle_correction_enabled_ ,current_yaw_);
+              "Angle Correction Mode State: %d, Heading: %.2f", angle_correction_enabled_ , current_yaw_);
     // Yaw control - split between angle correction mode and normal mode
     if (angle_correction_enabled_) {
         // Calculate yaw error (smallest angle between current and stored yaw)
@@ -559,7 +537,7 @@ void control_callback()
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr
       twist_subscription_;
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr current_depth_sub_;
-  rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
+  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr compass_sub_;
 
   // Publishers
   rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;

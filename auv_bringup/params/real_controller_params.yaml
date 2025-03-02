@@ -37,5 +37,5 @@ dumb_controller:
     depth_p_gain: 1.0
     depth_threshold: 0.025
 
-    yaw_p_gain: 1.0
-    yaw_threshold: 2.0
+    yaw_p_gain: 3.0
+    yaw_threshold: 7.0
