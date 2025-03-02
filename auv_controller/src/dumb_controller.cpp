@@ -2,9 +2,9 @@
 #include <functional>
 #include <memory>
 #include <std_msgs/msg/float64.hpp>
-
 #include <cmath>
 #include <rclcpp/qos.hpp>
+
 #include "auv_interfaces/action/depth_descent.hpp"
 #include "auv_interfaces/srv/angle_correction.hpp"  // New service header
 #include "geometry_msgs/msg/twist.hpp"
@@ -16,7 +16,8 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float64.hpp"
-
+#include "rclcpp/rclcpp.hpp"
+#include "std_srvs/srv/trigger.hpp"
 using namespace std::chrono_literals;
 using DepthDescent = auv_interfaces::action::DepthDescent;
 using GoalHandleDepthDescent = rclcpp_action::ServerGoalHandle<DepthDescent>;
@@ -166,13 +167,14 @@ public:
         "/mavros/cmd/arming");
     mode_client_ =
         this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
-        
+    calibration_client_ = this->create_client<std_srvs::srv::Trigger>("/calibrate_depth_sensor");
     // Set up angle correction service
     angle_correction_srv_ = this->create_service<auv_interfaces::srv::AngleCorrection>(
         "angle_correction",
         std::bind(&DumbController::handle_angle_correction, this, _1, _2));
 
     // Arm the vehicle
+    send_calibration_request();
     arm_vehicle(true);
     set_mode("MANUAL");
 
@@ -183,6 +185,30 @@ public:
   }
 
 private:
+  void send_calibration_request()
+  {
+    // Create a request
+    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
+
+    // Send the request
+    auto result_future = calibration_client_->async_send_request(
+      request,
+      std::bind(&DumbController::calibration_callback, this, std::placeholders::_1)
+    );
+  }
+  void calibration_callback(rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future)
+  {
+    try {
+      auto response = future.get();
+      if (response->success) {
+        RCLCPP_INFO(this->get_logger(), "Calibration successful: %s", response->message.c_str());
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "Calibration failed: %s", response->message.c_str());
+      }
+    } catch (const std::exception &e) {
+      RCLCPP_ERROR(this->get_logger(), "Service call failed: %s", e.what());
+    }
+  }
   void timer_callback()
   {
     control_callback();
@@ -545,7 +571,7 @@ void control_callback()
   // Service client
   rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
   rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
-  
+  rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr calibration_client_;
   // Angle correction service
   rclcpp::Service<auv_interfaces::srv::AngleCorrection>::SharedPtr angle_correction_srv_;
   
