@@ -337,6 +337,8 @@ void control_callback()
                      surge_low_cut_off, surge_high_pwm_change_,
                      surge_medium_pwm_change_, surge_low_pwm_change_);
 
+    RCLCPP_INFO(this->get_logger(),
+              "Angle Correction Mode State: %d, Yaw: %.2f", angle_correction_enabled_ ,current_yaw_);
     // Yaw control - split between angle correction mode and normal mode
     if (angle_correction_enabled_) {
         // Calculate yaw error (smallest angle between current and stored yaw)
@@ -356,9 +358,8 @@ void control_callback()
             yaw_pwm_ = std::max(neutral_pwm_-yaw_high_pwm_change_, std::min(neutral_pwm_+yaw_high_pwm_change_, yaw_pwm_));
             
             RCLCPP_INFO(this->get_logger(),
-                      "Angle-based yaw correction - Current: %.2f, Target: %.2f, Error: %.2f, "
-                      "PWM: %d",
-                      current_yaw_, stored_yaw_, yaw_error, yaw_pwm_);
+                      "Angle-based yaw correction - Target: %.2f, Error: %.2f, "
+                      "PWM: %d", stored_yaw_, yaw_error, yaw_pwm_);
         } else {
             // Within threshold, no correction needed
             yaw_pwm_ = neutral_pwm_;
