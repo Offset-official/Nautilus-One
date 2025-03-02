@@ -229,7 +229,7 @@ def generate_launch_description():
         [
             front_inference_arg,
             down_inference_arg,
-            # bridge_node,
+            #        bridge_node,
             yolo_gate_node,
             yolo_bucket_node,
             # Timer actions for inference nodes.

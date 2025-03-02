@@ -24,14 +24,14 @@ public:
   {
     RCLCPP_INFO(this->get_logger(), "ExperimentNode has started.");
 
-    // Declare parameters with defaults
+    // Declare parameters with defaults (retained for potential future use)
     gate_lost_threshold_ = this->declare_parameter("gate_lost_threshold", 3.0);
     forward_after_lost_   = this->declare_parameter("forward_after_lost", 13.0);
-    pause_before_rotation_ = this->declare_parameter("pause_before_rotation", 2.0);  // wait period before rotating in LOST_GATE
+    pause_before_rotation_ = this->declare_parameter("pause_before_rotation", 2.0);
     u_turn_duration_      = this->declare_parameter("u_turn_duration", 7.0);
     u_turn_yaw_speed_     = this->declare_parameter("u_turn_yaw_speed", 0.6);
     forward_speed_        = this->declare_parameter("forward_speed", 0.5);
-    kp_yaw_               = this->declare_parameter("kp_yaw", 0.0005);
+    kp_yaw_               = this->declare_parameter("kp_yaw", 0.005);
     kp_heave_             = this->declare_parameter("kp_heave", -0.01);
     x_tolerance_          = this->declare_parameter("x_tolerance", 30.0);
     y_tolerance_          = this->declare_parameter("y_tolerance", 30.0);
@@ -39,7 +39,7 @@ public:
 
     // Subscribe to the /auv_camera/detections topic
     detections_sub_ = this->create_subscription<auv_interfaces::msg::DetectionArray>(
-      "/auv_camera/detections", 10,
+      "/auv_camera_front/detections", 10,
       std::bind(&ExperimentNode::detectionsCallback, this, std::placeholders::_1));
 
     // Publisher for /cmd_vel
@@ -49,6 +49,7 @@ public:
     timer_ = this->create_wall_timer(100ms, std::bind(&ExperimentNode::controlLoop, this));
 
     // Initialization
+    gate_center_ = std::make_pair(320, 240); // default image center
     last_gate_detection_time_ = this->now();
     RCLCPP_INFO(this->get_logger(), "Initialization done. Waiting for detections...");
   }
@@ -92,10 +93,9 @@ private:
         int center_y = (detection.y1 + detection.y2) / 2;
         gate_center_ = std::make_pair(center_x, center_y);
         last_gate_detection_time_ = this->now();
-        RCLCPP_INFO(
-          this->get_logger(), "Gate found at center: (%d, %d). Updated last_gate_detection_time_.",
-          center_x, center_y);
+        RCLCPP_INFO(this->get_logger(), "Gate found at center: (%d, %d).", center_x, center_y);
         found_gate = true;
+        gate_found_ = true;  // mark that gate is found
         break;  // process only the first gate detection
       }
     }
@@ -109,70 +109,69 @@ private:
   // -------------------------------------------------------
   void controlLoop()
   {
+    // If the gate hasn't been detected at startup, perform yaw rotation in place.
+    if (!gate_found_) {
+      geometry_msgs::msg::Twist cmd_vel_msg;
+      // Set a fixed yaw rotation (e.g., 0.2 rad/s) and zero forward speed.
+      cmd_vel_msg.angular.z = 0.2;
+      cmd_vel_msg.linear.y = 0.0;
+      RCLCPP_INFO(this->get_logger(), "Searching for gate: rotating in place.");
+      cmd_vel_pub_->publish(cmd_vel_msg);
+      return;
+    }
+
     geometry_msgs::msg::Twist cmd_vel_msg;
-    // Initialize all velocities to zero
-    cmd_vel_msg.linear.x = 0.0;
     cmd_vel_msg.linear.y = 0.0;
     cmd_vel_msg.linear.z = 0.0;
     cmd_vel_msg.angular.x = 0.0;
     cmd_vel_msg.angular.y = 0.0;
     cmd_vel_msg.angular.z = 0.0;
 
+    // Compute error relative to the assumed image center (640x480 image)
+    float image_center_x = 320.0f;
+    float image_center_y = 240.0f;
+    float error_x = static_cast<float>(gate_center_.first) - image_center_x;
+    float error_y = static_cast<float>(gate_center_.second) - image_center_y;
+    
+    RCLCPP_INFO(this->get_logger(), "Gate error: x=%.1f, y=%.1f", error_x, error_y);
+    RCLCPP_INFO(this->get_logger(), "Gate center: (%d, %d)", gate_center_.first, gate_center_.second);
+
     auto now_time = this->now();
     double elapsed_since_gate = (now_time - last_gate_detection_time_).seconds();
 
-    // If the gate is detected recently and we are not in LOST_GATE, run the alignment FSM
     if (elapsed_since_gate < gate_lost_threshold_ && movement_state_ != LOST_GATE) {
       cmd_vel_msg = doAlignmentLogic();
     } else {
-      // Switch to LOST_GATE if not already in that state
       if (movement_state_ != LOST_GATE) {
         movement_state_ = LOST_GATE;
         lost_gate_start_time_ = now_time;
         RCLCPP_WARN(this->get_logger(), "[FSM] Gate is lost! Switching to LOST_GATE state.");
       }
-      // Calculate time spent in LOST_GATE state
       double elapsed_lost_state = (now_time - lost_gate_start_time_).seconds();
-      // LOST_GATE phases:
-      // Phase 1: Forward movement for forward_after_lost_ seconds
       if (elapsed_lost_state < forward_after_lost_) {
-        cmd_vel_msg.linear.x = forward_speed_;
+        cmd_vel_msg.linear.y = forward_speed_;
         cmd_vel_msg.angular.z = 0.0;
-        RCLCPP_INFO(
-          this->get_logger(), "[LOST_GATE] Moving forward for %.2f sec (elapsed=%.2f/%.2f)",
-          forward_after_lost_, elapsed_lost_state, forward_after_lost_);
-      }
-      // Phase 2: Wait (stop) for pause_before_rotation_ seconds before beginning the rotation
-      else if (elapsed_lost_state < (forward_after_lost_ + pause_before_rotation_)) {
-        // All velocities remain zero (pause)
-        RCLCPP_INFO(
-          this->get_logger(), "[LOST_GATE] Waiting for %.2f sec before rotating (elapsed=%.2f/%.2f)",
-          pause_before_rotation_, elapsed_lost_state - forward_after_lost_, pause_before_rotation_);
-      }
-      // Phase 3: Rotate for u_turn_duration_ seconds
-      else if (elapsed_lost_state < (forward_after_lost_ + pause_before_rotation_ + u_turn_duration_)) {
+        RCLCPP_INFO(this->get_logger(), "[LOST_GATE] Moving forward for %.2f sec (elapsed=%.2f/%.2f)",
+                    forward_after_lost_, elapsed_lost_state, forward_after_lost_);
+      } else if (elapsed_lost_state < (forward_after_lost_ + pause_before_rotation_)) {
+        RCLCPP_INFO(this->get_logger(), "[LOST_GATE] Waiting for %.2f sec before rotating (elapsed=%.2f/%.2f)",
+                    pause_before_rotation_, elapsed_lost_state - forward_after_lost_, pause_before_rotation_);
+      } else if (elapsed_lost_state < (forward_after_lost_ + pause_before_rotation_ + u_turn_duration_)) {
         cmd_vel_msg.angular.z = u_turn_yaw_speed_;
-        RCLCPP_INFO(
-          this->get_logger(),
-          "[LOST_GATE] Rotating for %.2f sec (elapsed=%.2f/%.2f), speed=%.2f rad/s",
-          u_turn_duration_, elapsed_lost_state - forward_after_lost_ - pause_before_rotation_,
-          u_turn_duration_, u_turn_yaw_speed_);
-      }
-      // Phase 4: After the defined phases, keep rotating until the gate is found
-      else {
+        RCLCPP_INFO(this->get_logger(),
+                    "[LOST_GATE] Rotating for %.2f sec (elapsed=%.2f/%.2f), speed=%.2f rad/s",
+                    u_turn_duration_, elapsed_lost_state - forward_after_lost_ - pause_before_rotation_,
+                    u_turn_duration_, u_turn_yaw_speed_);
+      } else {
         cmd_vel_msg.angular.z = u_turn_yaw_speed_;
-        RCLCPP_INFO(
-          this->get_logger(), "[LOST_GATE] Continuing rotation until gate is reacquired.");
+        RCLCPP_INFO(this->get_logger(), "[LOST_GATE] Continuing rotation until gate is reacquired.");
       }
 
-      // If the gate is seen again, revert back to horizontal alignment immediately
       if (elapsed_since_gate < gate_lost_threshold_) {
         RCLCPP_INFO(this->get_logger(), "[LOST_GATE] Gate reacquired! Switching back to HORIZONTAL_ALIGNMENT.");
         movement_state_ = HORIZONTAL_ALIGNMENT;
       }
     }
-
-    // Publish the computed command velocity
     cmd_vel_pub_->publish(cmd_vel_msg);
   }
 
@@ -182,46 +181,45 @@ private:
   geometry_msgs::msg::Twist doAlignmentLogic()
   {
     geometry_msgs::msg::Twist cmd_vel_msg;
-    // Typical image center coordinates (assumed image size: 640x480)
     float image_center_x = 320.0f;
     float image_center_y = 240.0f;
-
     float gate_x = static_cast<float>(gate_center_.first);
     float gate_y = static_cast<float>(gate_center_.second);
-
-    // Errors in image coordinates:
     float error_x = gate_x - image_center_x;  // horizontal error
-    float error_y = gate_y - image_center_y;  // vertical error
+    float error_y = gate_y - image_center_y;    // vertical error
 
     switch (movement_state_) {
       case HORIZONTAL_ALIGNMENT: {
-          // Yaw to correct horizontal error
-          float yaw_cmd = kp_yaw_ * error_x;
-          cmd_vel_msg.angular.z = yaw_cmd;
-          // Maintain a small forward movement
-          cmd_vel_msg.linear.x = 0.2f;
+          // Use a fixed yaw velocity (0.2 rad/s) based on the error direction.
+          const double fixed_yaw_velocity = 0.2;
+          if (error_x > 0) {
+            cmd_vel_msg.angular.z = fixed_yaw_velocity;
+          } else if (error_x < 0) {
+            cmd_vel_msg.angular.z = -fixed_yaw_velocity;
+          } else {
+            cmd_vel_msg.angular.z = 0.0;
+          }
+          cmd_vel_msg.linear.y = 0.2;
           if (std::fabs(error_x) < x_tolerance_) {
-            RCLCPP_INFO(this->get_logger(), "[FSM] Horizontal alignment achieved. Switching to VERTICAL_ALIGNMENT immediately.");
+            RCLCPP_INFO(this->get_logger(), "[FSM] Horizontal alignment achieved. Switching to VERTICAL_ALIGNMENT.");
             movement_state_ = VERTICAL_ALIGNMENT;
           }
           break;
         }
       case VERTICAL_ALIGNMENT: {
-          // Command vertical motion (heave) to correct vertical error
-          float z_cmd = kp_heave_ * error_y;
-          cmd_vel_msg.linear.z = z_cmd;
-          // Maintain a small forward movement
-          cmd_vel_msg.linear.x = 0.2f;
+          // No vertical correction (heave), maintain a small forward speed.
+          cmd_vel_msg.linear.y = 0.2;
+          cmd_vel_msg.linear.z = 0.0;
           if (std::fabs(error_y) < y_tolerance_) {
-            RCLCPP_INFO(this->get_logger(), "[FSM] Vertical alignment achieved. Switching to FORWARD_SURGE immediately.");
+            RCLCPP_INFO(this->get_logger(), "[FSM] Vertical alignment acceptable. Switching to FORWARD_SURGE.");
             movement_state_ = FORWARD_SURGE;
           }
           break;
         }
       case FORWARD_SURGE: {
-          // Surge forward at a higher speed
-          cmd_vel_msg.linear.x = 1.0f;
-          // If the gate drifts too far from center, revert to alignment states
+          // Send a fixed forward speed.
+          cmd_vel_msg.linear.y = 0.5;
+          cmd_vel_msg.angular.z = 0.0;
           if (std::fabs(error_x) > big_error_threshold_) {
             RCLCPP_INFO(this->get_logger(), "[FSM] Significant horizontal drift => switching back to HORIZONTAL_ALIGNMENT.");
             movement_state_ = HORIZONTAL_ALIGNMENT;
@@ -232,8 +230,8 @@ private:
           break;
         }
       case LOST_GATE: {
-          // This branch should not be reached in normal alignment logic.
-          cmd_vel_msg.linear.x = 0.0;
+          // This branch should not normally be reached in alignment logic.
+          cmd_vel_msg.linear.y = 0.0;
           cmd_vel_msg.angular.z = 0.0;
           break;
         }
@@ -241,14 +239,9 @@ private:
         break;
     }
 
-    // Debug info: log current state and errors
-    RCLCPP_INFO(
-      this->get_logger(), "state=%d | error_x=%.1f, error_y=%.1f => forward=%.2f, z=%.2f, yaw=%.4f",
-      movement_state_, error_x, error_y, cmd_vel_msg.linear.x, cmd_vel_msg.linear.z,
-      cmd_vel_msg.angular.z);
+    RCLCPP_INFO(this->get_logger(), "state=%d | error_x=%.1f, error_y=%.1f => forward=%.2f, yaw=%.4f",
+                movement_state_, error_x, error_y, cmd_vel_msg.linear.y, cmd_vel_msg.angular.z);
 
-    // (Preserve any swapping logic if needed; here we keep the same order as before)
-    std::swap(cmd_vel_msg.linear.x, cmd_vel_msg.linear.y);
     return cmd_vel_msg;
   }
 
@@ -267,7 +260,7 @@ private:
   // FSM current state
   MovementState movement_state_{HORIZONTAL_ALIGNMENT};
 
-  // Parameters (all configurable via ROS parameters)
+  // Configurable parameters
   double gate_lost_threshold_;
   double forward_after_lost_;
   double pause_before_rotation_;
@@ -279,6 +272,9 @@ private:
   double x_tolerance_;
   double y_tolerance_;
   double big_error_threshold_;
+
+  // Flag to indicate if the gate has been found at least once.
+  bool gate_found_ = false;
 };
 
 int main(int argc, char * argv[])

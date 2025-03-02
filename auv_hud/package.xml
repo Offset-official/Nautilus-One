@@ -17,7 +17,7 @@
   <depend>rcutils</depend>
   <depend>ament_index_cpp</depend>
 
-  <exec_depend>rosbridge_server</exec_depend>
+  <depend>rosbridge_server</depend>
   <exec_depend>npm</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
