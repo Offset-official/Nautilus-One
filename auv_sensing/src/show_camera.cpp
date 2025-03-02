@@ -1,58 +1,63 @@
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/compressed_image.hpp>
 #include <opencv2/opencv.hpp>
+#include <iostream>
 
-#include "cv_bridge/cv_bridge.h"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
-
-class ShowCameraNode : public rclcpp::Node
+class CompressedImageViewerNode : public rclcpp::Node
 {
 public:
-  ShowCameraNode(const char * camera_topic)
-  : Node("show_camera")
+  CompressedImageViewerNode(const std::string & topic_name)
+  : Node("compressed_image_viewer")
   {
-    RCLCPP_INFO(this->get_logger(), "Starting node...");
-
-    auto topics = this->get_topic_names_and_types();
-    // bool topic_exists = topics.find(camera_topic) != topics.end();
-    // if (topic_exists) {
-    //     RCLCPP_INFO(this->get_logger(), "Topic %s is alive", camera_topic);
-    //     RCLCPP_INFO(this->get_logger(), "Start Gazebo to see the camera feed.");
-    // }
-    // else {
-    //     RCLCPP_ERROR(this->get_logger(), "Topic %s is not alive. Exiting...", camera_topic);
-    //     rclcpp::shutdown();
-    // }
-
-    try {
-      subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-        camera_topic, 10, std::bind(&ShowCameraNode::image_callback, this, std::placeholders::_1));
-    } catch (rclcpp::exceptions::RCLError & e) {
-      RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
-      rclcpp::shutdown();
-    }
+    RCLCPP_INFO(this->get_logger(), "Subscribing to compressed topic: %s", topic_name.c_str());
+    subscription_ = this->create_subscription<sensor_msgs::msg::CompressedImage>(
+      topic_name, 10,
+      std::bind(&CompressedImageViewerNode::imageCallback, this, std::placeholders::_1));
   }
 
 private:
-  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const
+  void imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg)
   {
     try {
-      // RCLCPP_INFO(this->get_logger(), "Image Received");
-      cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
-      cv::imshow("Camera", frame);
-      cv::waitKey(10);
-    } catch (cv_bridge::Exception & e) {
-      RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
-      rclcpp::shutdown();
+      // Wrap the compressed image data in a cv::Mat
+      cv::Mat encoded_img(1, msg->data.size(), CV_8UC1,
+                          const_cast<unsigned char*>(msg->data.data()));
+      
+      // Decode the MJPEG image into a BGR (OpenCV) format
+      cv::Mat decoded_img = cv::imdecode(encoded_img, cv::IMREAD_COLOR);
+      if (decoded_img.empty()) {
+        RCLCPP_ERROR(this->get_logger(), "Failed to decode compressed image.");
+        return;
+      }
+      
+      // Display the decoded image in a window
+      cv::imshow("Compressed Image Viewer", decoded_img);
+      cv::waitKey(1);
+    }
+    catch (const std::exception & e) {
+      RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
     }
   }
-  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
+
+  rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr subscription_;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char ** argv)
 {
-  const char * camera_topic = argv[1];
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ShowCameraNode>(camera_topic));
+  
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <compressed_image_topic>\n";
+    std::cerr << "Example: " << argv[0] << " /auv_front_camera/image_raw/compressed\n";
+    return 1;
+  }
+  
+  std::string topic_name = argv[1];
+  auto node = std::make_shared<CompressedImageViewerNode>(topic_name);
+  
+  rclcpp::spin(node);
   rclcpp::shutdown();
+  cv::destroyAllWindows();
+  
   return 0;
 }
