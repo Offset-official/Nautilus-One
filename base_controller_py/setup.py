@@ -18,7 +18,8 @@ setup(
     license="TODO: License declaration",
     entry_points={
         "console_scripts": [
-            "depth_publisher = base_controller_py.depth_publisher:main"
+            "depth_publisher = base_controller_py.depth_publisher:main",
+            "calibrate = base_controller_py.calibrate:main",
         ],
     },
 )
