@@ -6,22 +6,14 @@
 #include <std_msgs/msg/float64.hpp>
 
 #include "auv_controller/dumb_controller.hpp"
-#include "auv_interfaces/action/depth_descent.hpp"
-#include "auv_interfaces/srv/angle_correction.hpp"
-#include "auv_interfaces/srv/set_color.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 #include "mavros_msgs/msg/override_rc_in.hpp"
-#include "mavros_msgs/srv/command_bool.hpp"
-#include "mavros_msgs/srv/set_mode.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float64.hpp"
 #include "std_srvs/srv/trigger.hpp"
 using namespace std::chrono_literals;
-using DepthDescent = auv_interfaces::action::DepthDescent;
-using GoalHandleDepthDescent = rclcpp_action::ServerGoalHandle<DepthDescent>;
 using namespace std::placeholders;
 
 DumbController::DumbController() : Node("dumb_controller") {
@@ -184,32 +176,6 @@ DumbController::DumbController() : Node("dumb_controller") {
                               std::bind(&DumbController::timer_callback, this));
 }
 
-void DumbController::send_calibration_request() {
-  // Create a request
-  auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
-
-  // Send the request
-  auto result_future = calibration_client_->async_send_request(
-      request, std::bind(&DumbController::calibration_callback, this,
-                         std::placeholders::_1));
-}
-
-void DumbController::calibration_callback(
-    rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future) {
-  try {
-    auto response = future.get();
-    if (response->success) {
-      RCLCPP_INFO(this->get_logger(), "Calibration successful: %s",
-                  response->message.c_str());
-    } else {
-      RCLCPP_ERROR(this->get_logger(), "Calibration failed: %s",
-                   response->message.c_str());
-    }
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(this->get_logger(), "Service call failed: %s", e.what());
-  }
-}
-
 void DumbController::timer_callback() {
   control_callback();
   publish_rc_override();
@@ -238,57 +204,9 @@ void DumbController::compass_callback(
   RCLCPP_INFO(this->get_logger(), "Current Heading: %.2f degrees", msg->data);
 }
 
-// Handle the angle correction service call
-void DumbController::handle_angle_correction(
-    const std::shared_ptr<auv_interfaces::srv::AngleCorrection::Request>
-        request,
-    std::shared_ptr<auv_interfaces::srv::AngleCorrection::Response> response) {
-  angle_correction_enabled_ = request->enable;
-
-  if (angle_correction_enabled_) {
-    // Store the current yaw angle when enabled
-    stored_yaw_ = current_yaw_;
-    RCLCPP_INFO(this->get_logger(),
-                "Angle correction enabled, stored yaw: %.2f degrees",
-                stored_yaw_);
-  } else {
-    RCLCPP_INFO(this->get_logger(), "Angle correction disabled");
-  }
-
-  response->success = true;
-  response->message = angle_correction_enabled_
-                          ? "Angle correction enabled, reference yaw stored"
-                          : "Angle correction disabled";
-}
-
 void DumbController::current_depth_callback(
     const std_msgs::msg::Float64::SharedPtr msg) {
   current_depth_ = msg->data;
-}
-
-void DumbController::set_mode(const std::string &mode) {
-  if (!mode_client_->wait_for_service(std::chrono::seconds(1))) {
-    RCLCPP_ERROR(this->get_logger(), "Set mode service not available");
-    return;
-  }
-
-  auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
-  request->custom_mode = mode;
-
-  auto callback =
-      [this,
-       mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
-        auto result = future.get();
-        if (result->mode_sent) {
-          RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s",
-                      mode.c_str());
-        } else {
-          RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s",
-                       mode.c_str());
-        }
-      };
-
-  mode_client_->async_send_request(request, callback);
 }
 
 void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
@@ -416,97 +334,6 @@ void DumbController::publish_rc_override() {
   RCLCPP_DEBUG(this->get_logger(),
                "Published RC Override: Surge: %d, Yaw: %d, Heave: %d",
                surge_pwm_, yaw_pwm_, heave_pwm_);
-}
-
-void DumbController::arm_vehicle(bool arm) {
-  while (!arm_client_->wait_for_service(1s) && rclcpp::ok()) {
-    RCLCPP_INFO(this->get_logger(),
-                "Waiting for arm service to be available...");
-  }
-
-  auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
-  request->value = arm;
-
-  auto future = arm_client_->async_send_request(request);
-
-  if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
-                                         future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
-    RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully",
-                arm ? "armed" : "disarmed");
-  } else {
-    RCLCPP_ERROR(this->get_logger(), "Failed to call arm service");
-  }
-}
-
-rclcpp_action::GoalResponse
-DumbController::handle_goal(const rclcpp_action::GoalUUID &uuid,
-                            std::shared_ptr<const DepthDescent::Goal> goal) {
-  RCLCPP_INFO(this->get_logger(),
-              "Received goal request with targe depth: %.2f meters",
-              goal->target_depth);
-  (void)uuid;
-  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-}
-
-rclcpp_action::CancelResponse DumbController::handle_cancel(
-    const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
-  RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
-  (void)goal_handle;
-  return rclcpp_action::CancelResponse::ACCEPT;
-}
-
-void DumbController::handle_accepted(
-    const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
-  // this needs to return quickly to avoid blocking the executor, so spin up a
-  // new thread
-  std::thread{std::bind(&DumbController::execute, this, _1), goal_handle}
-      .detach();
-}
-
-void DumbController::execute(
-    const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
-  RCLCPP_INFO(this->get_logger(), "Executing goal");
-  rclcpp::Rate loop_rate(500ms);
-  const auto goal = goal_handle->get_goal();
-  auto feedback = std::make_shared<DepthDescent::Feedback>();
-  auto &depth = feedback->current_depth;
-  auto result = std::make_shared<DepthDescent::Result>();
-
-  this->target_depth_ = goal->target_depth;
-  this->depth_reached_ = false;
-
-  // invoke the led color
-  auto color_request =
-      std::make_shared<auv_interfaces::srv::SetColor::Request>();
-  color_request->color = "#800080";
-
-  led_color_client->async_send_request(color_request);
-
-  while (!this->depth_reached_ && rclcpp::ok()) {
-    if (goal_handle->is_canceling()) {
-      result->final_depth = this->current_depth_;
-      this->target_depth_ = this->current_depth_;
-      this->depth_reached_ = true;
-      goal_handle->canceled(result);
-      RCLCPP_INFO(this->get_logger(),
-                  "Goal canceled. Holding depth at %.2f meters",
-                  this->current_depth_);
-      return;
-    }
-    depth = this->current_depth_;
-    goal_handle->publish_feedback(feedback);
-    loop_rate.sleep();
-  }
-
-  // Check if goal is done
-  if (rclcpp::ok()) {
-    result->final_depth = depth;
-    goal_handle->succeed(result);
-    RCLCPP_INFO(this->get_logger(), "Goal succeeded");
-    color_request->color = "#800080";
-    led_color_client->async_send_request(color_request);
-  }
 }
 
 int main(int argc, char *argv[]) {
