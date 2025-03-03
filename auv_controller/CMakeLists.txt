@@ -29,7 +29,7 @@ set(dependencies
 # Make sure to include the proper include directory
 include_directories(include)
 
-add_executable(dumb_controller src/dumb_controller.cpp)
+add_executable(dumb_controller src/dumb_controller.cpp src/controller_actions.cpp src/controller_services.cpp)
 ament_target_dependencies(dumb_controller ${dependencies})
 
 add_executable(control_cmd_cli src/control_cmd_cli.cpp)
