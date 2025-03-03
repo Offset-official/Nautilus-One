@@ -1,7 +1,7 @@
-auv_bringup
 auv_autonomy
+auv_bringup
+auv_comms
 auv_diagnostics
-auv_experiments
 auv_interfaces
 auv_ml
 auv_camera
