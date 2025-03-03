@@ -1,12 +1,13 @@
 #include <chrono>
+#include <cmath>
 #include <functional>
 #include <memory>
-#include <std_msgs/msg/float64.hpp>
-#include <cmath>
 #include <rclcpp/qos.hpp>
+#include <std_msgs/msg/float64.hpp>
 
 #include "auv_interfaces/action/depth_descent.hpp"
-#include "auv_interfaces/srv/angle_correction.hpp"  // New service header
+#include "auv_interfaces/srv/angle_correction.hpp"
+#include "auv_interfaces/srv/set_color.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 #include "mavros_msgs/msg/override_rc_in.hpp"
@@ -16,18 +17,15 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float64.hpp"
-#include "rclcpp/rclcpp.hpp"
 #include "std_srvs/srv/trigger.hpp"
 using namespace std::chrono_literals;
 using DepthDescent = auv_interfaces::action::DepthDescent;
 using GoalHandleDepthDescent = rclcpp_action::ServerGoalHandle<DepthDescent>;
 using namespace std::placeholders;
 
-class DumbController : public rclcpp::Node
-{
+class DumbController : public rclcpp::Node {
 public:
-  DumbController() : Node("dumb_controller")
-  {
+  DumbController() : Node("dumb_controller") {
     rcl_interfaces::msg::ParameterDescriptor param_desc;
     param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
 
@@ -68,8 +66,11 @@ public:
 
     this->declare_parameter("publish_rate_ms", 50, param_desc);
 
-    this->declare_parameter("yaw_p_gain", 10.0, double_param_desc);  // PWM change per degree of error
-    this->declare_parameter("yaw_threshold", 2.0, double_param_desc); // 2 degrees threshold
+    this->declare_parameter(
+        "yaw_p_gain", 10.0,
+        double_param_desc); // PWM change per degree of error
+    this->declare_parameter("yaw_threshold", 2.0,
+                            double_param_desc); // 2 degrees threshold
 
     // Get PWM parameters
     neutral_pwm_ = this->get_parameter("neutral_pwm").as_int();
@@ -119,7 +120,7 @@ public:
 
     current_depth_ = 0.0;
     target_depth_ = 0.0;
-    
+
     // Initialize angle correction variables
     current_yaw_ = 0.0;
     stored_yaw_ = 0.0;
@@ -147,16 +148,18 @@ public:
         "/current_depth", 10,
         std::bind(&DumbController::current_depth_callback, this,
                   std::placeholders::_1));
-                  
-    auto qos_profile = rclcpp::QoS(10)
-      .reliability(rclcpp::ReliabilityPolicy::BestEffort)     // Change from BEST_EFFORT to RELIABLE
-      .durability(rclcpp::DurabilityPolicy::Volatile)       // Keep VOLATILE
-      .liveliness(rclcpp::LivelinessPolicy::Automatic);    // Keep AUTOMATIC
-    
+
+    auto qos_profile =
+        rclcpp::QoS(10)
+            .reliability(rclcpp::ReliabilityPolicy::
+                             BestEffort) // Change from BEST_EFFORT to RELIABLE
+            .durability(rclcpp::DurabilityPolicy::Volatile)   // Keep VOLATILE
+            .liveliness(rclcpp::LivelinessPolicy::Automatic); // Keep AUTOMATIC
+
     compass_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-        "/mavros/global_position/compass_hdg", 
-        qos_profile,
-        std::bind(&DumbController::compass_callback, this, std::placeholders::_1));
+        "/mavros/global_position/compass_hdg", qos_profile,
+        std::bind(&DumbController::compass_callback, this,
+                  std::placeholders::_1));
 
     // Set up publishers
     rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>(
@@ -167,11 +170,13 @@ public:
         "/mavros/cmd/arming");
     mode_client_ =
         this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
-    calibration_client_ = this->create_client<std_srvs::srv::Trigger>("/calibrate_depth_sensor");
+    calibration_client_ =
+        this->create_client<std_srvs::srv::Trigger>("/calibrate_depth_sensor");
     // Set up angle correction service
-    angle_correction_srv_ = this->create_service<auv_interfaces::srv::AngleCorrection>(
-        "angle_correction",
-        std::bind(&DumbController::handle_angle_correction, this, _1, _2));
+    angle_correction_srv_ =
+        this->create_service<auv_interfaces::srv::AngleCorrection>(
+            "angle_correction",
+            std::bind(&DumbController::handle_angle_correction, this, _1, _2));
 
     // Arm the vehicle
     send_calibration_request();
@@ -185,89 +190,87 @@ public:
   }
 
 private:
-  void send_calibration_request()
-  {
+  void send_calibration_request() {
     // Create a request
     auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
 
     // Send the request
     auto result_future = calibration_client_->async_send_request(
-      request,
-      std::bind(&DumbController::calibration_callback, this, std::placeholders::_1)
-    );
+        request, std::bind(&DumbController::calibration_callback, this,
+                           std::placeholders::_1));
   }
-  void calibration_callback(rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future)
-  {
+  void calibration_callback(
+      rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future) {
     try {
       auto response = future.get();
       if (response->success) {
-        RCLCPP_INFO(this->get_logger(), "Calibration successful: %s", response->message.c_str());
+        RCLCPP_INFO(this->get_logger(), "Calibration successful: %s",
+                    response->message.c_str());
       } else {
-        RCLCPP_ERROR(this->get_logger(), "Calibration failed: %s", response->message.c_str());
+        RCLCPP_ERROR(this->get_logger(), "Calibration failed: %s",
+                     response->message.c_str());
       }
     } catch (const std::exception &e) {
       RCLCPP_ERROR(this->get_logger(), "Service call failed: %s", e.what());
     }
   }
-  void timer_callback()
-  {
+  void timer_callback() {
     control_callback();
     publish_rc_override();
   }
 
-  // Calculate the smallest angle between two yaw values (accounting for wraparound)
-  double calculate_yaw_difference(double current, double stored)
-  {
+  // Calculate the smallest angle between two yaw values (accounting for
+  // wraparound)
+  double calculate_yaw_difference(double current, double stored) {
     double diff = current - stored;
-    
+
     // Normalize to [-180, 180]
     if (diff > 180.0) {
       diff -= 360.0;
     } else if (diff < -180.0) {
       diff += 360.0;
     }
-    
+
     return diff;
   }
 
-  void compass_callback(const std_msgs::msg::Float64::SharedPtr msg)
-  {
+  void compass_callback(const std_msgs::msg::Float64::SharedPtr msg) {
     current_yaw_ = msg->data;
-    
+
     RCLCPP_INFO(this->get_logger(), "GOT DATA FROM CAOMPASS");
     RCLCPP_INFO(this->get_logger(), "Current Heading: %.2f degrees", msg->data);
   }
 
   // Handle the angle correction service call
   void handle_angle_correction(
-      const std::shared_ptr<auv_interfaces::srv::AngleCorrection::Request> request,
-      std::shared_ptr<auv_interfaces::srv::AngleCorrection::Response> response)
-  {
+      const std::shared_ptr<auv_interfaces::srv::AngleCorrection::Request>
+          request,
+      std::shared_ptr<auv_interfaces::srv::AngleCorrection::Response>
+          response) {
     angle_correction_enabled_ = request->enable;
-    
+
     if (angle_correction_enabled_) {
       // Store the current yaw angle when enabled
       stored_yaw_ = current_yaw_;
-      RCLCPP_INFO(this->get_logger(), "Angle correction enabled, stored yaw: %.2f degrees", stored_yaw_);
+      RCLCPP_INFO(this->get_logger(),
+                  "Angle correction enabled, stored yaw: %.2f degrees",
+                  stored_yaw_);
     } else {
       RCLCPP_INFO(this->get_logger(), "Angle correction disabled");
     }
-    
+
     response->success = true;
-    response->message = angle_correction_enabled_ ? 
-                         "Angle correction enabled, reference yaw stored" : 
-                         "Angle correction disabled";
+    response->message = angle_correction_enabled_
+                            ? "Angle correction enabled, reference yaw stored"
+                            : "Angle correction disabled";
   }
 
-  void current_depth_callback(const std_msgs::msg::Float64::SharedPtr msg)
-  {
+  void current_depth_callback(const std_msgs::msg::Float64::SharedPtr msg) {
     current_depth_ = msg->data;
   }
 
-  void set_mode(const std::string &mode)
-  {
-    if (!mode_client_->wait_for_service(std::chrono::seconds(1)))
-    {
+  void set_mode(const std::string &mode) {
+    if (!mode_client_->wait_for_service(std::chrono::seconds(1))) {
       RCLCPP_ERROR(this->get_logger(), "Set mode service not available");
       return;
     }
@@ -277,57 +280,47 @@ private:
 
     auto callback =
         [this,
-         mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future)
-    {
-      auto result = future.get();
-      if (result->mode_sent)
-      {
-        RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s",
-                    mode.c_str());
-      }
-      else
-      {
-        RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s",
-                     mode.c_str());
-      }
-    };
+         mode](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
+          auto result = future.get();
+          if (result->mode_sent) {
+            RCLCPP_INFO(this->get_logger(), "Successfully set mode to: %s",
+                        mode.c_str());
+          } else {
+            RCLCPP_ERROR(this->get_logger(), "Failed to set mode to: %s",
+                         mode.c_str());
+          }
+        };
 
     mode_client_->async_send_request(request, callback);
   }
 
-  void twist_callback(const geometry_msgs::msg::Twist &msg)
-  {
+  void twist_callback(const geometry_msgs::msg::Twist &msg) {
     target_vel_surge = msg.linear.y;
     target_vel_yaw = msg.angular.z;
     target_vel_heave = msg.linear.z;
   }
 
-void control_callback()
-{
+  void control_callback() {
     double depth_error = target_depth_ - current_depth_;
     double threshold = this->get_parameter("depth_threshold").as_double();
     double p_gain = this->get_parameter("depth_p_gain").as_double();
 
     // Standard depth control logic
-    if (!depth_reached_ && std::abs(depth_error) <= threshold)
-    {
-        RCLCPP_INFO(this->get_logger(), "Target depth %.2f reached",
-                    target_depth_);
-        target_vel_heave = 0.0;
-        depth_reached_ = true;
-    }
-    else if (!depth_reached_)
-    {
-        target_vel_heave = depth_error * p_gain;
-        RCLCPP_INFO(this->get_logger(),
-                    "Depth control - Current: %.2f, Target: %.2f, Error: %.2f, "
-                    "Command: %.2f",
-                    current_depth_, target_depth_, depth_error, target_vel_heave);
+    if (!depth_reached_ && std::abs(depth_error) <= threshold) {
+      RCLCPP_INFO(this->get_logger(), "Target depth %.2f reached",
+                  target_depth_);
+      target_vel_heave = 0.0;
+      depth_reached_ = true;
+    } else if (!depth_reached_) {
+      target_vel_heave = depth_error * p_gain;
+      RCLCPP_INFO(this->get_logger(),
+                  "Depth control - Current: %.2f, Target: %.2f, Error: %.2f, "
+                  "Command: %.2f",
+                  current_depth_, target_depth_, depth_error, target_vel_heave);
     }
 
-    if (std::abs(depth_error) > threshold)
-    {
-        depth_reached_ = false;
+    if (std::abs(depth_error) > threshold) {
+      depth_reached_ = false;
     }
 
     // Calculate heave and surge PWM values normally
@@ -342,38 +335,44 @@ void control_callback()
                      surge_medium_pwm_change_, surge_low_pwm_change_);
 
     RCLCPP_INFO(this->get_logger(),
-              "Angle Correction Mode State: %d, Heading: %.2f", angle_correction_enabled_ , current_yaw_);
+                "Angle Correction Mode State: %d, Heading: %.2f",
+                angle_correction_enabled_, current_yaw_);
     // Yaw control - split between angle correction mode and normal mode
     if (angle_correction_enabled_) {
-        // Calculate yaw error (smallest angle between current and stored yaw)
-        double yaw_error = calculate_yaw_difference(current_yaw_, stored_yaw_);
-        
-        // Get yaw correction parameters
-        double yaw_p_gain = this->get_parameter("yaw_p_gain").as_double();
-        double yaw_threshold = this->get_parameter("yaw_threshold").as_double();
-        
-        // Only apply correction if error is above threshold
-        if (std::abs(yaw_error) > yaw_threshold) {
-            // Calculate PWM directly from angle error
-            int yaw_correction = static_cast<int>(-yaw_error * yaw_p_gain);
-            yaw_pwm_ = neutral_pwm_ + yaw_correction;
-            
-            // Ensure PWM stays within safe limits
-            yaw_pwm_ = std::max(neutral_pwm_-yaw_high_pwm_change_, std::min(neutral_pwm_+yaw_high_pwm_change_, yaw_pwm_));
-            
-            RCLCPP_INFO(this->get_logger(),
-                      "Angle-based yaw correction - Target: %.2f, Error: %.2f, "
-                      "PWM: %d", stored_yaw_, yaw_error, yaw_pwm_);
-        } else {
-            // Within threshold, no correction needed
-            yaw_pwm_ = neutral_pwm_;
-            RCLCPP_INFO(this->get_logger(), "Yaw within threshold (%.2f°), no correction needed", yaw_threshold);
-        }
+      // Calculate yaw error (smallest angle between current and stored yaw)
+      double yaw_error = calculate_yaw_difference(current_yaw_, stored_yaw_);
+
+      // Get yaw correction parameters
+      double yaw_p_gain = this->get_parameter("yaw_p_gain").as_double();
+      double yaw_threshold = this->get_parameter("yaw_threshold").as_double();
+
+      // Only apply correction if error is above threshold
+      if (std::abs(yaw_error) > yaw_threshold) {
+        // Calculate PWM directly from angle error
+        int yaw_correction = static_cast<int>(-yaw_error * yaw_p_gain);
+        yaw_pwm_ = neutral_pwm_ + yaw_correction;
+
+        // Ensure PWM stays within safe limits
+        yaw_pwm_ =
+            std::max(neutral_pwm_ - yaw_high_pwm_change_,
+                     std::min(neutral_pwm_ + yaw_high_pwm_change_, yaw_pwm_));
+
+        RCLCPP_INFO(this->get_logger(),
+                    "Angle-based yaw correction - Target: %.2f, Error: %.2f, "
+                    "PWM: %d",
+                    stored_yaw_, yaw_error, yaw_pwm_);
+      } else {
+        // Within threshold, no correction needed
+        yaw_pwm_ = neutral_pwm_;
+        RCLCPP_INFO(this->get_logger(),
+                    "Yaw within threshold (%.2f°), no correction needed",
+                    yaw_threshold);
+      }
     } else {
-        // Normal operation - use velocity-based control for yaw
-        yaw_pwm_ = calculatePWM(
-            target_vel_yaw, yaw_high_cut_off, yaw_medium_cut_off, yaw_low_cut_off,
-            yaw_high_pwm_change_, yaw_medium_pwm_change_, yaw_low_pwm_change_);
+      // Normal operation - use velocity-based control for yaw
+      yaw_pwm_ = calculatePWM(
+          target_vel_yaw, yaw_high_cut_off, yaw_medium_cut_off, yaw_low_cut_off,
+          yaw_high_pwm_change_, yaw_medium_pwm_change_, yaw_low_pwm_change_);
     }
 
     RCLCPP_INFO(this->get_logger(),
@@ -381,36 +380,29 @@ void control_callback()
                 "sent to thrusters: [%d, %d,%d]",
                 target_vel_surge, target_vel_yaw, target_vel_heave, surge_pwm_,
                 yaw_pwm_, heave_pwm_);
-}
+  }
 
   // TODO add custmized PWM for backward motion
   int calculatePWM(float target_vel, const float high_cut_off,
                    const float medium_cut_off, const float low_cut_off,
                    const int high_pwm_change, const int medium_pwm_change,
-                   const int low_pwm_change)
-  {
+                   const int low_pwm_change) {
     float abs_target = abs(target_vel);
     int pwm_change = 0;
     int pwm = 0;
 
-    if (abs_target >= high_cut_off)
-    {
+    if (abs_target >= high_cut_off) {
       pwm_change = high_pwm_change;
-    }
-    else if (abs_target >= medium_cut_off)
-    {
+    } else if (abs_target >= medium_cut_off) {
       pwm_change = medium_pwm_change;
-    }
-    else if (abs_target >= low_cut_off)
-    {
+    } else if (abs_target >= low_cut_off) {
       pwm_change = low_pwm_change;
     }
 
     pwm = neutral_pwm_ + (target_vel >= 0 ? pwm_change : -pwm_change);
     return pwm;
   }
-  void publish_rc_override()
-  {
+  void publish_rc_override() {
     auto rc_out_msg = mavros_msgs::msg::OverrideRCIn();
     rc_out_msg.channels = {static_cast<unsigned short>(neutral_pwm_),
                            static_cast<unsigned short>(neutral_pwm_),
@@ -427,10 +419,8 @@ void control_callback()
                  surge_pwm_, yaw_pwm_, heave_pwm_);
   }
 
-  void arm_vehicle(bool arm)
-  {
-    while (!arm_client_->wait_for_service(1s) && rclcpp::ok())
-    {
+  void arm_vehicle(bool arm) {
+    while (!arm_client_->wait_for_service(1s) && rclcpp::ok()) {
       RCLCPP_INFO(this->get_logger(),
                   "Waiting for arm service to be available...");
     }
@@ -442,21 +432,17 @@ void control_callback()
 
     if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
                                            future) ==
-        rclcpp::FutureReturnCode::SUCCESS)
-    {
+        rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully",
                   arm ? "armed" : "disarmed");
-    }
-    else
-    {
+    } else {
       RCLCPP_ERROR(this->get_logger(), "Failed to call arm service");
     }
   }
 
   rclcpp_action::GoalResponse
   handle_goal(const rclcpp_action::GoalUUID &uuid,
-              std::shared_ptr<const DepthDescent::Goal> goal)
-  {
+              std::shared_ptr<const DepthDescent::Goal> goal) {
     RCLCPP_INFO(this->get_logger(),
                 "Received goal request with targe depth: %.2f meters",
                 goal->target_depth);
@@ -465,24 +451,21 @@ void control_callback()
   }
 
   rclcpp_action::CancelResponse
-  handle_cancel(const std::shared_ptr<GoalHandleDepthDescent> goal_handle)
-  {
+  handle_cancel(const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
     RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
     (void)goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
   void
-  handle_accepted(const std::shared_ptr<GoalHandleDepthDescent> goal_handle)
-  {
+  handle_accepted(const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
     // this needs to return quickly to avoid blocking the executor, so spin up a
     // new thread
     std::thread{std::bind(&DumbController::execute, this, _1), goal_handle}
         .detach();
   }
 
-  void execute(const std::shared_ptr<GoalHandleDepthDescent> goal_handle)
-  {
+  void execute(const std::shared_ptr<GoalHandleDepthDescent> goal_handle) {
     RCLCPP_INFO(this->get_logger(), "Executing goal");
     rclcpp::Rate loop_rate(500ms);
     const auto goal = goal_handle->get_goal();
@@ -493,10 +476,15 @@ void control_callback()
     this->target_depth_ = goal->target_depth;
     this->depth_reached_ = false;
 
-    while (!this->depth_reached_ && rclcpp::ok())
-    {
-      if (goal_handle->is_canceling())
-      {
+    // invoke the led color
+    auto color_request =
+        std::make_shared<auv_interfaces::srv::SetColor::Request>();
+    color_request->color = "#800080";
+
+    led_color_client->async_send_request(color_request);
+
+    while (!this->depth_reached_ && rclcpp::ok()) {
+      if (goal_handle->is_canceling()) {
         result->final_depth = this->current_depth_;
         this->target_depth_ = this->current_depth_;
         this->depth_reached_ = true;
@@ -512,11 +500,12 @@ void control_callback()
     }
 
     // Check if goal is done
-    if (rclcpp::ok())
-    {
+    if (rclcpp::ok()) {
       result->final_depth = depth;
       goal_handle->succeed(result);
       RCLCPP_INFO(this->get_logger(), "Goal succeeded");
+      color_request->color = "#fffffffff";
+      led_color_client->async_send_request(color_request);
     }
   }
 
@@ -550,7 +539,7 @@ void control_callback()
   double current_depth_;
   double target_depth_;
   bool depth_reached_;
-  
+
   // Angle correction variables
   double current_yaw_;
   double stored_yaw_;
@@ -573,8 +562,9 @@ void control_callback()
   rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr calibration_client_;
   // Angle correction service
-  rclcpp::Service<auv_interfaces::srv::AngleCorrection>::SharedPtr angle_correction_srv_;
-  
+  rclcpp::Service<auv_interfaces::srv::AngleCorrection>::SharedPtr
+      angle_correction_srv_;
+  rclcpp::Client<auv_interfaces::srv::SetColor>::SharedPtr led_color_client;
   // Action Server
   rclcpp_action::Server<DepthDescent>::SharedPtr action_server_;
 
@@ -582,8 +572,7 @@ void control_callback()
   rclcpp::TimerBase::SharedPtr publish_timer_;
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
   auto controller = std::make_shared<DumbController>();
   rclcpp::spin(controller);
