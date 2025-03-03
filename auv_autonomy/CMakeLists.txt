@@ -6,29 +6,36 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+find_package(rclcpp_action REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(apriltag_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(mavros REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(auv_interfaces REQUIRED)
 set(dependencies
     rclcpp
+    rclcpp_action
     mavros
     mavros_msgs
     apriltag_msgs
     geometry_msgs
+    auv_interfaces
 )
 
 add_executable(forward src/forward.cpp)
 add_executable(april_follow src/april_follow.cpp)
+add_executable(april_follow_server src/april_follow_server.cpp)
 
 ament_target_dependencies(forward ${dependencies})
 ament_target_dependencies(april_follow ${dependencies})
+ament_target_dependencies(april_follow_server ${dependencies})
 
 install(TARGETS
     forward
     april_follow
+    april_follow_server
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
