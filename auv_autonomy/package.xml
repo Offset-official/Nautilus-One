@@ -13,6 +13,7 @@
   <depend>mavros</depend>
   <depend>mavros_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>auv_interfaces</depend>
   <exec_depend>auv_controller</exec_depend>
   <exec_depend>apriltag_ros</exec_depend>
   <test_depend>ament_lint_auto</test_depend>
