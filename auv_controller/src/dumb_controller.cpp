@@ -218,8 +218,6 @@ void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
 }
 
 void DumbController::control_callback() {
-    if(!soft_arm_)
-        return;
   double depth_error = target_depth_ - current_depth_;
   double threshold = this->get_parameter("depth_threshold").as_double();
   double p_gain = this->get_parameter("depth_p_gain").as_double();
