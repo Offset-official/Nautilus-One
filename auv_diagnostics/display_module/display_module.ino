@@ -4,11 +4,20 @@
 #include "image.h"
 #include <ArduinoJson.h>
 #include <SD.h>
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+#define PIN        6
+#define NUMPIXELS  44
 
 
 #define MAX_IMAGE_SIZE (100 * 100 * 2)
 
 const int chipSelect = BUILTIN_SDCARD; 
+
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 
 
 DynamicJsonDocument doc(2048); // Global allocation for JSON parsing
@@ -41,6 +50,7 @@ void setup() {
 
     // Initial drawing
     Paint_DrawImage(disarmed, 0, 0, 35, 35);
+    pixels.begin();
 }
 
 void loop() {
@@ -60,6 +70,17 @@ void loop() {
         const char* battery_N_val = doc["battery_N"] | "NA";
         const char* task_val = doc["task"] | "NTSK";
         const char* jetson_nav_conn_val = doc["jetson_connection"] ? jetson_nav_conn : jetson_nav_conn_not;
+        const char* neopixel_color = doc["neopixel_color"] | "off";
+
+        // Work with neopixel strip
+        uint8_t r, g, b;
+        hexToRGB(neopixel_color, r, g, b);
+
+        for(int i=0; i<NUMPIXELS; i++) {
+
+            pixels.setPixelColor(i, pixels.Color(r, g, b));
+            pixels.show();
+        }
 
         // Update Display
         static const unsigned char* last_arm_status = nullptr;
@@ -122,4 +143,21 @@ void display_image_from_sd(const char* filename, UWORD Startx, UWORD Starty, UWO
     free(imageData);
 
     Serial.println("Image displayed!");
+}
+
+void hexToRGB(const char* hex, uint8_t &r, uint8_t &g, uint8_t &b) {
+    if (hex[0] == '#') {
+        hex++;  // Skip the '#' character
+    }
+    if (strlen(hex) == 6) {
+        char rStr[3] = {hex[0], hex[1], '\0'};
+        char gStr[3] = {hex[2], hex[3], '\0'};
+        char bStr[3] = {hex[4], hex[5], '\0'};
+
+        r = strtoul(rStr, NULL, 16);
+        g = strtoul(gStr, NULL, 16);
+        b = strtoul(bStr, NULL, 16);
+    } else {
+        r = g = b = 0;  // Default to black if invalid input
+    }
 }

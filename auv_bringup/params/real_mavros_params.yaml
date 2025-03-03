@@ -29,6 +29,7 @@ mavros:
       - setpoint_position
       - vision_pose
       - vfr_hud
+      - global_position
 
       # --master=udp:0.0.0.0:14550 --out=udp:0.0.0.0:14660
 

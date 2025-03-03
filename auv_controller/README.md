@@ -1,3 +1,15 @@
+To execute depth_descent action:
+
+```bash
+ros2 action send_goal /depth_descent auv_interfaces/action/DepthDescent '{target_depth: -0.1}' --feedback
+```
+
+Remember to launch MAVROS with the depth publisher
+
+```bash
+ros2 launch auv_bringup real_launch.py
+```
+
 To launch the simulation environment:
 
 ```bash
@@ -27,3 +39,10 @@ To change the params
 ```bash
 ros2 param set /base_controller pid_ki 2.0 pid_kd 2.0 pid_kp 2.0
 ```
+
+To change mode to angle correction
+```bash
+ros2 service call /angle_correction auv_interfaces/srv/AngleCorrection "{enable: true}"
+```
+
+
