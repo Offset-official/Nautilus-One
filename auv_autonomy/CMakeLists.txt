@@ -12,12 +12,14 @@ find_package(apriltag_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(mavros REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(auv_interfaces REQUIRED)
 set(dependencies
     rclcpp
     mavros
     mavros_msgs
     apriltag_msgs
     geometry_msgs
+    auv_interfaces
 )
 
 add_executable(forward src/forward.cpp)
