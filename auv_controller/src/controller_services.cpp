@@ -21,6 +21,34 @@ void DumbController::arm_vehicle(bool arm) {
   }
 }
 
+void DumbController::soft_arm(
+    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+    std::shared_ptr<std_srvs::srv::SetBool::Response> response) {
+  if (request->data) {
+    send_calibration_request();
+    soft_arm_ = true;
+    auto color_request =
+        std::make_shared<auv_interfaces::srv::SetColor::Request>();
+    color_request->color = "#AFE1AF";
+    auto req_ = led_color_client->async_send_request(color_request);
+    req_.wait();
+    response->success = true;
+    response->message = "Soft Armed";
+    return;
+  }
+  soft_arm_ = false;
+  target_vel_yaw = 0;
+  target_vel_heave = 0;
+  target_vel_surge = 0;
+  auto color_request =
+      std::make_shared<auv_interfaces::srv::SetColor::Request>();
+  color_request->color = "#FFC0CB";
+  auto req_ = led_color_client->async_send_request(color_request);
+  req_.wait();
+  response->success = true;
+  response->message = "Soft Disarmed";
+}
+
 // Handle the angle correction service call
 void DumbController::handle_angle_correction(
     const std::shared_ptr<auv_interfaces::srv::AngleCorrection::Request>

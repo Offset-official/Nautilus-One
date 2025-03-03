@@ -20,6 +20,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float64.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
 using namespace std::chrono_literals;
@@ -42,6 +43,8 @@ private:
       const std::shared_ptr<auv_interfaces::srv::AngleCorrection::Request>
           request,
       std::shared_ptr<auv_interfaces::srv::AngleCorrection::Response> response);
+  void soft_arm(const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                std::shared_ptr<std_srvs::srv::SetBool::Response> response);
   void current_depth_callback(const std_msgs::msg::Float64::SharedPtr msg);
   void set_mode(const std::string &mode);
   void twist_callback(const geometry_msgs::msg::Twist &msg);
@@ -70,6 +73,8 @@ private:
   int yaw_pwm_ = 1500;
   double velocity_surge, velocity_yaw, velocity_heave;
   double target_vel_surge, target_vel_yaw, target_vel_heave;
+
+  bool soft_arm_ = false;
 
   int neutral_pwm_;
   int surge_low_pwm_change_;
@@ -117,11 +122,12 @@ private:
   rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
   rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr calibration_client_;
+  rclcpp::Client<auv_interfaces::srv::SetColor>::SharedPtr led_color_client;
 
   // Angle correction service
   rclcpp::Service<auv_interfaces::srv::AngleCorrection>::SharedPtr
       angle_correction_srv_;
-  rclcpp::Client<auv_interfaces::srv::SetColor>::SharedPtr led_color_client;
+  rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr soft_arm_srv_;
 
   // Action Server
   rclcpp_action::Server<DepthDescent>::SharedPtr action_server_;

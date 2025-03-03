@@ -164,6 +164,8 @@ DumbController::DumbController() : Node("dumb_controller") {
       this->create_service<auv_interfaces::srv::AngleCorrection>(
           "angle_correction",
           std::bind(&DumbController::handle_angle_correction, this, _1, _2));
+  soft_arm_srv_ = this->create_service<std_srvs::srv::SetBool>("soft_arm",
+          std::bind(&DumbController::soft_arm, this, _1, _2));
 
   // Arm the vehicle
   send_calibration_request();
@@ -216,6 +218,8 @@ void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
 }
 
 void DumbController::control_callback() {
+    if(!soft_arm_)
+        return;
   double depth_error = target_depth_ - current_depth_;
   double threshold = this->get_parameter("depth_threshold").as_double();
   double p_gain = this->get_parameter("depth_p_gain").as_double();
