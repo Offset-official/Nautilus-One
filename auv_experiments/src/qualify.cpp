@@ -1,5 +1,6 @@
 #include "auv_interfaces/action/depth_descent.hpp"
 #include "auv_interfaces/msg/detection_array.hpp"
+#include "auv_interfaces/srv/angle_correction.hpp"
 #include "cv_bridge/cv_bridge.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -192,6 +193,12 @@ private:
       if (elapsed_lost_state < forward_after_lost_) {
         cmd_vel_msg.linear.y = forward_speed_;
         cmd_vel_msg.angular.z = 0.0;
+
+        auto request = std::make_shared<auv_interfaces::srv::AngleCorrection::Request>();
+        request->enable = true;
+        auto srv_res = angle_correct_client_->async_send_request(request);
+        srv_res.wait();
+
         RCLCPP_INFO(
             this->get_logger(),
             "[LOST_GATE] Moving forward for %.2f sec (elapsed=%.2f/%.2f)",
@@ -332,6 +339,8 @@ private:
       depth_descent_action;
 
   rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr soft_arm_client_;
+  rclcpp::Client<auv_interfaces::srv::AngleCorrection>::SharedPtr
+      angle_correct_client_;
   // Gate center in image coordinates
   std::pair<int, int> gate_center_{320, 240};
   rclcpp::Time last_gate_detection_time_;
