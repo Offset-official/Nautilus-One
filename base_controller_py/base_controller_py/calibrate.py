@@ -13,7 +13,7 @@ class DepthSensorCalibration(Node):
     def __init__(self):
         super().__init__("depth_sensor_calibration")
 
-        self.connection_string = "udp:0.0.0.0:14550"
+        self.connection_string = "udpout:0.0.0.0:9000"
 
         # Create MAVLink connection
         self.mav_connection = None
