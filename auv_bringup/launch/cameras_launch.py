@@ -31,7 +31,7 @@ def generate_launch_description():
     
     camera_name_arg_2 = DeclareLaunchArgument(
         'camera_name_2',
-        default_value='auv_camera_bottom',
+        default_value='auv_camera_down',
         description='Camera name'
     )
 
