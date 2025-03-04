@@ -6,20 +6,22 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+find_package(rclcpp_action REQUIRED)
 find_package(auv_interfaces REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 
-
 set(dependencies
     rclcpp
+    rclcpp_action
+    std_srvs
     OpenCV 
     cv_bridge
     auv_interfaces
 )
-
 add_executable(qualify src/qualify.cpp)
 
 ament_target_dependencies(qualify ${dependencies})

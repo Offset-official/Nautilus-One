@@ -4,3 +4,4 @@ install
 log
 build
 *.pyc
+*.tar.gz

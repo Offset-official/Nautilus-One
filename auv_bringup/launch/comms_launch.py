@@ -35,7 +35,7 @@ def generate_launch_description():
                 package="auv_comms",
                 executable="read_sequence_server",
                 output="screen",
-                remappings=[("/input_image/compressed", "/image_raw/compressed")],
+                remappings=[("/input_image/compressed", "/auv_camera_front/compressed")],
                 condition=UnlessCondition(LaunchConfiguration("debug")),
             ),
             Node(
@@ -43,7 +43,7 @@ def generate_launch_description():
                 executable="color_detector_pub",
                 output="screen",
                 parameters=[color_detector_params_file],
-                remappings=[("/input_image/compressed", "/image_raw/compressed")],
+                remappings=[("/input_image/compressed", "/auv_camera_front/compressed")],
                 condition=IfCondition(LaunchConfiguration("debug")),
             ),
         ]

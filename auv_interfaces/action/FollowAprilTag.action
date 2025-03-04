@@ -1,0 +1,7 @@
+uint16 tag_id
+bool min
+float32 target_screen_percentange
+---
+float32 screen_percentange
+---
+float32 current_screen_percentange
