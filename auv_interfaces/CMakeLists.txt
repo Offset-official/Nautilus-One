@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SetColor.srv"
   "srv/AngleCorrection.srv"
   "action/ReadCommSequence.action"
+  "action/FollowAprilTag.action"
   "action/DepthDescent.action"
   DEPENDENCIES sensor_msgs std_msgs
 )

@@ -39,3 +39,10 @@ To change the params
 ```bash
 ros2 param set /base_controller pid_ki 2.0 pid_kd 2.0 pid_kp 2.0
 ```
+
+To change mode to angle correction
+```bash
+ros2 service call /angle_correction auv_interfaces/srv/AngleCorrection "{enable: true}"
+```
+
+
