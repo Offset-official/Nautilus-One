@@ -44,7 +44,6 @@ RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
 # Add source commands to .bashrc
 RUN echo "source /auv_ws/install/setup.bash" >> /root/.bashrc
 
-# Updated tmux command to set up three windows with specific commands
-CMD ["tmux", "new-session", "-s", "nano-ros", "echo hi", ";", \
-     "new-window", "-n", "launch", "/bin/bash", "-c", "source /auv_ws/install/setup.bash && ros2 launch auv_bringup nano.launch.py", ";", \
-     "new-window", "-n", "shell"]
+# Updated tmux command to set up two windows with specific commands
+CMD ["tmux", "new-session", "-s", "nano-ros", "/bin/bash", "-c", "source /auv_ws/install/setup.bash && ros2 launch auv_bringup nano.launch.py", ";", \
+     "new-window", "/bin/bash"]
