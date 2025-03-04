@@ -23,6 +23,18 @@ def generate_launch_description():
         description='Camera frame rate'
     )
     
+    camera_device_arg_2 = DeclareLaunchArgument(
+        'camera_device_2',
+        default_value='/dev/video2',
+        description='Camera device path'
+    )
+    
+    camera_name_arg_2 = DeclareLaunchArgument(
+        'camera_name_2',
+        default_value='auv_camera_bottom',
+        description='Camera name'
+    )
+
     # Create and return launch description
     return LaunchDescription([
         camera_device_arg,
@@ -36,6 +48,17 @@ def generate_launch_description():
             parameters=[{
                 'camera_device': LaunchConfiguration('camera_device'),
                 'camera_name': LaunchConfiguration('camera_name'),
+                'frame_rate': LaunchConfiguration('frame_rate')
+            }]
+        ),
+        Node(
+            package='auv_camera',
+            executable='publish_camera',
+            name='publish_camera',
+            output='screen',
+            parameters=[{
+                'camera_device': LaunchConfiguration('camera_device_2'),
+                'camera_name': LaunchConfiguration('camera_name_2'),
                 'frame_rate': LaunchConfiguration('frame_rate')
             }]
         )
