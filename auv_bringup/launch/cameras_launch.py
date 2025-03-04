@@ -39,6 +39,8 @@ def generate_launch_description():
     return LaunchDescription([
         camera_device_arg,
         camera_name_arg,
+        camera_device_arg_2,
+        camera_name_arg_2,
         frame_rate_arg,
         Node(
             package='auv_camera',
