@@ -69,5 +69,5 @@ docker load -i nano-ros-full.tar.gz
 ```
 ## Run the nano container
 ```bash
-sudo docker run --rm --network host -it --device=/dev/ttyACM-11 --device=/dev/video0 --device=/dev/video2 ghcr.io/offset-official/nano-ros-full 
+sudo docker run --rm --network host -it --device=/dev/ttyACM0 --device=/dev/video0 --device=/dev/video2 ghcr.io/offset-official/nano-ros-full 
 ```
