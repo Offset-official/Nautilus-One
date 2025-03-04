@@ -13,6 +13,9 @@ def generate_launch_description():
     diagnostics_launch_file = os.path.join(get_package_share_directory('auv_diagnostics'),'launch','diagnostics_launch.py')
     diagnostics_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(diagnostics_launch_file))
 
+    comms_launch_file = os.path.join(get_package_share_directory('auv_bringup'),'launch','comms_launch.py')
+    comms_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(comms_launch_file))
+
     return LaunchDescription([
-        camera_launch,diagnostics_launch
+        camera_launch,diagnostics_launch,comms_launch
         ])
