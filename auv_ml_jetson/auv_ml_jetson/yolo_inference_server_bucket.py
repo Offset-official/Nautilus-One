@@ -3,7 +3,6 @@
 import time
 import rclpy
 from rclpy.node import Node
-from ament_index_python.packages import get_package_share_directory
 
 from auv_interfaces.srv import YoloInference
 from auv_interfaces.msg import Detection
@@ -18,9 +17,11 @@ class BucketInferenceClient(Node):
     def __init__(self):
         super().__init__("yolo_inference_client_bucket")
         self.srv = self.create_service(YoloInference, "yolo_inference_bucket", self.handle_inference)
-        # Set the FastAPI server URL for bucket inference (replace <FASTAPI_SERVER_IP> with actual IP)
-        self.fastapi_url = "http://192.168.2.4:8000/inference/bucket"
-        self.get_logger().info(f"ROS Service Node for Bucket Inference is ready. FastAPI URL: {self.fastapi_url}")
+        # Declare the FastAPI server IP parameter (default: 192.168.2.4)
+        self.declare_parameter("fastapi_server_ip", "192.168.2.4")
+        ip = self.get_parameter("fastapi_server_ip").value
+        self.fastapi_url = f"http://{ip}:8000/inference/bucket"
+        self.get_logger().info(f"Bucket Inference Node ready. FastAPI URL: {self.fastapi_url}")
 
     def handle_inference(self, request, response):
         start_time = time.time()
@@ -33,7 +34,7 @@ class BucketInferenceClient(Node):
             response.error_message = f"CvBridge Error: {e}"
             return response
 
-        # Encode image to JPEG and then to base64
+        # Encode image to JPEG then to base64.
         ret, buffer = cv2.imencode('.jpg', cv_image)
         if not ret:
             self.get_logger().error("Failed to encode image")
@@ -41,7 +42,6 @@ class BucketInferenceClient(Node):
             response.error_message = "Failed to encode image"
             return response
         img_base64 = base64.b64encode(buffer).decode('utf-8')
-
         payload = {"image": img_base64}
         try:
             r = requests.post(self.fastapi_url, json=payload, timeout=10)
@@ -57,7 +57,7 @@ class BucketInferenceClient(Node):
             response.error_message = f"HTTP Request failed: {e}"
             return response
 
-        # Decode annotated image from base64
+        # Decode annotated image from base64.
         annotated_image_b64 = result.get("annotated_image")
         if annotated_image_b64 is None:
             self.get_logger().error("No annotated_image in response")
@@ -75,7 +75,7 @@ class BucketInferenceClient(Node):
             response.error_message = f"Failed to decode annotated image: {e}"
             return response
 
-        # Process detections
+        # Process detections.
         detections_data = result.get("detections", [])
         detections = []
         for det in detections_data:

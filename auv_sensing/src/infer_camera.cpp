@@ -1,10 +1,10 @@
 #include <opencv2/opencv.hpp>
-
 #include "auv_interfaces/msg/detection_array.hpp"
 #include "auv_interfaces/srv/yolo_inference.hpp"
 #include "cv_bridge/cv_bridge.h"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "sensor_msgs/msg/compressed_image.hpp"  // For compressed images
 
 using namespace std::chrono_literals;
 
@@ -18,21 +18,21 @@ public:
     this->declare_parameter<std::string>("camera_pub_topic", "/auv_camera/image_inferred");
     this->declare_parameter<std::string>("detections_pub_topic", "/auv_camera/detections");
     this->declare_parameter<std::string>("inference_service", "yolo_inference_server");
+    // New parameter indicating whether the source image is compressed
+    this->declare_parameter<bool>("compressed", false);
 
     // Get parameter values
-    camera_source_topic_   = this->get_parameter("camera_source_topic").as_string();
-    camera_pub_topic_      = this->get_parameter("camera_pub_topic").as_string();
-    detections_pub_topic_  = this->get_parameter("detections_pub_topic").as_string();
-    inference_service_     = this->get_parameter("inference_service").as_string();
+    camera_source_topic_  = this->get_parameter("camera_source_topic").as_string();
+    camera_pub_topic_     = this->get_parameter("camera_pub_topic").as_string();
+    detections_pub_topic_ = this->get_parameter("detections_pub_topic").as_string();
+    inference_service_    = this->get_parameter("inference_service").as_string();
+    is_compressed_        = this->get_parameter("compressed").as_bool();
 
     RCLCPP_INFO(get_logger(), "Starting node...");
+    RCLCPP_INFO(get_logger(), "Subscribing to topic: %s", camera_source_topic_.c_str());
+    RCLCPP_INFO(get_logger(), "Compressed parameter: %s", is_compressed_ ? "true" : "false");
 
-    // if (!checkTopicExists(camera_source_topic_)) {
-    //   RCLCPP_ERROR(get_logger(), "Topic '%s' is not alive. Exiting...", camera_source_topic_.c_str());
-    //   rclcpp::shutdown();
-    //   return;
-    // }
-
+    // (Optional) Check if topic exists...
     RCLCPP_INFO(get_logger(), "Topic '%s' is alive", camera_source_topic_.c_str());
     RCLCPP_INFO(get_logger(), "Start Gazebo to start inference.");
 
@@ -47,27 +47,29 @@ private:
   std::string camera_pub_topic_;
   std::string detections_pub_topic_;
   std::string inference_service_;
+  bool is_compressed_;
 
-  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
+  rclcpp::SubscriptionBase::SharedPtr subscription_;
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
   rclcpp::Publisher<auv_interfaces::msg::DetectionArray>::SharedPtr detectionsPublisher_;
   rclcpp::Client<auv_interfaces::srv::YoloInference>::SharedPtr client_;
 
-  // Check if a topic exists
-  bool checkTopicExists(const std::string & topic)
-  {
-    auto topics = this->get_topic_names_and_types();
-    return topics.find(topic) != topics.end();
-  }
-
-  // Setup the image subscription
+  // Setup the image subscription based on whether the source is compressed.
   void setupSubscriptions()
   {
-    subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-      camera_source_topic_,
-      1,
-      std::bind(&CameraInferenceNode::imageCallback, this, std::placeholders::_1)
-    );
+    if (is_compressed_) {
+      subscription_ = this->create_subscription<sensor_msgs::msg::CompressedImage>(
+        camera_source_topic_,
+        1,
+        std::bind(&CameraInferenceNode::compressedImageCallback, this, std::placeholders::_1)
+      );
+    } else {
+      subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
+        camera_source_topic_,
+        1,
+        std::bind(&CameraInferenceNode::imageCallback, this, std::placeholders::_1)
+      );
+    }
   }
 
   // Setup publishers for the inferred image and detection array
@@ -118,11 +120,48 @@ private:
     }
   }
 
-  // Callback triggered when a new image is received from the camera topic
+  // Callback for uncompressed image messages
   void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg)
   {
+    processImage(msg);
+  }
+
+  // Callback for compressed image messages
+  void compressedImageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg)
+  {
+    try {
+      // Wrap the compressed image data in a cv::Mat
+      cv::Mat encoded_img(1, msg->data.size(), CV_8UC1,
+                          const_cast<unsigned char*>(msg->data.data()));
+      // Decode the image (assuming MJPEG compression)
+      cv::Mat decoded_img = cv::imdecode(encoded_img, cv::IMREAD_COLOR);
+      if (decoded_img.empty()) {
+        RCLCPP_ERROR(get_logger(), "Failed to decode compressed image.");
+        return;
+      }
+      // Convert the decoded image to a sensor_msgs::msg::Image using cv_bridge
+      sensor_msgs::msg::Image::SharedPtr image_msg;
+      try {
+        // image_msg = cv_bridge::CvImage(msg->header, "bgr8", decoded_img)->toImageMsg();
+        cv_bridge::CvImage cv_img(msg->header, "bgr8", decoded_img);
+sensor_msgs::msg::Image::SharedPtr image_msg = cv_img.toImageMsg();
+
+      } catch (cv_bridge::Exception & e) {
+        RCLCPP_ERROR(get_logger(), "cv_bridge exception: %s", e.what());
+        return;
+      }
+      processImage(image_msg);
+    }
+    catch (const std::exception & e) {
+      RCLCPP_ERROR(get_logger(), "Exception in compressedImageCallback: %s", e.what());
+    }
+  }
+
+  // Process the image and call the inference service.
+  void processImage(const sensor_msgs::msg::Image::SharedPtr & img_msg)
+  {
     auto request = std::make_shared<auv_interfaces::srv::YoloInference::Request>();
-    request->image = *msg;
+    request->image = *img_msg;
 
     if (!waitForServiceAvailability()) {
       rclcpp::shutdown();
