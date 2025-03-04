@@ -17,6 +17,11 @@ def generate_launch_description():
         default_value="bucket",
         description="Inference type for the down camera (gate, bucket, or None).",
     )
+    jetson_arg = DeclareLaunchArgument(
+        "jetson",
+        default_value="false",
+        description="Use auv_ml_jetson package if true, otherwise use auv_ml package.",
+    )
 
     # Bridge node to bring images from Gazebo to ROS.
     bridge_node = Node(
@@ -30,10 +35,16 @@ def generate_launch_description():
         ],
     )
 
+    # Determine package based on jetson argument.
+    # If jetson is "true", then use "auv_ml_jetson", else "auv_ml".
+    package_substitution = PythonExpression(
+        ["'auv_ml_jetson' if '", LaunchConfiguration("jetson"), "' == 'true' else 'auv_ml'"]
+    )
+
     # Inference service nodes:
     # Launch the gate server if either camera is set to "gate".
     yolo_gate_node = Node(
-        package="auv_ml",
+        package=package_substitution,
         executable="yolo_inference_server_gate",
         name="yolo_inference_gate",
         output="screen",
@@ -51,7 +62,7 @@ def generate_launch_description():
     )
     # Launch the bucket server if either camera is set to "bucket".
     yolo_bucket_node = Node(
-        package="auv_ml",
+        package=package_substitution,
         executable="yolo_inference_server_bucket",
         name="yolo_inference_bucket",
         output="screen",
@@ -229,6 +240,7 @@ def generate_launch_description():
         [
             front_inference_arg,
             down_inference_arg,
+            jetson_arg,
             #        bridge_node,
             yolo_gate_node,
             yolo_bucket_node,
