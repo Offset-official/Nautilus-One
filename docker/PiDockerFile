@@ -1,10 +1,9 @@
 FROM arm64v8/ros:humble-ros-base
 
-RUN apt-get update && apt-get install -y tmux python3-pip
-RUN apt-get update && apt-get install -y ros-humble-demo-nodes-cpp
-RUN apt-get update && apt-get install -y neovim
-RUN rosdep update
+RUN apt-get update && apt-get install -y python3-pip \
+ros-humble-demo-nodes-cpp neovim tmux
 
+RUN rosdep update
 
 ##fastdds config
 ENV ROS_DISCOVERY_SERVER=127.0.0.1:11811
