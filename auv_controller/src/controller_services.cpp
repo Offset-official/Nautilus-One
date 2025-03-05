@@ -30,7 +30,7 @@ void DumbController::soft_arm(
     auto color_request =
         std::make_shared<auv_interfaces::srv::SetColor::Request>();
     color_request->color = "#AFE1AF";
-    auto req_ = led_color_client->async_send_request(color_request);
+    auto req_ = led_color_client_->async_send_request(color_request);
     req_.wait();
     response->success = true;
     response->message = "Soft Armed";
@@ -43,7 +43,7 @@ void DumbController::soft_arm(
   auto color_request =
       std::make_shared<auv_interfaces::srv::SetColor::Request>();
   color_request->color = "#FFC0CB";
-  auto req_ = led_color_client->async_send_request(color_request);
+  auto req_ = led_color_client_->async_send_request(color_request);
   req_.wait();
   response->success = true;
   response->message = "Soft Disarmed";
