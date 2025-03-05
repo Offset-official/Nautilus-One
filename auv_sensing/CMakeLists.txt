@@ -27,6 +27,7 @@ add_executable(show_camera_sdp src/show_camera_sdp.cpp)
 add_executable(republish_sdp src/republish_sdp.cpp)
 add_executable(republish_sdp_camera_info src/republish_sdp_camera_info.cpp)
 add_executable(publish_webcam src/publish_webcam.cpp)
+add_executable(show_camera_uncomp src/show_camera_uncomp.cpp)
 
 
 
@@ -40,6 +41,7 @@ ament_target_dependencies(show_camera_sdp ${dependencies})
 ament_target_dependencies(republish_sdp ${dependencies})
 ament_target_dependencies(republish_sdp_camera_info ${dependencies})
 ament_target_dependencies(publish_webcam ${dependencies})
+ament_target_dependencies(show_camera_uncomp ${dependencies})
 
 
 
@@ -50,6 +52,7 @@ install(TARGETS
     show_camera_url
     show_camera_compressed
     show_camera_sdp
+    show_camera_uncomp
     republish_sdp
     publish_webcam
     republish_sdp_camera_info
