@@ -1,13 +1,13 @@
 FROM arm64v8/ros:humble-ros-base
 
-RUN apt-get update && apt-get install -y python3-pip
-RUN apt-get update && apt-get install -y ros-humble-demo-nodes-cpp
-RUN apt-get update && apt-get install -y neovim tmux v4l-utils
+RUN apt-get update && apt-get install -y python3-pip \ 
+ros-humble-demo-nodes-cpp neovim tmux
+
 RUN rosdep update
 
 ## gstreamer install
 RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
-RUN apt install -y ros-humble-image-transport-plugins
+RUN apt-get install -y ros-humble-image-transport-plugins v4l-utils
 
 ##fastdds config
 ENV ROS_DISCOVERY_SERVER=192.168.2.2:11811
