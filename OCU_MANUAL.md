@@ -1,6 +1,6 @@
 # Top Side Computing Manual
 
-This guide instructs the operational commands for the AUV. In the correct configuration all
+This guide instructs the operational commands for the AUV. In the current configuration all
 nodes except inference nodes are running on the AUV.
 
 ## Prerequisites
