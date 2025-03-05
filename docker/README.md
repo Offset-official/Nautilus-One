@@ -27,7 +27,7 @@ scp pi-ros-full.tar pi@192.168.2.2:~/docker_images
 ## Load the image
 > Run this command inside the raspberry pi
 ```bash
-docker load -i pi-ros.tar
+docker load -i ~/docker_images/pi-ros-full.tar
 ```
 
 ## Run the container
