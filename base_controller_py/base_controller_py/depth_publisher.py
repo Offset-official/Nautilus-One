@@ -13,7 +13,7 @@ class MavlinkDepthPublisher(Node):
         self.publisher_ = self.create_publisher(Float64, "/current_depth", 5)
 
         # Connect to MAVLink (adjust for your connection type)
-        self.connection = mavutil.mavlink_connection("udpout:0.0.0.0:9000")  # SITL
+        self.connection = mavutil.mavlink_connection("udp:0.0.0.0:14000")  # SITL
         # self.connection = mavutil.mavlink_connection('/dev/ttyUSB0', baud=57600)  # Serial
 
         # Wait for MAVLink heartbeat
