@@ -5,3 +5,4 @@ log
 build
 *.pyc
 *.tar.gz
+docker/pi-ros-full.tar

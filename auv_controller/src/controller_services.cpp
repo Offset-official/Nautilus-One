@@ -9,15 +9,28 @@ void DumbController::arm_vehicle(bool arm) {
   auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
   request->value = arm;
 
-  auto future = arm_client_->async_send_request(request);
+  bool command_success = false;
+  while (!command_success && rclcpp::ok()) {
+    auto future = arm_client_->async_send_request(request);
 
-  if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
-                                         future) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
-    RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully",
-                arm ? "armed" : "disarmed");
-  } else {
-    RCLCPP_ERROR(this->get_logger(), "Failed to call arm service");
+    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(),
+                                           future) ==
+        rclcpp::FutureReturnCode::SUCCESS) {
+      if (future.get()->success) {
+        command_success = true;
+        RCLCPP_INFO(this->get_logger(), "Vehicle %s successfully",
+                    arm ? "armed" : "disarmed");
+      } else {
+        RCLCPP_WARN(this->get_logger(), "Vehicle %s command received but not successful, retrying...",
+                    arm ? "arm" : "disarm");
+        // Add a small delay before retrying to avoid spamming
+        std::this_thread::sleep_for(500ms);
+      }
+    } else {
+      RCLCPP_ERROR(this->get_logger(), "Failed to call arm service, retrying...");
+      // Add a small delay before retrying
+      std::this_thread::sleep_for(500ms);
+    }
   }
 }
 
@@ -30,7 +43,7 @@ void DumbController::soft_arm(
     auto color_request =
         std::make_shared<auv_interfaces::srv::SetColor::Request>();
     color_request->color = "#AFE1AF";
-    auto req_ = led_color_client->async_send_request(color_request);
+    auto req_ = led_color_client_->async_send_request(color_request);
     req_.wait();
     response->success = true;
     response->message = "Soft Armed";
@@ -43,7 +56,7 @@ void DumbController::soft_arm(
   auto color_request =
       std::make_shared<auv_interfaces::srv::SetColor::Request>();
   color_request->color = "#FFC0CB";
-  auto req_ = led_color_client->async_send_request(color_request);
+  auto req_ = led_color_client_->async_send_request(color_request);
   req_.wait();
   response->success = true;
   response->message = "Soft Disarmed";

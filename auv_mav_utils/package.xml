@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>base_controller_py</name>
+  <name>auv_mav_utils</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="subham.jalan@plaksha.edu.in">jalan</maintainer>
@@ -9,6 +9,7 @@
   <depend>rclpy</depend>
   <depend>std_srvs</depend>
   <depend>rcl_interfaces</depend>
+  <depend>auv_interfaces</depend>
   <exec_depend>python-pymavlink</exec_depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -159,6 +159,7 @@ DumbController::DumbController() : Node("dumb_controller") {
       this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
   calibration_client_ =
       this->create_client<std_srvs::srv::Trigger>("/calibrate_depth_sensor");
+  led_color_client_ = this->create_client<auv_interfaces::srv::SetColor>("/set_color");
   // Set up angle correction service
   angle_correction_srv_ =
       this->create_service<auv_interfaces::srv::AngleCorrection>(
@@ -167,6 +168,7 @@ DumbController::DumbController() : Node("dumb_controller") {
   soft_arm_srv_ = this->create_service<std_srvs::srv::SetBool>("soft_arm",
           std::bind(&DumbController::soft_arm, this, _1, _2));
 
+  
   // Arm the vehicle
   send_calibration_request();
   arm_vehicle(true);

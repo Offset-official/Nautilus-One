@@ -1,22 +1,19 @@
 FROM arm64v8/ros:humble-ros-base
 
+RUN apt-get update && apt-get install -y python3-pip \ 
+ros-humble-demo-nodes-cpp neovim tmux
+
+RUN rosdep update
+
+## gstreamer install
+RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
+RUN apt-get install -y ros-humble-image-transport-plugins v4l-utils
+
+##fastdds config
 ENV ROS_DISCOVERY_SERVER=192.168.2.2:11811
 COPY nano_super_client_configuration_file.xml /nano_super_client_configuration_file.xml
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/nano_super_client_configuration_file.xml       
 
-# Define path to packages list file
-ARG PACKAGES_FILE="nano_packages.list"
-
-RUN apt-get update && apt-get install -y python3-pip
-RUN apt-get update && apt-get install -y ros-humble-demo-nodes-cpp
-RUN apt-get update && apt-get install -y neovim tmux v4l-utils
-
-## gstreamer install
-RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
-
-RUN rosdep update
-
-# Create workspace directory
 RUN mkdir -p /auv_ws/src/auv_ros2
 
 COPY ./auv_autonomy/package.xml /auv_ws/src/auv_ros2/auv_autonomy/package.xml
@@ -27,7 +24,6 @@ COPY ./auv_diagnostics/package.xml /auv_ws/src/auv_ros2/auv_diagnostics/package.
 COPY ./auv_experiments/package.xml /auv_ws/src/auv_ros2/auv_experiments/package.xml
 COPY ./auv_interfaces/package.xml /auv_ws/src/auv_ros2/auv_interfaces/package.xml
 
-# Now run rosdep update and install dependencies based on the actual files
 WORKDIR /auv_ws
 RUN rosdep install --from-paths src --ignore-src -r -y
 

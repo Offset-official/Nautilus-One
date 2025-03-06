@@ -1,6 +1,6 @@
 # Top Side Computing Manual
 
-This guide instructs the operational commands for the AUV. In the correct configuration all
+This guide instructs the operational commands for the AUV. In the current configuration all
 nodes except inference nodes are running on the AUV.
 
 ## Prerequisites
@@ -34,7 +34,7 @@ These commands would have to be run in every terminal session.
 - **auv_controller** : Controller Node
 - **auv_interfaces** : Custom Messages,Srvs,Actions
 - **auv_manipulators** : Arm actuation packages
-- **base_controller_py** : Mavlink nodes
+- **auv_mav_utils** : Mavlink nodes
 
 ### Jetson Nano (Inference) Packages
 
@@ -165,6 +165,13 @@ If you need to manaully arm the thrusters,
 ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: true}"
 ```
 
+
+### AUV Mav Utils
+
+To run heading test with different params.  
+```bash
+ros2 run auv_mav_utils heading_test --ros-args -p target_depth:=-0.8 -p linear_speed:=1.5 -p enable_angle_correction:=false -p movement_duration:=15.0
+```
 ### Arm Controller
 
 To actuate the arm, run the following command
