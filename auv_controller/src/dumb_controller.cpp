@@ -168,6 +168,7 @@ DumbController::DumbController() : Node("dumb_controller") {
   soft_arm_srv_ = this->create_service<std_srvs::srv::SetBool>("soft_arm",
           std::bind(&DumbController::soft_arm, this, _1, _2));
 
+  
   // Arm the vehicle
   send_calibration_request();
   arm_vehicle(true);

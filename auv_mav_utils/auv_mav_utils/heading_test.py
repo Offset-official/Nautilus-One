@@ -75,6 +75,7 @@ class HeadingTest(Node):
         self._get_result_future.add_done_callback(self.get_result_callback)
     
     def get_result_callback(self, future):
+        self._logger.info("Goal completed")
         result = future.result().result
         self.get_logger().info(f"Depth descent completed. Final depth: {result.final_depth}")
         
