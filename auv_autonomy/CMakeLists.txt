@@ -27,18 +27,15 @@ set(dependencies
 add_executable(forward src/forward.cpp)
 add_executable(april_follow src/april_follow.cpp)
 add_executable(april_follow_server src/april_follow_server.cpp)
-add_executable(heading_test src/heading_test.cpp)
 
 ament_target_dependencies(forward ${dependencies})
 ament_target_dependencies(april_follow ${dependencies})
 ament_target_dependencies(april_follow_server ${dependencies})
-ament_target_dependencies(heading_test ${dependencies})
 
 install(TARGETS
     forward
     april_follow
     april_follow_server
-    heading_test
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}
