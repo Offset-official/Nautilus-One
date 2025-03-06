@@ -47,6 +47,7 @@ void DumbController::execute(
   auto color_request =
       std::make_shared<auv_interfaces::srv::SetColor::Request>();
   color_request->color = "#800080";
+  color_request->color_count = 0;
 
   auto req_= led_color_client_->async_send_request(color_request);
   req_.wait();
@@ -73,6 +74,7 @@ void DumbController::execute(
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Goal succeeded");
     color_request->color = "#ffffff";
+    color_request->color_count = 0;
     req_ = led_color_client_->async_send_request(color_request);
     req_.wait();
   }
