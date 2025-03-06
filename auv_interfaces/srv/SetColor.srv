@@ -1,4 +1,5 @@
 string color
+int8 color_count
 ---
 bool success
 string message
