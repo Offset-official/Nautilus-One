@@ -11,9 +11,11 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(auv_interfaces REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
 find_package(ZMQ)
@@ -29,9 +31,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(dependencies
     rclcpp
+    rclcpp_action
     behaviortree_cpp_v3
     sensor_msgs
     geometry_msgs
+    auv_interfaces
     ament_index_cpp
 )
 
@@ -40,11 +44,13 @@ include_directories(include ${ZMQ_INCLUDE_DIRS})
 add_library(auv_elapsed_bt_node SHARED src/auv_bt/Elapsed.cpp)
 add_library(auv_forward_bt_node SHARED src/auv_bt/Forward.cpp)
 add_library(auv_turn_bt_node SHARED src/auv_bt/Turn.cpp)
+add_library(auv_descend_bt_node SHARED src/auv_bt/Descend.cpp)
 
 list(APPEND plugin_libs
     auv_elapsed_bt_node
     auv_forward_bt_node
     auv_turn_bt_node
+    auv_descend_bt_node
 )
 
 foreach(bt_plugin ${plugin_libs})
