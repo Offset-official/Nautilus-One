@@ -45,12 +45,14 @@ add_library(auv_elapsed_bt_node SHARED src/auv_bt/Elapsed.cpp)
 add_library(auv_forward_bt_node SHARED src/auv_bt/Forward.cpp)
 add_library(auv_turn_bt_node SHARED src/auv_bt/Turn.cpp)
 add_library(auv_descend_bt_node SHARED src/auv_bt/Descend.cpp)
+add_library(auv_set_led_color_bt_node SHARED src/auv_bt/SetLEDColor.cpp)
 
 list(APPEND plugin_libs
     auv_elapsed_bt_node
     auv_forward_bt_node
     auv_turn_bt_node
     auv_descend_bt_node
+    auv_set_led_color_bt_node
 )
 
 foreach(bt_plugin ${plugin_libs})
