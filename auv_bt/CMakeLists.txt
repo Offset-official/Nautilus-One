@@ -39,10 +39,12 @@ include_directories(include ${ZMQ_INCLUDE_DIRS})
 
 add_library(auv_elapsed_bt_node SHARED src/auv_bt/Elapsed.cpp)
 add_library(auv_forward_bt_node SHARED src/auv_bt/Forward.cpp)
+add_library(auv_turn_bt_node SHARED src/auv_bt/Turn.cpp)
 
 list(APPEND plugin_libs
     auv_elapsed_bt_node
     auv_forward_bt_node
+    auv_turn_bt_node
 )
 
 foreach(bt_plugin ${plugin_libs})
