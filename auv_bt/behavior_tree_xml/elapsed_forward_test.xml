@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <SequenceStar>
+            <Condition ID="Elapsed" seconds="15"/>
+            <Action ID="Forward" speed="0.5"/>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Condition ID="Elapsed">
+            <input_port name="seconds" type="int"/>
+        </Condition>
+        <Action ID="Forward">
+            <input_port default="0.5" name="speed">speed to move in the y direction</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
