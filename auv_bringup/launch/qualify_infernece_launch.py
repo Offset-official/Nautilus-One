@@ -11,7 +11,7 @@ def generate_launch_description():
     # Declare a launch argument "compressed" with default value "false".
     compressed_arg = DeclareLaunchArgument(
         'compressed',
-        default_value='false',
+        default_value='true',
         description='If true, the input image is compressed and the uncomp node should be launched'
     )
 
