@@ -4,20 +4,17 @@
     <BehaviorTree ID="BehaviorTree">
         <SequenceStar>
             <Condition ID="Elapsed" seconds="15"/>
-            <Action ID="Descend" target_depth="-0.5"/>
+            <Action ID="Descend" target_depth="-0.0"/>
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="Descend">
-            <input_port default="0.0" name="target_depth">depth to descend to</input_port>
+            <input_port name="target_depth" type="double"/>
         </Action>
         <Condition ID="Elapsed">
             <input_port name="seconds" type="int"/>
         </Condition>
-        <Action ID="Turn">
-            <input_port default="0.5" name="speed">speed at which to turn</input_port>
-        </Action>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>
