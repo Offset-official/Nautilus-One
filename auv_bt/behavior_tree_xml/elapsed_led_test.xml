@@ -3,8 +3,12 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <SequenceStar>
-            <Condition ID="Elapsed" seconds="15"/>
-            <Action ID="SetLEDColor" color="#ffffff" num="0"/>
+            <Condition ID="Elapsed" seconds="10"/>
+            <Action ID="SetLEDColor" color="#ffffff" num="20"/>
+            <Condition ID="Elapsed" seconds="5"/>
+            <Action ID="SetLEDColor" color="#ff0000" num="14"/>
+            <Condition ID="Elapsed" seconds="5"/>
+            <Action ID="SetLEDColor" color="#00ff00" num="7"/>
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
@@ -13,11 +17,8 @@
             <input_port name="seconds" type="int"/>
         </Condition>
         <Action ID="SetLEDColor">
-            <input_port default="#ffffff" name="color">color of neopixel LEDs</input_port>
-            <input_port default="0" name="num">number of LEDs to turn on</input_port>
-        </Action>
-        <Action ID="Turn">
-            <input_port default="0.5" name="speed">speed at which to turn</input_port>
+            <input_port name="color" type="double"/>
+            <input_port name="num" type="double"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->
