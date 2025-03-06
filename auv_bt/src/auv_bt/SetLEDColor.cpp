@@ -16,13 +16,16 @@ SetLEDColor::SetLEDColor(const std::string &xml_tag_name,
 
 void SetLEDColor::on_tick() {
   std::string color;
+  int num;
   getInput("color", color);
+  getInput("num", num);
 
   request_->color = color;
+  request_->color_count = num;
 }
 
 BT::NodeStatus SetLEDColor::on_success() {
-  RCLCPP_INFO(node_->get_logger(), "depth descent Suceeded");
+  RCLCPP_INFO(node_->get_logger(), "/set_color Suceeded");
 
   return BT::NodeStatus::SUCCESS;
 }
@@ -31,8 +34,8 @@ BT::NodeStatus SetLEDColor::on_success() {
 BT_REGISTER_NODES(factory) {
   BT::NodeBuilder builder = [](const std::string &name,
                                const BT::NodeConfiguration &config) {
-    return std::make_unique<SetLEDColor>(name, "depth_descent", config);
+    return std::make_unique<SetLEDColor>(name, "/set_color", config);
   };
 
-  factory.registerBuilder<SetLEDColor>("Descend", builder);
+  factory.registerBuilder<SetLEDColor>("SetLEDColor", builder);
 }
