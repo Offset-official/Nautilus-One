@@ -37,6 +37,37 @@ set(dependencies
 
 include_directories(include ${ZMQ_INCLUDE_DIRS})
 
+add_library(auv_elapsed_bt_node SHARED src/auv_bt/Elapsed.cpp)
+
+list(APPEND plugin_libs
+    auv_elapsed_bt_node
+)
+
+foreach(bt_plugin ${plugin_libs})
+  ament_target_dependencies(${bt_plugin} ${dependencies})
+  target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
+endforeach()
+
+add_executable(bt_qualify src/bt_qualify_main.cpp)
+ament_target_dependencies(bt_qualify ${dependencies})
+target_link_libraries(bt_qualify ${ZMQ_LIBRARIES})
+
+install(TARGETS
+  ${plugin_libs}
+  bt_qualify
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+install(DIRECTORY behavior_tree_xml
+  DESTINATION share/${PROJECT_NAME}
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
