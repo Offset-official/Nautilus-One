@@ -11,14 +11,14 @@ interface CompressedImageMsg {
 export default function Home() {
   const [ros, setRos] = useState<ROSLIB.Ros | null>(null);
   const [velocity, setVelocity] = useState({ x: "0.00", y: "0.00", z: "0.00" });
-  const [selectedCamera, setSelectedCamera] = useState("/usb_cam_0/image_raw/compressed");
+  const [selectedCamera, setSelectedCamera] = useState("/auv_camera_front/image_raw/compressed");
   const [images, setImages] = useState<{ [key: string]: string }>({});
   const [recordingStatus, setRecordingStatus] = useState("Not recording");
 
   // Camera options (for image streaming)
   const cameraOptions = [
-    { topic: "/usb_cam_0/image_raw/compressed", alias: "Front Camera" },
-    { topic: "/usb_cam_1/image_raw/compressed", alias: "Rear Camera" },
+    { topic: "/auv_camera_front/image_raw/compressed", alias: "Front Jetson Camera" },
+    { topic: "/auv_camera_down/image_raw/compressed", alias: "Down Jetson Camera" },
     { topic: "/usb_cam_2/image_raw/compressed", alias: "Side Camera" },
   ];
 

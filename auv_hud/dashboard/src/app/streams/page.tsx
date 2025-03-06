@@ -11,8 +11,8 @@ interface CompressedImageMsg {
 
 export default function VideoStream() {
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({
-    "/usb_cam_0/image_raw/compressed": "",
-    "/usb_cam_1/image_raw/compressed": "",
+    "/auv_camera_down/image_raw/compressed": "",
+    "/auv_camera_front/image_raw/compressed": "",
     "/usb_cam_2/image_raw/compressed": "",
   });
 
@@ -58,8 +58,8 @@ export default function VideoStream() {
 
     // Create subscribers for all three cameras
     const subscribers = [
-      createSubscriber("/usb_cam_0/image_raw/compressed"),
-      createSubscriber("/usb_cam_1/image_raw/compressed"),
+      createSubscriber("/auv_camera_down/image_raw/compressed"),
+      createSubscriber("/auv_camera_front/image_raw/compressed"),
       createSubscriber("/usb_cam_2/image_raw/compressed"),
     ];
 
