@@ -20,7 +20,7 @@ COPY ./auv_bringup/package.xml /auv_ws/src/auv_ros2/auv_bringup/package.xml
 COPY ./auv_controller/package.xml /auv_ws/src/auv_ros2/auv_controller/package.xml
 COPY ./auv_interfaces/package.xml /auv_ws/src/auv_ros2/auv_interfaces/package.xml
 COPY ./auv_manipulator/package.xml /auv_ws/src/auv_ros2/auv_manipulator/package.xml
-COPY ./base_controller_py/package.xml /auv_ws/src/auv_ros2/base_controller_py/package.xml
+COPY ./auv_mav_utils/package.xml /auv_ws/src/auv_ros2/auv_mav_utils/package.xml
 
 WORKDIR /auv_ws
 RUN rosdep update
@@ -31,7 +31,7 @@ COPY ./auv_bringup/ /auv_ws/src/auv_ros2/auv_bringup/
 COPY ./auv_controller/ /auv_ws/src/auv_ros2/auv_controller/
 COPY ./auv_interfaces/ /auv_ws/src/auv_ros2/auv_interfaces/
 COPY ./auv_manipulator/ /auv_ws/src/auv_ros2/auv_manipulator/
-COPY ./base_controller_py/ /auv_ws/src/auv_ros2/base_controller_py
+COPY ./auv_mav_utils/ /auv_ws/src/auv_ros2/auv_mav_utils
 
 WORKDIR /auv_ws
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
