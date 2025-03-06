@@ -44,6 +44,9 @@ class HeadingTest(Node):
         self.get_logger().info("Waiting for 10 seconds before starting depth action")
         time.sleep(10)  # Initial delay
         self.start_depth_descent()
+        time.sleep(10)
+        self.move_forward()
+
 
     def start_depth_descent(self):
         # Wait for action server to be available
@@ -85,7 +88,6 @@ class HeadingTest(Node):
             self.correct_angle()
         else:
             self.get_logger().info("Angle correction disabled, proceeding with forward movement")
-            self.move_forward()
     
     def feedback_callback(self, feedback_msg):
         # Process feedback from action server
