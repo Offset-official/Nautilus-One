@@ -40,7 +40,7 @@ class MavlinkDepthPublisher(Node):
         msg = self.connection.recv_match(type="AHRS2", blocking=False)
         if msg:
             altitude = msg.altitude  # Extract altitude from AHRS message
-            self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
+            # self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
 
             # Publish to /depth topic
             depth_msg = Float64()
