@@ -106,19 +106,24 @@ class HeadingTest(Node):
 
     def _depth_result_callback(self, future):
         """Process the depth action result and trigger next phase."""
-        result = future.result().result
-        status = future.result().status
+        try:
+            result = future.result().result
+            status = future.result().status
+            
+            self.get_logger().info(f"Depth action completed with status: {status}")
 
-        if status == rclpy.action.GoalStatus.STATUS_SUCCEEDED:
-            self.get_logger().info("Depth action succeeded. Starting next phase.")
+            if status == rclpy.action.GoalStatus.STATUS_SUCCEEDED:
+                self.get_logger().info("Depth action succeeded. Starting next phase.")
 
-            if self.enable_angle_correction:
-                self.set_angle_correction(True)
+                if self.enable_angle_correction:
+                    self.set_angle_correction(True)
 
-            time.sleep(10)  # Wait before starting movement
-            self.start_forward_movement()
-        else:
-            self.get_logger().error("Depth action did not succeed")
+                # Use a timer instead of sleep to avoid blocking
+                self.create_timer(10.0, self.start_forward_movement)
+            else:
+                self.get_logger().error(f"Depth action did not succeed, status: {status}")
+        except Exception as e:
+            self.get_logger().error(f"Exception in depth result callback: {str(e)}")
 
     def start_forward_movement(self):
         """Begin forward movement phase."""
