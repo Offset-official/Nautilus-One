@@ -26,7 +26,7 @@ class HeadingTest(Node):
             "enable_angle_correction"
         ).value
         self.linear_speed = self.get_parameter("linear_speed").value
-        self.movement_duration = self.get_parameter("movement_duration").value
+        self.movement_duration = self.get_parameter("movement_duration").value or 0.0
 
         self.cmd_vel_pub = self.create_publisher(Twist, "cmd_vel", 10)
 
@@ -61,8 +61,8 @@ class HeadingTest(Node):
         self.get_logger().info(f"Sending depth descent goal: {self.target_depth}")
 
         # Send goal with feedback callback
-        future = self.depth_action_client.send_goal(goal_msg)
-        rclpy.spin_until_future_complete(self.depth_action_client, future)
+        future = self.depth_action_client.send_goal_async(goal_msg)
+        rclpy.spin_until_future_complete(self, future)
         time.sleep(5)
         self.move_forward()
 

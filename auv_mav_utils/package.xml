@@ -9,6 +9,7 @@
   <depend>rclpy</depend>
   <depend>std_srvs</depend>
   <depend>rcl_interfaces</depend>
+  <depend>auv_interfaces</depend>
   <exec_depend>python-pymavlink</exec_depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
