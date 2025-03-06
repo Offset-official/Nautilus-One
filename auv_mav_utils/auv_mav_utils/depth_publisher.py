@@ -13,7 +13,7 @@ class MavlinkDepthPublisher(Node):
         self.publisher_ = self.create_publisher(Float64, "/current_depth", 5)
 
         # Connect to MAVLink (adjust for your connection type)
-        self.connection = mavutil.mavlink_connection("udp:0.0.0.0:14000")  # SITL
+        self.connection = mavutil.mavlink_connection("udp:0.0.0.0:14550")  # SITL
         # self.connection = mavutil.mavlink_connection('/dev/ttyUSB0', baud=57600)  # Serial
 
         # Wait for MAVLink heartbeat
@@ -40,7 +40,7 @@ class MavlinkDepthPublisher(Node):
         msg = self.connection.recv_match(type="AHRS2", blocking=False)
         if msg:
             altitude = msg.altitude  # Extract altitude from AHRS message
-            self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
+            # self.get_logger().info(f"Publishing Depth: {altitude:.2f} meters")
 
             # Publish to /depth topic
             depth_msg = Float64()

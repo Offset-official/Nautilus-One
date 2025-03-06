@@ -49,8 +49,8 @@ class AUVDiagnostics(Node):
         }
 
         self.color = "off" 
-
-        self.timer = self.create_timer(2, self.publish_diagnostics)
+        self.color_count = 0
+        self.timer = self.create_timer(0.5, self.publish_diagnostics)
 
     # Callback for /mavros/state
     def navigator_state_callback(self, msg):
@@ -60,9 +60,11 @@ class AUVDiagnostics(Node):
     def battery_nav_callback(self, msg):
         self.battery_nav_data["percentage"] = msg.percentage if hasattr(msg, "percentage") else "NA"
 
+    # Callback for /set_color service
     def set_color_callback(self, request, response):
         if request.color.lower() == "off" or request.color.startswith("#"):
             self.color = request.color
+            self.color_count = request.color_count
             response.success = True
             response.message = f"Color set to {request.color}"
         else:
@@ -70,6 +72,8 @@ class AUVDiagnostics(Node):
             response.message = "Invalid color"
 
         return response
+    
+
 
     def publish_diagnostics(self):
         # Combine state and battery data
@@ -79,7 +83,8 @@ class AUVDiagnostics(Node):
             "batteryJ": "NA", 
             "task": "QLFN",
             "jetson_connection": False,
-            "neopixel_color": self.color
+            "neopixel_color": self.color,
+            "neopixel_count": self.color_count    
         }
 
         # Convert to JSON and publish
