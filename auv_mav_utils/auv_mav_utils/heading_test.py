@@ -47,18 +47,19 @@ class HeadingTest(Node):
         time.sleep(10)
         self.move_forward()
 
-
     def start_depth_descent(self):
         # Wait for action server to be available
         if not self.depth_action_client.wait_for_server(timeout_sec=5.0):
-            self.get_logger().error("Depth descent action server not available after timeout")
+            self.get_logger().error(
+                "Depth descent action server not available after timeout"
+            )
             return
 
         # Create and send goal
         goal_msg = DepthDescent.Goal()
         goal_msg.target_depth = self.target_depth
         self.get_logger().info(f"Sending depth descent goal: {self.target_depth}")
-        
+
         # Send goal with feedback callback
         self._send_goal_future = self.depth_action_client.send_goal_async(
             goal_msg, feedback_callback=self.feedback_callback
@@ -76,51 +77,57 @@ class HeadingTest(Node):
         # Request the result
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
-    
+
     def get_result_callback(self, future):
         self._logger.info("Goal completed")
         result = future.result().result
-        self.get_logger().info(f"Depth descent completed. Final depth: {result.final_depth}")
-        
+        self.get_logger().info(
+            f"Depth descent completed. Final depth: {result.final_depth}"
+        )
+
         # After depth descent is complete, proceed with angle correction if enabled
         if self.enable_angle_correction:
             self.get_logger().info("Starting angle correction...")
             self.correct_angle()
         else:
-            self.get_logger().info("Angle correction disabled, proceeding with forward movement")
-    
+            self.get_logger().info(
+                "Angle correction disabled, proceeding with forward movement"
+            )
+
     def feedback_callback(self, feedback_msg):
         # Process feedback from action server
         current_depth = feedback_msg.feedback.current_depth
         self.get_logger().info(f"Current depth: {current_depth}")
-    
+
     def correct_angle(self):
         # This would be implemented to call the angle correction service
         # For now, just proceed to forward movement
         self.get_logger().info("Angle correction would be performed here")
         self.move_forward()
-    
+
     def move_forward(self):
-        self.get_logger().info(f"Moving forward at {self.linear_speed} m/s for {self.movement_duration} seconds")
-        
+        self.get_logger().info(
+            f"Moving forward at {self.linear_speed} m/s for {self.movement_duration} seconds"
+        )
+
         # Create timer to publish velocity commands
         self.movement_timer = self.create_timer(0.1, self.publish_velocity)
-        
+
         # Create timer to stop movement after duration
         self.stop_timer = self.create_timer(self.movement_duration, self.stop_movement)
-    
+
     def publish_velocity(self):
         # Create and publish forward velocity command
         twist = Twist()
-        twist.linear.x = self.linear_speed
+        twist.linear.y = self.linear_speed
         self.cmd_vel_pub.publish(twist)
-    
+
     def stop_movement(self):
         # Stop the vehicle
         twist = Twist()
         self.cmd_vel_pub.publish(twist)
         self.get_logger().info("Movement completed")
-        
+
         # Cancel timers
         self.movement_timer.cancel()
         self.stop_timer.cancel()
@@ -129,7 +136,7 @@ class HeadingTest(Node):
 def main(args=None):
     rclpy.init(args=args)
     heading_test_node = HeadingTest()
-    
+
     try:
         rclpy.spin(heading_test_node)
     except KeyboardInterrupt:
@@ -140,5 +147,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
