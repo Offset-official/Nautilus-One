@@ -1,32 +1,42 @@
 cmake_minimum_required(VERSION 3.8)
-project(auv_autonomy)
+project(auv_bt)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # find dependencies
-find_package(rclcpp_action REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(apriltag_msgs REQUIRED)
-find_package(mavros_msgs REQUIRED)
-find_package(mavros REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(auv_interfaces REQUIRED)
+
+
+find_package(ZMQ)
+if(ZMQ_FOUND)
+    message(STATUS "ZeroMQ found.")
+    add_definitions(-DZMQ_FOUND)
+else()
+  message(WARNING "ZeroMQ NOT found. Not including PublisherZMQ.")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+
 set(dependencies
     rclcpp
     rclcpp_action
-    mavros
-    mavros_msgs
-    apriltag_msgs
+    behaviortree_cpp_v3
+    sensor_msgs
     geometry_msgs
     auv_interfaces
+    ament_index_cpp
 )
 
-add_executable(forward src/forward.cpp)
-add_executable(april_follow src/april_follow.cpp)
-add_executable(april_follow_server src/april_follow_server.cpp)
+include_directories(include ${ZMQ_INCLUDE_DIRS})
 
 ament_target_dependencies(forward ${dependencies})
 ament_target_dependencies(april_follow ${dependencies})
