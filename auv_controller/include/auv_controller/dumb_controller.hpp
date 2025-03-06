@@ -122,7 +122,7 @@ private:
   rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arm_client_;
   rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr calibration_client_;
-  rclcpp::Client<auv_interfaces::srv::SetColor>::SharedPtr led_color_client;
+  rclcpp::Client<auv_interfaces::srv::SetColor>::SharedPtr led_color_client_;
 
   // Angle correction service
   rclcpp::Service<auv_interfaces::srv::AngleCorrection>::SharedPtr
