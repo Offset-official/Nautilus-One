@@ -33,8 +33,8 @@ public:
     RCLCPP_INFO(get_logger(), "Compressed parameter: %s", is_compressed_ ? "true" : "false");
 
     // (Optional) Check if topic exists...
-    RCLCPP_INFO(get_logger(), "Topic '%s' is alive", camera_source_topic_.c_str());
-    RCLCPP_INFO(get_logger(), "Start Gazebo to start inference.");
+    // RCLCPP_INFO(get_logger(), "Topic '%s' is alive", camera_source_topic_.c_str());
+    // RCLCPP_INFO(get_logger(), "Start Gazebo to start inference.");
 
     setupSubscriptions();
     setupPublishers();
