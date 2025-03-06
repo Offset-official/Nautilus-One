@@ -27,6 +27,9 @@ setup(
             "yolo_inference_server_gate = auv_ml.yolo_inference_server_gate:main",
             # "yolo_inference_test_gate = auv_ml.yolo_inference_test_gate:main",
             "yolo_inference_server_bucket = auv_ml.yolo_inference_server_bucket:main",
-        ],
+            "uncomp = auv_ml.uncomp:main",
+        
+            ],
+
     },
 )
