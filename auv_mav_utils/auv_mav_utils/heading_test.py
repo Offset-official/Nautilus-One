@@ -139,6 +139,7 @@ class HeadingTest(Node):
 
     def _stop_movement(self):
         """Stop the forward movement and clean up timers."""
+        # Stop movement
         stop_message = Twist()
         self.cmd_vel_pub.publish(stop_message)  # All velocities default to 0.0
 
@@ -154,6 +155,47 @@ class HeadingTest(Node):
         if self.stop_timer:
             self.stop_timer.cancel()
             self.stop_timer = None
+
+        # Create a new timer for the completion sequence
+        # This separates the stopping from the completion sequence
+        self.create_timer(0.1, self._complete_mission_sequence)
+
+    def _complete_mission_sequence(self):
+        """Complete the mission sequence with angle correction disable and surface."""
+        # Cancel this one-shot timer
+        for timer in self.get_timers():
+            if timer.callback == self._complete_mission_sequence:
+                timer.cancel()
+                break
+
+        self.get_logger().info("Completing mission sequence")
+
+        # Disable angle correction
+        self.set_angle_correction(False)
+
+        # Wait for angle correction to be disabled
+        time.sleep(5)
+
+        # Final action - come to surface
+        # This should be the last command with no functions after it
+        self.get_logger().info("Mission complete, returning to surface")
+        self.send_surface_action()
+
+    def send_surface_action(self):
+        """Send the final depth action to return to surface."""
+        if not self.depth_action_client.wait_for_server(timeout_sec=1.0):
+            self.get_logger().error(
+                "Depth descent action server not available for surface action"
+            )
+            return
+
+        goal_msg = DepthDescent.Goal()
+        goal_msg.target_depth = -0.05  # Surface depth
+
+        self.get_logger().info("Sending final command: return to surface")
+
+        # For the final action, we don't add any callback that would execute additional code
+        self.depth_action_client.send_goal_async(goal_msg)
 
     def set_angle_correction(self, enable):
         """Enable or disable angle correction."""
