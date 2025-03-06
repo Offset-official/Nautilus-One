@@ -61,49 +61,11 @@ class HeadingTest(Node):
         self.get_logger().info(f"Sending depth descent goal: {self.target_depth}")
 
         # Send goal with feedback callback
-        self._send_goal_future = self.depth_action_client.send_goal_async(
-            goal_msg, feedback_callback=self.feedback_callback
-        )
-        self._send_goal_future.add_done_callback(self.goal_response_callback)
-
-    def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().info("Goal rejected :(")
-            return
-
-        self.get_logger().info("Goal accepted :)")
-
-        # Request the result
-        self._get_result_future = goal_handle.get_result_async()
-        self._get_result_future.add_done_callback(self.get_result_callback)
-
-    def get_result_callback(self, future):
-        self._logger.info("Goal completed")
-        result = future.result().result
-        self.get_logger().info(
-            f"Depth descent completed. Final depth: {result.final_depth}"
-        )
-
-        # After depth descent is complete, proceed with angle correction if enabled
-        if self.enable_angle_correction:
-            self.get_logger().info("Starting angle correction...")
-            self.correct_angle()
-        else:
-            self.get_logger().info(
-                "Angle correction disabled, proceeding with forward movement"
-            )
-
-    def feedback_callback(self, feedback_msg):
-        # Process feedback from action server
-        current_depth = feedback_msg.feedback.current_depth
-        self.get_logger().info(f"Current depth: {current_depth}")
-
-    def correct_angle(self):
-        # This would be implemented to call the angle correction service
-        # For now, just proceed to forward movement
-        self.get_logger().info("Angle correction would be performed here")
+        future = self.depth_action_client.send_goal(goal_msg)
+        rclpy.spin_until_future_complete(self.depth_action_client, future)
+        time.sleep(5)
         self.move_forward()
+
 
     def move_forward(self):
         self.get_logger().info(
