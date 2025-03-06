@@ -8,12 +8,6 @@ from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
 
 def generate_launch_description():
-    # Declare a launch argument "compressed" with default value "false".
-    compressed_arg = DeclareLaunchArgument(
-        'compressed',
-        default_value='true',
-        description='If true, the input image is compressed and the uncomp node should be launched'
-    )
 
     # Node for yolo_inference_server_gate.
     yolo_node = launch_ros.actions.Node(
@@ -25,17 +19,6 @@ def generate_launch_description():
     )
 
     # Conditionally launch the uncomp node only if "compressed" is true.
-    uncomp_node = launch_ros.actions.Node(
-        package='auv_ml',
-        executable='uncomp',
-        name='uncomp',
-        output='screen',
-        parameters=[{
-            'input_topic': 'auv_camera_front/image_raw/compressed',
-            'output_topic': 'auv_camera_front/image_raw'
-        }],
-        condition=IfCondition(LaunchConfiguration('compressed'))
-    )
 
     # Node for infer_camera, using the "compressed" launch argument.
     infer_node = launch_ros.actions.Node(
