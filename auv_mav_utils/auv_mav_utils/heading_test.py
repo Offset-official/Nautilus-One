@@ -87,6 +87,7 @@ class HeadingTest(Node):
     def stop_movement(self):
         # Stop the vehicle
         twist = Twist()
+        twist.linear.y = 0.0
         self.cmd_vel_pub.publish(twist)
         self.get_logger().info("Movement completed")
 
