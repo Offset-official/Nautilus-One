@@ -72,7 +72,7 @@ void DumbController::execute(
     result->final_depth = depth;
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Goal succeeded");
-    color_request->color = "#800080";
+    color_request->color = "#FFFFFFF";
     req_ = led_color_client_->async_send_request(color_request);
     req_.wait();
   }

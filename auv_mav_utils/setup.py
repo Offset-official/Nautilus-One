@@ -1,7 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = "base_controller_py"
-
+package_name = "auv_mav_utils"
 setup(
     name=package_name,
     version="0.0.0",
@@ -18,8 +17,9 @@ setup(
     license="TODO: License declaration",
     entry_points={
         "console_scripts": [
-            "depth_publisher = base_controller_py.depth_publisher:main",
-            "calibrate = base_controller_py.calibrate:main",
+            "depth_publisher = auv_mav_utils.depth_publisher:main",
+            "calibrate = auv_mav_utils.calibrate:main",
+            "heading_test = auv_mav_utils.heading_test:main",
         ],
     },
 )
