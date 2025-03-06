@@ -19,9 +19,8 @@ int main(int argc, char *argv[]) {
   BT::SharedLibrary loader;
 
   factory.registerFromPlugin(loader.getOSName("auv_elapsed_bt_node"));
-
   std::string pkgpath = ament_index_cpp::get_package_share_directory("auv_bt");
-  std::string xml_file = pkgpath + "/behavior_tree_xml/qualify.xml";
+  std::string xml_file = pkgpath + "/behavior_tree_xml/elapsed_test.xml";
 
   auto blackboard = BT::Blackboard::create();
   blackboard->set("node", node);
