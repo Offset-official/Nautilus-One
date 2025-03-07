@@ -107,7 +107,7 @@ class HeadingTest(Node):
         # Step 7: Return to surface
         self.get_logger().info("Step 7: Returning to surface (depth 0.025)")
         surface_action_completed = threading.Event()
-        self.send_depth_action(0.025, surface_action_completed)
+        self.send_depth_action(-0.1, surface_action_completed)
 
         # Wait for return to surface to complete
         surface_action_completed.wait()
