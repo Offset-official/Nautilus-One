@@ -30,6 +30,7 @@ void Gate::detections_callback(
   last_detections_ = std::move(msg);
 
   auto largest_size = 0.0;
+  auto gate_center_x = 0;
   for (auto detection : last_detections_->detections) {
     auto x1 = detection.x1;
     auto y1 = detection.y1;
@@ -38,14 +39,17 @@ void Gate::detections_callback(
 
     // compute the area of the detection
     auto size = (x2 - x1) * (y2 - y1);
-    if (size > largest_size)
+    if (size > largest_size){
       largest_size = size;
+      gate_center_x = (x2 + x1) /2;
+    }
   }
 
   auto largest_ratio = (double)largest_size / (double)screen_area;
 
   if (largest_ratio > last_computed_ratio) {
     last_computed_ratio = largest_ratio;
+    last_horizontal_error = screen_width - gate_center_x;
     RCLCPP_INFO(node_->get_logger(), "found new gate with ratio %f",
                 last_computed_ratio);
   }
@@ -68,6 +72,8 @@ BT::NodeStatus Gate::tick() {
 
   auto num_leds = num_leds_to_turn_on(last_computed_ratio, target_size);
   setOutput("num", num_leds);
+
+  setOutput("horizontal_error",last_horizontal_error);
 
   if (last_computed_ratio > target_size) {
     return BT::NodeStatus::SUCCESS;
