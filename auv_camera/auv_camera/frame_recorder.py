@@ -27,18 +27,12 @@ class FrameRecorderNode(Node):
         self.fps = self.get_parameter('fps').get_parameter_value().integer_value
         self.format = self.get_parameter('format').get_parameter_value().string_value
         
-        # Create output directory structure
+        # Create base output directory
         if not self.output_dir:
             self.output_dir = os.getcwd()
-        
-        self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.topic_name = self.topic.replace('/', '_').strip('_')
-        self.save_dir = os.path.join(self.output_dir, self.timestamp, self.topic_name)
-        
-        if not os.path.exists(self.save_dir):
-            os.makedirs(self.save_dir)
             
-        self.get_logger().info(f"Will save frames to: {self.save_dir}")
+        # Topic name for folder structure
+        self.topic_name = self.topic.replace('/', '_').strip('_')
         
         # Initialize bridge and subscription
         self.bridge = CvBridge()
@@ -48,6 +42,7 @@ class FrameRecorderNode(Node):
         self.is_recording = False
         self.lock = threading.Lock()
         self.frame_count = 0
+        self.current_save_dir = None
         
         # Create services
         self.start_srv = self.create_service(
@@ -67,6 +62,17 @@ class FrameRecorderNode(Node):
         
         self.get_logger().info(f"Frame recorder initialized for topic: {self.topic}")
         self.get_logger().info(f"Use services '{self.get_name()}/start_recording' and '{self.get_name()}/stop_recording' to control recording")
+
+    def create_new_save_directory(self):
+        """Create a new timestamped directory for this recording session"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        save_dir = os.path.join(self.output_dir, timestamp, self.topic_name)
+        
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+            
+        self.get_logger().info(f"Created new recording directory: {save_dir}")
+        return save_dir
 
     def start_subscription(self):
         """Create the subscription to the image topic"""
@@ -88,7 +94,7 @@ class FrameRecorderNode(Node):
 
     def image_callback(self, msg):
         """Process incoming compressed image messages"""
-        if not self.is_recording:
+        if not self.is_recording or self.current_save_dir is None:
             return
             
         with self.lock:
@@ -99,7 +105,7 @@ class FrameRecorderNode(Node):
                 
                 # Save the frame
                 frame_filename = f"frame_{self.frame_count:06d}.{self.format}"
-                save_path = os.path.join(self.save_dir, frame_filename)
+                save_path = os.path.join(self.current_save_dir, frame_filename)
                 
                 cv2.imwrite(save_path, cv_image)
                 
@@ -115,10 +121,18 @@ class FrameRecorderNode(Node):
                 response.success = False
                 response.message = "Already recording"
             else:
+                # Create a new directory for this recording session
+                self.current_save_dir = self.create_new_save_directory()
+                
+                # Reset frame counter for new recording session
+                self.frame_count = 0
+                
+                # Start recording
                 self.is_recording = True
                 self.start_subscription()
+                
                 response.success = True
-                response.message = f"Started recording from {self.topic} to {self.save_dir}"
+                response.message = f"Started recording from {self.topic} to {self.current_save_dir}"
                 self.get_logger().info(response.message)
         return response
 
@@ -131,8 +145,12 @@ class FrameRecorderNode(Node):
             else:
                 self.is_recording = False
                 self.stop_subscription()
+                
+                save_dir = self.current_save_dir
+                frames_saved = self.frame_count
+                
                 response.success = True
-                response.message = f"Stopped recording. Saved {self.frame_count} frames to {self.save_dir}"
+                response.message = f"Stopped recording. Saved {frames_saved} frames to {save_dir}"
                 self.get_logger().info(response.message)
         return response
 
