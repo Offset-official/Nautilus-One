@@ -19,7 +19,7 @@ public:
     node_ =
         config().blackboard->template get<typename NodeT::SharedPtr>("node");
 
-    server_timeout_ = 1s;
+    server_timeout_ = 5s;
 
     // Initialize the request and response
     request_ = std::make_shared<typename ServiceT::Request>();
