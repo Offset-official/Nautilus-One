@@ -50,6 +50,7 @@ add_library(auv_descend_bt_node SHARED src/auv_bt/Descend.cpp)
 add_library(auv_set_led_color_bt_node SHARED src/auv_bt/SetLEDColor.cpp)
 add_library(auv_set_mode_bt_node SHARED src/auv_bt/SetMode.cpp)
 add_library(auv_is_armed_bt_node SHARED src/auv_bt/isArmed.cpp)
+add_library(auv_gate_bt_node SHARED src/auv_bt/Gate.cpp)
 
 list(APPEND plugin_libs
     auv_elapsed_bt_node
@@ -59,6 +60,7 @@ list(APPEND plugin_libs
     auv_set_led_color_bt_node
     auv_set_mode_bt_node
     auv_is_armed_bt_node
+    auv_gate_bt_node
 )
 
 foreach(bt_plugin ${plugin_libs})
