@@ -27,7 +27,7 @@ scp pi-ros-full.tar pi@192.168.2.2:~/docker_images
 ## Load the image
 > Run this command inside the raspberry pi
 ```bash
-docker load -i ~/docker_images/pi-ros-full.tar
+ssh pi@192.168.2.2 "docker load -i ~/docker_images/pi-ros-full.tar"
 ```
 
 ## Run the container
@@ -65,7 +65,8 @@ scp nano-ros-full.tar nano@192.168.2.4:~/Documents
 ## Load the image
 > Run this command inside the Jetson Nano
 ```bash
-docker load -i ~/Documents/nano-ros-full.tar
+ssh nano@192.168.2.4 "docker load -i ~/Documents/nano-ros-full.tar"
+
 ```
 ## Run the nano container
 ```bash
