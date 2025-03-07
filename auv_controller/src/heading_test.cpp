@@ -1,5 +1,6 @@
 #include <chrono>
 #include <memory>
+#include <thread>
 
 #include "geometry_msgs/msg/twist.hpp"
 #include "mavros_msgs/msg/state.hpp"
@@ -44,37 +45,85 @@ public:
         angle_correction_client_ = this->create_client<auv_interfaces::srv::AngleCorrection>(
             "angle_correction");
             
-        // Start the execution sequence
-        this->timer_ = this->create_wall_timer(
-            100ms, std::bind(&HeadingTest::execute_sequence, this));
+        // Start the execution sequence in a separate thread to avoid blocking the main thread
+        std::thread([this]() { this->execute_sequence(); }).detach();
     }
 
 private:
     void execute_sequence()
     {
-        // Only execute once
-        this->timer_->cancel();
-        
         RCLCPP_INFO(this->get_logger(), "Starting execution sequence");
         RCLCPP_INFO(this->get_logger(), "Target depth: %f", target_depth_);
         RCLCPP_INFO(this->get_logger(), "Angle correction: %s", enable_angle_correction_ ? "enabled" : "disabled");
         RCLCPP_INFO(this->get_logger(), "Linear speed: %f", linear_speed_);
         RCLCPP_INFO(this->get_logger(), "Movement duration: %f seconds", movement_duration_);
         
-        // Send depth action
-        send_depth_action(target_depth_);
+        // Step 1: Enable angle correction
         if (enable_angle_correction_) {
+            RCLCPP_INFO(this->get_logger(), "Step 1: Enabling angle correction");
             set_angle_correction(true);
+            
+            // Wait for angle correction to be enabled
+            int attempts = 0;
+            while (!angle_correction_enabled_ && attempts < 10) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                rclcpp::spin_some(this->get_node_base_interface());
+                attempts++;
+            }
         }
-                
-        start_forward_movement();
+        
+        // Step 2: Wait for 10 seconds
+        RCLCPP_INFO(this->get_logger(), "Step 2: Waiting for 10 seconds");
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        
+        // Step 3: Send depth action
+        RCLCPP_INFO(this->get_logger(), "Step 3: Starting descent to target depth: %f", target_depth_);
+        bool depth_action_completed = false;
+        send_depth_action(target_depth_, [this, &depth_action_completed]() {
+            depth_action_completed = true;
+        });
+        
+        // Wait for depth action to complete
+        while (!depth_action_completed) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            rclcpp::spin_some(this->get_node_base_interface());
+        }
+        
+        // Step 4: Wait for 5 seconds after depth descent
+        RCLCPP_INFO(this->get_logger(), "Step 4: Waiting for 5 seconds after depth descent");
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        
+        // Step 5: Move forward for specified duration
+        RCLCPP_INFO(this->get_logger(), "Step 5: Moving forward with speed %f for %f seconds", 
+                    linear_speed_, movement_duration_);
+        perform_forward_movement();
+        
+        // Step 6: Wait for 5 seconds after forward motion
+        RCLCPP_INFO(this->get_logger(), "Step 6: Waiting for 5 seconds after forward motion");
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        
+        // Step 7: Return to surface
+        RCLCPP_INFO(this->get_logger(), "Step 7: Returning to surface (depth 0.025)");
+        depth_action_completed = false;
+        send_depth_action(0.025, [this, &depth_action_completed]() {
+            depth_action_completed = true;
+        });
+        
+        // Wait for return to surface to complete
+        while (!depth_action_completed) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            rclcpp::spin_some(this->get_node_base_interface());
+        }
+        
+        // Step 8: Final log message
+        RCLCPP_INFO(this->get_logger(), "Sequence completed successfully!");
     }
 
-    void send_depth_action(float target_depth)
+    void send_depth_action(float target_depth, std::function<void()> completion_callback)
     {
-        if (!depth_action_client_->wait_for_action_server(std::chrono::seconds(1)))
+        if (!depth_action_client_->wait_for_action_server(std::chrono::seconds(5)))
         {
-            RCLCPP_ERROR(this->get_logger(), "Depth descent action server not available");
+            RCLCPP_ERROR(this->get_logger(), "Depth descent action server not available after waiting 5 seconds");
             return;
         }
 
@@ -111,63 +160,65 @@ private:
 
         // Result callback
         send_goal_options.result_callback =
-            [this](const rclcpp_action::ClientGoalHandle<auv_interfaces::action::DepthDescent>::WrappedResult &result)
+            [this, completion_callback](const rclcpp_action::ClientGoalHandle<auv_interfaces::action::DepthDescent>::WrappedResult &result)
         {
             if (result.code == rclcpp_action::ResultCode::SUCCEEDED)
             {
-                RCLCPP_INFO(this->get_logger(), "Depth action succeeded. Starting next phase.");
-                
-
+                RCLCPP_INFO(this->get_logger(), "Depth action succeeded with result: %f", result.result->final_depth);
+                if (completion_callback) {
+                    completion_callback();
+                }
             }
             else
             {
-                RCLCPP_ERROR(this->get_logger(), "Depth action did not succeed");
+                RCLCPP_ERROR(this->get_logger(), "Depth action did not succeed, result code: %d", 
+                             static_cast<int>(result.code));
+                if (completion_callback) {
+                    completion_callback();  // Still call callback to prevent deadlock
+                }
             }
         };
 
         // Send the goal
-        auto req_ = depth_action_client_->async_send_goal(goal_msg, send_goal_options);
-        req_.wait();
+        depth_action_client_->async_send_goal(goal_msg, send_goal_options);
     }
 
-    void start_forward_movement()
+    void perform_forward_movement()
     {
         // Start moving forward
         auto twist_message = geometry_msgs::msg::Twist();
         twist_message.linear.y = linear_speed_;
-        RCLCPP_INFO(this->get_logger(), "Moving forward with speed: %f for %f seconds", 
-                    linear_speed_, movement_duration_);
         
-        // Publish velocity command continuously
-        move_timer_ = this->create_wall_timer(
-            50ms,
-            [this, twist_message]() {
-                cmd_vel_pub_->publish(twist_message);
-            });
+        // Time tracking
+        auto start_time = std::chrono::steady_clock::now();
+        auto end_time = start_time + std::chrono::duration<double>(movement_duration_);
         
-        // Create a timer to stop movement after the specified duration
-        stop_timer_ = this->create_wall_timer(
-            std::chrono::duration<double>(movement_duration_),
-            [this]() {
-                // Stop the movement
-                auto stop_message = geometry_msgs::msg::Twist();
-                stop_message.linear.y = 0.0;
-                RCLCPP_INFO(this->get_logger(), "Stop moving forward after %f seconds.", movement_duration_);
-                cmd_vel_pub_->publish(stop_message);
-                
-                // Cancel the move timer
-                move_timer_->cancel();
-                
-                // Cancel this timer
-                stop_timer_->cancel();
-            });
+        // Move forward for the specified duration
+        while (std::chrono::steady_clock::now() < end_time) {
+            cmd_vel_pub_->publish(twist_message);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            rclcpp::spin_some(this->get_node_base_interface());
+        }
+        
+        // Stop movement
+        auto stop_message = geometry_msgs::msg::Twist();
+        stop_message.linear.y = 0.0;
+        cmd_vel_pub_->publish(stop_message);
+        
+        // Publish stop command multiple times to ensure it's received
+        for (int i = 0; i < 5; i++) {
+            cmd_vel_pub_->publish(stop_message);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+        
+        RCLCPP_INFO(this->get_logger(), "Forward movement completed");
     }
 
     void set_angle_correction(bool enable)
     {
-        if (!angle_correction_client_->wait_for_service(std::chrono::seconds(1)))
+        if (!angle_correction_client_->wait_for_service(std::chrono::seconds(5)))
         {
-            RCLCPP_ERROR(this->get_logger(), "Angle correction service not available");
+            RCLCPP_ERROR(this->get_logger(), "Angle correction service not available after waiting 5 seconds");
             return;
         }
 
@@ -208,11 +259,6 @@ private:
     bool enable_angle_correction_;
     double linear_speed_;
     double movement_duration_;
-    
-    // Timers
-    rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::TimerBase::SharedPtr move_timer_;
-    rclcpp::TimerBase::SharedPtr stop_timer_;
 };
 
 int main(int argc, char **argv)
