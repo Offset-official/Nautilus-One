@@ -31,5 +31,20 @@ def generate_launch_description():
             executable='bag_recorder',
             name='bag_recorder',
             output='screen'
+        ),
+
+        # Start recorder launcher node
+        Node(
+            package='auv_camera',
+            executable='recorder_launcher',
+            name='recorder_launcher',
+            parameters=[{
+                'topics': [
+                    '/auv_camera_down/image_raw/compressed',
+                    '/auv_camera_front/image_raw/compressed',
+                    '/usb_cam_2/image_raw/compressed'
+                ]
+            }],
+            output='screen'
         )
     ])
