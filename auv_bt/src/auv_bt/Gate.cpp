@@ -17,7 +17,7 @@ Gate::Gate(const std::string &xml_tag_name, const BT::NodeConfiguration &conf)
 
   detections_sub_ =
       node_->create_subscription<auv_interfaces::msg::DetectionArray>(
-          "/detections", 100, std::bind(&Gate::detections_callback, this, _1));
+          "/auv_camera_front/detections", 100, std::bind(&Gate::detections_callback, this, _1));
 
   last_reading_time_ = node_->now();
   last_computed_size = 0.0;

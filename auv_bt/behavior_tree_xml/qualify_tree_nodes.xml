@@ -1,0 +1,29 @@
+<root>
+    <TreeNodesModel>
+        <Action ID="Descend">
+            <input_port name="target_depth" default="-0.0">Depth to descend to</input_port>
+        </Action>
+        <Condition ID="Elapsed">
+            <input_port name="seconds" default="1">time to wait</input_port>
+        </Condition>
+        <Action ID="Forward">
+            <input_port name="speed" default="0.5">linear z velocity</input_port>
+        </Action>
+        <Condition ID="Gate">
+            <output_port name="num" default="1">number of LEDs to turn on</output_port>
+            <input_port name="target_size" default="0.5">the size of the detected gate</input_port>
+        </Condition>
+        <Condition ID="IsArmed"/>
+        <Action ID="SetLEDColor">
+            <input_port name="color" default="#ffffff">Neopixel color to set</input_port>
+            <input_port name="num" default="0">number of pixels to turn on</input_port>
+        </Action>
+        <Action ID="SetMode">
+            <input_port name="arm" default="false">arm the robot?</input_port>
+        </Action>
+        <Action ID="Turn">
+            <input_port name="speed" default="0.5">angular z velocity</input_port>
+        </Action>
+    </TreeNodesModel>
+</root>
+
