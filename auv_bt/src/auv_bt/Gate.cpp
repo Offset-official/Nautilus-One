@@ -17,10 +17,11 @@ Gate::Gate(const std::string &xml_tag_name, const BT::NodeConfiguration &conf)
 
   detections_sub_ =
       node_->create_subscription<auv_interfaces::msg::DetectionArray>(
-          "/auv_camera_front/detections", 100, std::bind(&Gate::detections_callback, this, _1));
+          "/auv_camera_front/detections", 100,
+          std::bind(&Gate::detections_callback, this, _1));
 
   last_reading_time_ = node_->now();
-  last_computed_size = 0.0;
+  last_computed_ratio = 0.0;
   last_num_leds = 1;
 }
 
@@ -41,8 +42,10 @@ void Gate::detections_callback(
       largest_size = size;
   }
 
-  if (largest_size > last_computed_size)
-    last_computed_size = largest_size;
+  auto largest_ratio = (double)largest_size / (double)screen_area;
+
+  if (largest_size > last_computed_ratio)
+    last_computed_ratio = largest_ratio;
 }
 
 int Gate::num_leds_to_turn_on(double current_size, double target_size) {
@@ -60,10 +63,10 @@ BT::NodeStatus Gate::tick() {
   double target_size = 0.5;
   getInput("size", target_size);
 
-  auto num_leds = num_leds_to_turn_on(last_computed_size, target_size);
+  auto num_leds = num_leds_to_turn_on(last_computed_ratio, target_size);
   setOutput("num", num_leds);
 
-  if (last_computed_size > target_size) {
+  if (last_computed_ratio > target_size) {
     return BT::NodeStatus::SUCCESS;
   } else {
     return BT::NodeStatus::FAILURE;
