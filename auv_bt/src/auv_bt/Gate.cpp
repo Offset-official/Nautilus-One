@@ -44,8 +44,11 @@ void Gate::detections_callback(
 
   auto largest_ratio = (double)largest_size / (double)screen_area;
 
-  if (largest_size > last_computed_ratio)
+  if (largest_ratio > last_computed_ratio) {
     last_computed_ratio = largest_ratio;
+    RCLCPP_INFO(node_->get_logger(), "found new gate with ratio %f",
+                last_computed_ratio);
+  }
 }
 
 int Gate::num_leds_to_turn_on(double current_size, double target_size) {
