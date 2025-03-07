@@ -19,8 +19,9 @@ public:
   static BT::PortsList providedPorts() {
     return BT::PortsList({
         BT::InputPort<double>("size"),
-        BT::InputPort<std::string>("mode"), // should either be max or min
+        BT::InputPort<std::string>("mode"), // not working right now should either be max or min
         BT::OutputPort<int>("num"), // number of leds which should be lit up
+        BT::OutputPort<int>("horizontal_error"), // the horizontal deviation from the center
     });
   }
 
@@ -33,6 +34,7 @@ private:
       detections_sub_;
   auv_interfaces::msg::DetectionArray::UniquePtr last_detections_;
   double last_computed_ratio;
+  int last_horizontal_error;
   int last_num_leds;
   const int max_leds = 20;
   const double screen_width = 720;
