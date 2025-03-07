@@ -32,9 +32,12 @@ private:
   rclcpp::Subscription<auv_interfaces::msg::DetectionArray>::SharedPtr
       detections_sub_;
   auv_interfaces::msg::DetectionArray::UniquePtr last_detections_;
-  double last_computed_size;
+  double last_computed_ratio;
   int last_num_leds;
   const int max_leds = 20;
+  const double screen_width = 720;
+  const double screen_height = 1280;
+  const double screen_area = screen_width * screen_height;
 
   int num_leds_to_turn_on(double, double);
 };
