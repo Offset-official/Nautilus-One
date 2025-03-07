@@ -9,12 +9,6 @@ interface CompressedImageMsg {
   data: string;
 }
 
-// Define the structure for each recorded frame including timestamp
-interface FrameData {
-  data: Uint8Array;
-  timestamp: number;
-}
-
 export default function VideoStream() {
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({
     "/auv_camera_down/image_raw/compressed": "",
@@ -28,36 +22,21 @@ export default function VideoStream() {
     "/auv_camera_front/image_raw/compressed": false,
     "/usb_cam_2/image_raw/compressed": false,
   });
-  
-  // Refs to store frame data (with timestamps) for recording
-  const frameBuffers = useRef<{ [key: string]: FrameData[] }>({
-    "/auv_camera_down/image_raw/compressed": [],
-    "/auv_camera_front/image_raw/compressed": [],
-    "/usb_cam_2/image_raw/compressed": [],
-  });
-  
-  // Refs for MediaRecorder objects
-  const mediaRecorders = useRef<{ [key: string]: MediaRecorder | null }>({
-    "/auv_camera_down/image_raw/compressed": null,
-    "/auv_camera_front/image_raw/compressed": null,
-    "/usb_cam_2/image_raw/compressed": null,
-  });
-  
-  // Ref to store the most recent raw image data (not used for saving now)
-  const rawImageData = useRef<{ [key: string]: Uint8Array | null }>({
-    "/auv_camera_down/image_raw/compressed": null,
-    "/auv_camera_front/image_raw/compressed": null,
-    "/usb_cam_2/image_raw/compressed": null,
-  });
 
   // State for the selected camera to view in full resolution
   const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
+  
+  // Reference to the ROS connection to be used across functions
+  const rosRef = useRef<ROSLIB.Ros | null>(null);
 
   useEffect(() => {
+    // Connect to ROS bridge websocket server
     const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
+    rosRef.current = ros;
 
     ros.on("connection", () => console.log("Connected to ROS"));
     ros.on("error", (error) => console.error("ROS connection error:", error));
+    ros.on("close", () => console.log("Connection to ROS bridge closed"));
 
     const createSubscriber = (topicName: string) => {
       const listener = new ROSLIB.Topic({
@@ -81,14 +60,6 @@ export default function VideoStream() {
             .map((_, i) => byteCharacters.charCodeAt(i));
           const byteArray = new Uint8Array(byteNumbers);
           
-          // Update the latest frame data
-          rawImageData.current[topicName] = byteArray;
-          
-          // If recording, add the frame along with the timestamp
-          if (recording[topicName]) {
-            frameBuffers.current[topicName].push({ data: byteArray, timestamp: Date.now() });
-          }
-          
           const blob = new Blob([byteArray], { type: "image/jpeg" });
           const imageUrl = URL.createObjectURL(blob);
           setImageUrls((prev) => ({ ...prev, [topicName]: imageUrl }));
@@ -111,149 +82,95 @@ export default function VideoStream() {
       subscribers.forEach((sub) => sub.unsubscribe());
       console.log("Unsubscribed from ROS topics");
       
-      // Clean up any ongoing recordings
-      Object.entries(mediaRecorders.current).forEach(([topicName, recorder]) => {
-        if (recorder && recorder.state !== "inactive") {
-          recorder.stop();
-        }
-      });
+      // Close the ROS connection
+      if (rosRef.current && rosRef.current.isConnected) {
+        rosRef.current.close();
+      }
     };
-  }, [recording]);
+  }, []);
 
-  // Start recording for a specific camera
+  // Call the start_recording service for a specific camera topic
   const startRecording = (topicName: string) => {
-    // Clear previous frames
-    frameBuffers.current[topicName] = [];
+    if (!rosRef.current || !rosRef.current.isConnected) {
+      console.error("ROS connection not available");
+      return;
+    }
     
-    setRecording((prev) => ({
-      ...prev,
-      [topicName]: true
-    }));
+    // Extract a service name from the topic name
+    const topicNameClean = topicName.replace(/\//g, '_').replace(/^_/, '');
+    const serviceName = `/frame_recorder_${topicNameClean}/start_recording`;
     
-    console.log(`Started recording for ${topicName}`);
+    // Create a service client for the start_recording service
+    const startRecordingClient = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: serviceName,
+      serviceType: 'std_srvs/srv/Trigger'
+    });
+    
+    // Create a service request
+    const request = new ROSLIB.ServiceRequest({});
+    
+    console.log(`Calling service: ${serviceName}`);
+    
+    // Call the service
+    startRecordingClient.callService(request, 
+      (result) => {
+        console.log(`Start recording service response: ${result.success} - ${result.message}`);
+        if (result.success) {
+          setRecording((prev) => ({
+            ...prev,
+            [topicName]: true
+          }));
+        } else {
+          console.error(`Failed to start recording: ${result.message}`);
+        }
+      },
+      (error) => {
+        console.error("Service call failed:", error);
+      }
+    );
   };
 
-  // Stop recording and save video
+  // Call the stop_recording service for a specific camera topic
   const stopRecording = (topicName: string) => {
-    setRecording((prev) => ({
-      ...prev,
-      [topicName]: false
-    }));
-    
-    const frames = frameBuffers.current[topicName];
-    if (frames.length === 0) {
-      console.warn("No frames captured for recording");
+    if (!rosRef.current || !rosRef.current.isConnected) {
+      console.error("ROS connection not available");
       return;
     }
     
-    // Create a video from captured frames
-    const chunks: Blob[] = [];
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    // Extract a service name from the topic name
+    const topicNameClean = topicName.replace(/\//g, '_').replace(/^_/, '');
+    const serviceName = `/frame_recorder_${topicNameClean}/stop_recording`;
     
-    if (!ctx) {
-      console.error("Could not get canvas context");
-      return;
-    }
+    // Create a service client for the stop_recording service
+    const stopRecordingClient = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: serviceName, 
+      serviceType: 'std_srvs/srv/Trigger'
+    });
     
-    // Set canvas size based on first frame (assuming all frames are the same size)
-    const firstFrameBlob = new Blob([frames[0].data], { type: 'image/jpeg' });
-    const imgForSize = new window.Image();
+    // Create a service request
+    const request = new ROSLIB.ServiceRequest({});
     
-    imgForSize.onload = () => {
-      canvas.width = imgForSize.width;
-      canvas.height = imgForSize.height;
-      
-      // Start recording with MediaRecorder using the canvas stream at 30fps
-      const stream = canvas.captureStream(30);
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
-      
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data);
-        }
-      };
-      
-      // Optimized file saving logic for long recordings
-      mediaRecorder.onstop = () => {
-        (async () => {
-          const blob = new Blob(chunks, { type: 'video/webm' });
-          const topicParts = topicName.split('/');
-          const fileName = `${topicParts[topicParts.length - 3]}_recording_${new Date().toISOString()}.webm`;
-          
-          // If the File System Access API is available, use it to prompt a save dialog.
-          if (window.showSaveFilePicker) {
-            try {
-              const options = {
-                suggestedName: fileName,
-                types: [{
-                  description: 'WebM Video',
-                  accept: { 'video/webm': ['.webm'] },
-                }],
-              };
-              const handle = await window.showSaveFilePicker(options);
-              const writable = await handle.createWritable();
-              await writable.write(blob);
-              await writable.close();
-              console.log(`Recording saved as ${fileName}`);
-            } catch (e) {
-              console.error("File saving cancelled or failed", e);
-            }
-          } else {
-            // Fallback to anchor-based download
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            URL.revokeObjectURL(url);
-            console.log(`Recording saved as ${fileName}`);
-          }
-        })();
-      };
-      
-      mediaRecorders.current[topicName] = mediaRecorder;
-      mediaRecorder.start();
-      
-      let frameIndex = 0;
-      
-      // Process each frame with dynamic delay based on capture timestamps
-      function processFrame() {
-        if (frameIndex < frames.length) {
-          const currentFrame = frames[frameIndex];
-          const blob = new Blob([currentFrame.data], { type: 'image/jpeg' });
-          const url = URL.createObjectURL(blob);
-          const tempImg = new window.Image();
-          
-          tempImg.onload = () => {
-            ctx.drawImage(tempImg, 0, 0);
-            URL.revokeObjectURL(url);
-            
-            // Determine the delay until the next frame using timestamps
-            let delay = 33; // Fallback delay (approx. 30fps)
-            if (frameIndex < frames.length - 1) {
-              const nextFrame = frames[frameIndex + 1];
-              delay = nextFrame.timestamp - currentFrame.timestamp;
-              if (delay <= 0) {
-                delay = 33;
-              }
-            }
-            
-            frameIndex++;
-            setTimeout(processFrame, delay);
-          };
-          tempImg.src = url;
+    console.log(`Calling service: ${serviceName}`);
+    
+    // Call the service
+    stopRecordingClient.callService(request,
+      (result) => {
+        console.log(`Stop recording service response: ${result.success} - ${result.message}`);
+        if (result.success) {
+          setRecording((prev) => ({
+            ...prev,
+            [topicName]: false
+          }));
         } else {
-          // All frames processed, stop the recorder
-          mediaRecorder.stop();
+          console.error(`Failed to stop recording: ${result.message}`);
         }
+      },
+      (error) => {
+        console.error("Service call failed:", error);
       }
-      
-      // Start processing frames
-      processFrame();
-    };
-    
-    imgForSize.src = URL.createObjectURL(firstFrameBlob);
+    );
   };
 
   return (
