@@ -60,12 +60,12 @@ docker save ghcr.io/offset-official/nano-ros-full:latest -o  nano-ros-full.tar
 
 ## Transfer the image
 ```bash
-scp nano-ros-full.tar nano@192.168.2.4
+scp nano-ros-full.tar nano@192.168.2.4:~/Documents
 ```
 ## Load the image
 > Run this command inside the Jetson Nano
 ```bash
-docker load -i nano-ros-full.tar
+docker load -i ~/Documents/nano-ros-full.tar
 ```
 ## Run the nano container
 ```bash
