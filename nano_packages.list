@@ -5,3 +5,5 @@ auv_diagnostics
 auv_interfaces
 auv_ml
 auv_camera
+auv_ml_jetson
+auv_sensing
