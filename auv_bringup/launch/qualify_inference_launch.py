@@ -18,8 +18,6 @@ def generate_launch_description():
         parameters=[{'fastapi_server_ip': '192.168.2.4'}]
     )
 
-    # Conditionally launch the uncomp node only if "compressed" is true.
-
     # Node for infer_camera, using the "compressed" launch argument.
     infer_node = launch_ros.actions.Node(
         package='auv_sensing',
@@ -31,14 +29,14 @@ def generate_launch_description():
             'camera_pub_topic': '/auv_camera_front/image_inferred',
             'detections_pub_topic': '/auv_camera_front/detections',
             'inference_service': 'yolo_inference_gate',
-            'compressed': LaunchConfiguration('compressed')
+            # 'compressed': LaunchConfiguration('compressed')
         }]
     )
 
     return LaunchDescription([
-        compressed_arg,
+        # compressed_arg,
         yolo_node,
-        uncomp_node,
+        # uncomp_node,
         infer_node
     ])
 
