@@ -26,6 +26,7 @@ setup(
             # "yolo_inference_server_gate = auv_ml.yolo_inference_server_gate:main",
             # "yolo_inference_test_gate = auv_ml.yolo_inference_test_gate:main",
             "publish_camera = auv_camera.publish_camera:main",
+            "record_camera = auv_camera.record_camera:main",
         ],
     },
 )
