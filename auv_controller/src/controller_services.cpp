@@ -120,16 +120,71 @@ void DumbController::send_calibration_request() {
 
 void DumbController::calibration_callback(
     rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future) {
+  static int retry_count = 0;
+  const int max_retries = 3;
+  const int retry_delay_ms = 1000;
+  
   try {
     auto response = future.get();
     if (response->success) {
       RCLCPP_INFO(this->get_logger(), "Calibration successful: %s",
                   response->message.c_str());
+      retry_count = 0; // Reset counter on success
     } else {
       RCLCPP_ERROR(this->get_logger(), "Calibration failed: %s",
                    response->message.c_str());
+      
+      // Retry logic
+      if (retry_count < max_retries) {
+        retry_count++;
+        RCLCPP_WARN(this->get_logger(), "Retrying calibration (%d/%d)...",
+                   retry_count, max_retries);
+                   
+        // Schedule retry with a delay
+        auto timer = this->create_wall_timer(
+          std::chrono::milliseconds(retry_delay_ms),
+          [this, timer_ref = std::weak_ptr<rclcpp::TimerBase>()] {
+            auto timer_ptr = timer_ref.lock();
+            if (timer_ptr) {
+              timer_ptr->cancel();
+            }
+            auto req = std::make_shared<std_srvs::srv::Trigger::Request>();
+            calibration_client_->async_send_request(
+                req, std::bind(&DumbController::calibration_callback, this,
+                              std::placeholders::_1));
+          });
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "Calibration failed after %d attempts", 
+                     max_retries);
+        retry_count = 0; // Reset counter for next time
+      }
     }
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_logger(), "Service call failed: %s", e.what());
+    
+    // Retry logic for exceptions
+    if (retry_count < max_retries) {
+      retry_count++;
+      RCLCPP_WARN(this->get_logger(), "Retrying calibration after exception (%d/%d)...",
+                 retry_count, max_retries);
+                 
+      // Schedule retry with a delay
+      auto timer = this->create_wall_timer(
+        std::chrono::milliseconds(retry_delay_ms),
+        [this, timer_ref = std::weak_ptr<rclcpp::TimerBase>()] {
+          auto timer_ptr = timer_ref.lock();
+          if (timer_ptr) {
+            timer_ptr->cancel();
+          }
+          auto req = std::make_shared<std_srvs::srv::Trigger::Request>();
+          calibration_client_->async_send_request(
+              req, std::bind(&DumbController::calibration_callback, this,
+                           std::placeholders::_1));
+        });
+    } else {
+      RCLCPP_ERROR(this->get_logger(), "Calibration failed after %d attempts due to exceptions", 
+                   max_retries);
+      retry_count = 0; // Reset counter for next time
+    }
   }
 }
