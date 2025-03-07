@@ -11,12 +11,15 @@ find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(auv_interfaces REQUIRED)
+find_package(image_transport REQUIRED)
+
 
 set(dependencies
     rclcpp
     OpenCV 
     cv_bridge
     auv_interfaces
+    image_transport
 )
 
 add_executable(show_camera src/show_camera.cpp)
