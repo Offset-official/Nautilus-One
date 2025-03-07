@@ -13,7 +13,7 @@ from cv_bridge import CvBridge
 
 class FrameRecorderNode(Node):
     def __init__(self):
-        super().__init__('record_camera')
+        super().__init__('frame_recorder')
 
         # Declare parameters
         self.declare_parameter('topic', '/camera/image_raw/compressed')
