@@ -31,8 +31,7 @@ class HeadingTest(Node):
         self.target_depth = self.get_parameter("target_depth").value
         self.angle_correction = self.get_parameter("angle_correction").value
         self.linear_speed = self.get_parameter("linear_speed").value
-        self.movement_duration = self.get_parameter("movement_duration").value or 0.0
-        self.angle_correction_enabled = False
+        self.movement_duration = self.get_parameter("movement_duration").value
 
         # Use a ReentrantCallbackGroup to allow for nested callbacks
         callback_group = ReentrantCallbackGroup()
@@ -41,10 +40,23 @@ class HeadingTest(Node):
         self.cmd_vel_pub = self.create_publisher(Twist, "cmd_vel", 10)
 
         # Initialize action client
-        self.depth_action_client = ActionClient(self, DepthDescent, "depth_descent")
-        self.angle_correction_client = self.create_client(
-            AngleCorrection, "angle_correction"
+        self.depth_action_client = ActionClient(
+            self, DepthDescent, "depth_descent", callback_group=callback_group
         )
+
+        # Initialize service client
+        self.angle_correction_client = self.create_client(
+            AngleCorrection, "angle_correction", callback_group=callback_group
+        )
+
+        # Start the execution sequence in a separate thread
+        sequence_thread = threading.Thread(target=self.execute_sequence)
+        sequence_thread.daemon = True
+        sequence_thread.start()
+
+    def execute_sequence(self):
+        # Wait a moment for everything to initialize
+        time.sleep(1.0)
 
         self.get_logger().info("Starting execution sequence")
         self.get_logger().info(f"Target depth: {self.target_depth}")
@@ -54,13 +66,10 @@ class HeadingTest(Node):
         self.get_logger().info(f"Linear speed: {self.linear_speed}")
         self.get_logger().info(f"Movement duration: {self.movement_duration} seconds")
 
-        self.get_logger().info("Waiting for 10 seconds before starting depth action")
-        time.sleep(10)  # Initial delay
-        
-        if self.enable_angle_correction:
-                self.set_angle_correction(True)
-
-        self.start_depth_descent()
+        # Step 1: Enable angle correction if needed
+        if self.angle_correction:
+            self.get_logger().info("Step 1: Enabling angle correction")
+            angle_correction_success = self.set_angle_correction(True)
 
             if not angle_correction_success:
                 self.get_logger().warn(
@@ -119,88 +128,98 @@ class HeadingTest(Node):
         goal_msg = DepthDescent.Goal()
         goal_msg.target_depth = target_depth
 
-        # Send goal with feedback callback
-        future = self.depth_action_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(self, future)
-        
-        # Wait for 3 seconds after depth action is completed before moving forward
-        self.get_logger().info("Depth action completed. Waiting for 3 seconds before moving forward")
-        time.sleep(3)
-        self.move_forward()
+        self.get_logger().info(f"Sending depth descent goal: {target_depth}")
 
-    def move_forward(self):
-        self.get_logger().info(
-            f"Moving forward at {self.linear_speed} m/s for {self.movement_duration} seconds"
+        # Define callbacks
+        def feedback_callback(feedback_msg):
+            self.get_logger().info(
+                f"Depth descent feedback - Current depth: {feedback_msg.feedback.current_depth}"
+            )
+
+        def goal_response_callback(future):
+            goal_handle = future.result()
+            if not goal_handle.accepted:
+                self.get_logger().error("Goal was rejected by server")
+                completion_event.set()  # Prevent deadlock
+                return
+
+            self.get_logger().info("Goal accepted by server")
+
+            # Request result
+            result_future = goal_handle.get_result_async()
+            result_future.add_done_callback(result_callback)
+
+        def result_callback(future):
+            result = future.result().result
+            self.get_logger().info(
+                f"Depth action completed with final depth: {result.final_depth}"
+            )
+            completion_event.set()
+
+        # Send goal
+        send_goal_future = self.depth_action_client.send_goal_async(
+            goal_msg, feedback_callback=feedback_callback
         )
         send_goal_future.add_done_callback(goal_response_callback)
 
-        # Create timer to publish velocity commands
-        self.movement_timer = self.create_timer(0.1, self.publish_velocity)
-        
-        # Create a timer to stop movement after the specified duration
-        if self.movement_duration > 0:
-            self.get_logger().info(f"Setting up stop timer for {self.movement_duration} seconds")
-            self.stop_timer = self.create_timer(self.movement_duration, self.stop_movement)
+    def perform_forward_movement(self):
+        # Create twist message for forward movement
+        twist_message = Twist()
+        twist_message.linear.y = float(self.linear_speed)
 
-    def set_angle_correction(self, enable):
-        """Enable or disable angle correction."""
-        if not self.angle_correction_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().error("Angle correction service not available")
-            return
-
-        request = AngleCorrection.Request()
-        request.enable = enable
-
-        future = self.angle_correction_client.call_async(request)
-        future.add_done_callback(
-            partial(self._angle_correction_callback, enable=enable)
-        )
+        # Start time tracking
+        start_time = time.time()
+        end_time = start_time + float(self.movement_duration)
 
         # Move forward for the specified duration
         while time.time() < end_time:
             self.cmd_vel_pub.publish(twist_message)
             time.sleep(0.05)  # Publish at 20Hz
 
-    def stop_movement(self):
-        self.get_logger().info("Stop timer triggered, stopping movement")
-        
-        # Cancel the stop timer to prevent multiple calls
-        if hasattr(self, 'stop_timer'):
-            self.stop_timer.cancel()
-        
-        # Cancel movement timer
-        if hasattr(self, 'movement_timer'):
-            self.movement_timer.cancel()
+        # Stop movement
+        stop_message = Twist()
+        stop_message.linear.y = 0.0
 
-        # Stop the vehicle
-        twist = Twist()
-        twist.linear.y = 0.0
-        self.cmd_vel_pub.publish(twist)
-        self.get_logger().info("Movement completed")
-        
-        # Wait for 3 seconds after movement is completed before surfacing
-        self.get_logger().info("Waiting for 3 seconds before bringing up the vehicle")
-        time.sleep(3)
-        self.bring_up()
+        # Publish stop command multiple times to ensure it's received
+        for _ in range(5):
+            self.cmd_vel_pub.publish(stop_message)
+            time.sleep(0.05)
 
-    def bring_up(self):
-        self.get_logger().info("Bringing up the vehicle")
-        
-        # Wait for action server to be available
-        if not self.depth_action_client.wait_for_server(timeout_sec=5.0):
+        self.get_logger().info("Forward movement completed")
+
+    def set_angle_correction(self, enable):
+        # Wait for service to be available
+        if not self.angle_correction_client.wait_for_service(timeout_sec=5.0):
             self.get_logger().error(
-                "Depth descent action server not available after timeout"
+                "Angle correction service not available after waiting 5 seconds"
             )
-            return
+            return False
 
-        # Create and send goal
-        goal_msg = DepthDescent.Goal()
-        goal_msg.target_depth = -0.25
-        self.get_logger().info(f"Sending depth descent goal: {goal_msg.target_depth}")
+        # Create request
+        request = AngleCorrection.Request()
+        request.enable = enable
 
-        # Send goal with feedback callback
-        future = self.depth_action_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(self, future)
+        # Send request
+        future = self.angle_correction_client.call_async(request)
+
+        # Wait for response in this thread (blocking)
+        rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
+
+        if future.done():
+            response = future.result()
+            if response.success:
+                self.get_logger().info(
+                    f'Successfully {"enabled" if enable else "disabled"} angle correction'
+                )
+                return True
+            else:
+                self.get_logger().error(
+                    f'Failed to {"enable" if enable else "disable"} angle correction'
+                )
+                return False
+        else:
+            self.get_logger().error("Service call timed out")
+            return False
 
 
 def main(args=None):
