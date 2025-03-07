@@ -17,6 +17,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(auv_interfaces REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(mavros_msgs REQUIRED)
 
 find_package(ZMQ)
 if(ZMQ_FOUND)
@@ -36,6 +37,7 @@ set(dependencies
     sensor_msgs
     geometry_msgs
     auv_interfaces
+    mavros_msgs
     ament_index_cpp
 )
 
@@ -46,6 +48,8 @@ add_library(auv_forward_bt_node SHARED src/auv_bt/Forward.cpp)
 add_library(auv_turn_bt_node SHARED src/auv_bt/Turn.cpp)
 add_library(auv_descend_bt_node SHARED src/auv_bt/Descend.cpp)
 add_library(auv_set_led_color_bt_node SHARED src/auv_bt/SetLEDColor.cpp)
+add_library(auv_set_mode_bt_node SHARED src/auv_bt/SetMode.cpp)
+add_library(auv_is_armed_bt_node SHARED src/auv_bt/isArmed.cpp)
 
 list(APPEND plugin_libs
     auv_elapsed_bt_node
@@ -53,6 +57,8 @@ list(APPEND plugin_libs
     auv_turn_bt_node
     auv_descend_bt_node
     auv_set_led_color_bt_node
+    auv_set_mode_bt_node
+    auv_is_armed_bt_node
 )
 
 foreach(bt_plugin ${plugin_libs})
