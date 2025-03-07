@@ -49,7 +49,7 @@ Run the following command in this `directory`.
 Be sure to check the image id  of the newly built image using `docker images`, then run this command
 
 ```bash
-docker tag {your-image-id-here} ghcr.io/offset-official/nano-ros-full:latest
+docker tag nano-ros-full ghcr.io/offset-official/nano-ros-full:latest
 ```
 
 ## Exporting the image
