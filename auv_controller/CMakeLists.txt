@@ -35,9 +35,6 @@ ament_target_dependencies(dumb_controller ${dependencies})
 add_executable(control_cmd_cli src/control_cmd_cli.cpp)
 ament_target_dependencies(control_cmd_cli ${dependencies})
 
-add_executable(heading_test src/heading_test.cpp)
-ament_target_dependencies(heading_test ${dependencies})
-
 target_include_directories(dumb_controller PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
@@ -46,14 +43,8 @@ target_include_directories(control_cmd_cli PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
 
-target_include_directories(heading_test PUBLIC
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include>)
-
 target_compile_features(dumb_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(control_cmd_cli PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(heading_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
 
 # Install header files
 install(DIRECTORY include/
@@ -64,7 +55,6 @@ install(DIRECTORY include/
 install(TARGETS 
   dumb_controller
   control_cmd_cli
-  heading_test
   DESTINATION lib/${PROJECT_NAME}
 )
 
