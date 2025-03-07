@@ -49,7 +49,7 @@ Run the following command in this `directory`.
 Be sure to check the image id  of the newly built image using `docker images`, then run this command
 
 ```bash
-docker tag {your-image-id-here} ghcr.io/offset-official/nano-ros-full:latest
+docker tag nano-ros-full ghcr.io/offset-official/nano-ros-full:latest
 ```
 
 ## Exporting the image
@@ -60,12 +60,12 @@ docker save ghcr.io/offset-official/nano-ros-full:latest -o  nano-ros-full.tar
 
 ## Transfer the image
 ```bash
-scp nano-ros-full.tar nano@192.168.2.4
+scp nano-ros-full.tar nano@192.168.2.4:~/Documents
 ```
 ## Load the image
 > Run this command inside the Jetson Nano
 ```bash
-docker load -i nano-ros-full.tar
+docker load -i ~/Documents/nano-ros-full.tar
 ```
 ## Run the nano container
 ```bash
