@@ -9,6 +9,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from geometry_msgs.msg import Twist
 from auv_interfaces.action import DepthDescent
 from auv_interfaces.srv import AngleCorrection
+from mavros_msgs.srv import CommandBool
 
 
 class HeadingTest(Node):
@@ -112,8 +113,47 @@ class HeadingTest(Node):
         # Wait for return to surface to complete
         surface_action_completed.wait()
 
-        # Step 8: Final log message
+        # Step 8: Disarm
+        self.get_logger().info("Step 8: Disarming")
+        self.arm_vehicle(False)
+
+        # Step 9: Final log message
         self.get_logger().info("Sequence completed successfully!")
+
+    def arm_vehicle(self, arm):
+        # Wait for service to be available
+        while not self.arm_client.wait_for_service(timeout_sec=1.0) and rclpy.ok():
+            self.get_logger().info("Waiting for arm service to be available...")
+
+        # Create request
+        request = CommandBool.Request()
+        request.value = arm
+
+        command_success = False
+        while not command_success and rclpy.ok():
+            # Send request asynchronously
+            future = self.arm_client.call_async(request)
+
+            # Wait for response
+            rclpy.spin_until_future_complete(self, future)
+
+            if future.done():
+                response = future.result()
+                if response.success:
+                    command_success = True
+                    self.get_logger().info(
+                        f"Vehicle {'armed' if arm else 'disarmed'} successfully"
+                    )
+                else:
+                    self.get_logger().warn(
+                        f"Vehicle {'arm' if arm else 'disarm'} command received but not successful, retrying..."
+                    )
+                    # Add a small delay before retrying to avoid spamming
+                    time.sleep(0.5)
+            else:
+                self.get_logger().error("Failed to call arm service, retrying...")
+                # Add a small delay before retrying
+                time.sleep(0.5)
 
     def send_depth_action(self, target_depth, completion_event):
         # Wait for action server
