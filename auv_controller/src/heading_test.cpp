@@ -16,21 +16,20 @@ class HeadingTest : public rclcpp::Node
 public:
     HeadingTest()
         : Node("heading_test"),
-          angle_correction_enabled_(false),
           target_depth_(-0.6),  // Default value
-          enable_angle_correction_(true),  // Default value
+          angle_correction_(false),  // Default value
           linear_speed_(1.0),  // Default value
           movement_duration_(10.0)  // Default 10 seconds
     {
         // Declare parameters
         this->declare_parameter("target_depth", target_depth_);
-        this->declare_parameter("enable_angle_correction", enable_angle_correction_);
+        this->declare_parameter("angle_correction", angle_correction_);
         this->declare_parameter("linear_speed", linear_speed_);
         this->declare_parameter("movement_duration", movement_duration_);
         
         // Get parameters
         target_depth_ = this->get_parameter("target_depth").as_double();
-        enable_angle_correction_ = this->get_parameter("enable_angle_correction").as_bool();
+        angle_correction_ = this->get_parameter("angle_correction").as_bool();
         linear_speed_ = this->get_parameter("linear_speed").as_double();
         movement_duration_ = this->get_parameter("movement_duration").as_double();
         
@@ -54,18 +53,18 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "Starting execution sequence");
         RCLCPP_INFO(this->get_logger(), "Target depth: %f", target_depth_);
-        RCLCPP_INFO(this->get_logger(), "Angle correction: %s", enable_angle_correction_ ? "enabled" : "disabled");
+        RCLCPP_INFO(this->get_logger(), "Angle correction: %s", angle_correction_ ? "enabled" : "disabled");
         RCLCPP_INFO(this->get_logger(), "Linear speed: %f", linear_speed_);
         RCLCPP_INFO(this->get_logger(), "Movement duration: %f seconds", movement_duration_);
         
         // Step 1: Enable angle correction
-        if (enable_angle_correction_) {
+        if (angle_correction_) {
             RCLCPP_INFO(this->get_logger(), "Step 1: Enabling angle correction");
             set_angle_correction(true);
             
             // Wait for angle correction to be enabled
             int attempts = 0;
-            while (!angle_correction_enabled_ && attempts < 10) {
+            while (!angle_correction_ && attempts < 10) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 rclcpp::spin_some(this->get_node_base_interface());
                 attempts++;
@@ -234,7 +233,7 @@ private:
                     this->get_logger(),
                     "Successfully %s angle correction",
                     enable ? "enabled" : "disabled");
-                angle_correction_enabled_ = enable;
+                angle_correction_ = enable;
             }
             else
             {
@@ -252,11 +251,10 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
     rclcpp_action::Client<auv_interfaces::action::DepthDescent>::SharedPtr depth_action_client_;
     rclcpp::Client<auv_interfaces::srv::AngleCorrection>::SharedPtr angle_correction_client_;
-    bool angle_correction_enabled_;
     
     // Parameters
     double target_depth_;
-    bool enable_angle_correction_;
+    bool angle_correction_;
     double linear_speed_;
     double movement_duration_;
 };
