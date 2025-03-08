@@ -9,33 +9,24 @@ from launch.conditions import IfCondition
 
 def generate_launch_description():
 
-    # Node for yolo_inference_server_gate.
-    yolo_node = launch_ros.actions.Node(
-        package='auv_ml_jetson',
-        executable='yolo_inference_server_gate',
-        name='yolo_inference_server_gate',
-        output='screen',
-        parameters=[{'fastapi_server_ip': '192.168.2.4'}]
-    )
-
     # Node for infer_camera, using the "compressed" launch argument.
     infer_node = launch_ros.actions.Node(
         package='auv_sensing',
-        executable='infer_camera',
-        name='infer_camera',
+        executable='infer_camera_gate',
+        name='infer_camera_gate',
         output='screen',
         parameters=[{
             'camera_source_topic': '/auv_camera_front/image_raw',
             'camera_pub_topic': '/auv_camera_front/image_inferred',
             'detections_pub_topic': '/auv_camera_front/detections',
             'inference_service': 'yolo_inference_gate',
+            'fastapi_server_ip': '192.168.2.4'
             # 'compressed': LaunchConfiguration('compressed')
         }]
     )
 
     return LaunchDescription([
         # compressed_arg,
-        yolo_node,
         # uncomp_node,
         infer_node
     ])
