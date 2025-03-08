@@ -242,7 +242,7 @@ void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
   // Set up a new timer to reset velocities after 50ms
   velocity_command_active_ = true;
   velocity_reset_timer_ = this->create_wall_timer(
-    std::chrono::milliseconds(50),
+    std::chrono::milliseconds(40),
     std::bind(&DumbController::reset_velocities, this));
     
   RCLCPP_DEBUG(this->get_logger(), 
