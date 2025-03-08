@@ -1,28 +1,35 @@
 <root>
     <TreeNodesModel>
         <Action ID="Descend">
-            <input_port name="target_depth" default="-0.0">Depth to descend to</input_port>
+            <input_port default="-0.0" name="target_depth">Depth to descend to</input_port>
         </Action>
         <Condition ID="Elapsed">
-            <input_port name="seconds" default="1">time to wait</input_port>
+            <input_port default="1" name="seconds">time to wait</input_port>
         </Condition>
+        <Action ID="FollowGate">
+            <input_port default="20" name="error_threshold">error threshold</input_port>
+            <input_port default="0.5" name="forward_speed">linear y velocity</input_port>
+            <input_port default="0" name="horizontal_error">gate horizontal error</input_port>
+            <input_port default="0.5" name="turn_speed">angular z velocity</input_port>
+        </Action>
         <Action ID="Forward">
-            <input_port name="speed" default="0.5">linear z velocity</input_port>
+            <input_port default="0.5" name="speed">linear z velocity</input_port>
         </Action>
         <Condition ID="Gate">
-            <output_port name="num" default="1">number of LEDs to turn on</output_port>
-            <input_port name="target_size" default="0.5">the size of the detected gate</input_port>
+            <output_port default="0" name="horizontal_error">difference between gate detection from center of the screen</output_port>
+            <output_port default="1" name="num">number of LEDs to turn on</output_port>
+            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
         </Condition>
         <Condition ID="IsArmed"/>
         <Action ID="SetLEDColor">
-            <input_port name="color" default="#ffffff">Neopixel color to set</input_port>
-            <input_port name="num" default="0">number of pixels to turn on</input_port>
+            <input_port default="#ffffff" name="color">Neopixel color to set</input_port>
+            <input_port default="0" name="num">number of pixels to turn on</input_port>
         </Action>
         <Action ID="SetMode">
-            <input_port name="arm" default="false">arm the robot?</input_port>
+            <input_port default="false" name="arm">arm the robot?</input_port>
         </Action>
         <Action ID="Turn">
-            <input_port name="speed" default="0.5">angular z velocity</input_port>
+            <input_port default="0.5" name="speed">angular z velocity</input_port>
         </Action>
     </TreeNodesModel>
 </root>

@@ -18,6 +18,28 @@
                     <Action ID="SetLEDColor" color="#ffffff" num="{led_num}"/>
                 </Parallel>
             </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Gate" horizontal_error="0" num="1" target_size="0.25"/>
+                <Action ID="Turn" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Gate" horizontal_error="0" num="1" target_size="0.8"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Inverter>
+                    <Condition ID="IsArmed"/>
+                </Inverter>
+                <Action ID="SetMode" arm="false"/>
+            </ReactiveFallback>
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
