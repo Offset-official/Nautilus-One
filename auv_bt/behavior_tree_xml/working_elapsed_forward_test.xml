@@ -2,10 +2,10 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Parallel failure_threshold="2" success_threshold="1">
-            <Condition ID="Elapsed" seconds="15"/>
+        <SequenceStar>
+            <Condition ID="Elapsed" seconds="5"/>
             <Action ID="Forward" speed="0.5"/>
-        </Parallel>
+        </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
@@ -13,7 +13,7 @@
             <input_port name="seconds" type="int"/>
         </Condition>
         <Action ID="Forward">
-            <input_port name="speed" type="double"/>
+            <input_port default="0.5" name="speed">speed to move in the y direction</input_port>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->
