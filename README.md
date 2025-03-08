@@ -24,7 +24,21 @@ Check out the [installation file](INSTALL.md).
   
 The project assumes that you are using `zsh` like a sane human.
 
+To edit a BehaviorTree using Groot, install these dependencies:
 
+```bash
+sudo apt install qtbase5-dev libqt5svg5-dev libzmq3-dev libdw-dev
+```
+
+Get the source code for Groot
+```bash
+cd ~/auv_ws
+rosdep install --from-paths src --ignore-src -r -y
+cd ~/auv_ws/src/
+vcs import . < auv_ros2/third_parties.repos
+cd ~/auv_ws
+colcon build --symlink-install
+```
 ## Usage
 
 ### Manual Control with the real robot
