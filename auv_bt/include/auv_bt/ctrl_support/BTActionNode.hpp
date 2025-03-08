@@ -201,6 +201,8 @@ protected:
           if (this->goal_handle_->get_goal_id() == result.goal_id) {
             goal_result_available_ = true;
             result_ = result;
+          } else {
+            RCLCPP_INFO(node_->get_logger(), "!! goal id mismatch !!");
           }
         };
 
