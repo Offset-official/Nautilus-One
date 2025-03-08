@@ -8,7 +8,7 @@
                 <Condition ID="IsDepthCalibrated" depth_threshold="0.0"/>
                 <Action ID="CalibrateDepth"/>
             </ReactiveFallback>
-            <Action ID="SetLEDColor" color="#4db4d7" num="0"/>
+            <Action ID="SetLEDColor" color="#00ff22" num="0"/>
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->

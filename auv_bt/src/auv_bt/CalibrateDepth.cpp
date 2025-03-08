@@ -17,7 +17,8 @@ void CalibrateDepth::on_tick() {}
 BT::NodeStatus CalibrateDepth::on_success() {
   RCLCPP_INFO(node_->get_logger(), "calibration request sent successfully");
 
-  return BT::NodeStatus::SUCCESS;
+  // we want the topic of depth to be zero
+  return BT::NodeStatus::RUNNING;
 }
 
 #include "behaviortree_cpp_v3/bt_factory.h"
