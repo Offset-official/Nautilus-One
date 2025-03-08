@@ -8,23 +8,23 @@
 #include "mavros_msgs/srv/command_bool.hpp"
 
 SetMode::SetMode(const std::string &xml_tag_name,
-                         const std::string &action_name,
-                         const BT::NodeConfiguration &conf)
+                 const std::string &action_name,
+                 const BT::NodeConfiguration &conf)
     : BtServiceNode<mavros_msgs::srv::CommandBool>(xml_tag_name, action_name,
-                                               conf) {}
+                                                   conf) {}
 
 void SetMode::on_tick() {
   bool arm;
   getInput("arm", arm);
 
   request_->value = arm;
-
 }
 
 BT::NodeStatus SetMode::on_success() {
-  RCLCPP_INFO(node_->get_logger(), "/set_mode Suceeded");
+  RCLCPP_INFO(node_->get_logger(), "arming request sent successfully");
 
-  return BT::NodeStatus::SUCCESS;
+  // the condition node should return true not us
+  return BT::NodeStatus::RUNNING;
 }
 
 #include "behaviortree_cpp_v3/bt_factory.h"
