@@ -34,6 +34,9 @@ class HeadingTest(Node):
         self.linear_speed = self.get_parameter("linear_speed").value
         self.movement_duration = self.get_parameter("movement_duration").value
 
+        self.arm_client = self.create_client(CommandBool, 'mavros/cmd/arming')
+
+
         # Use a ReentrantCallbackGroup to allow for nested callbacks
         callback_group = ReentrantCallbackGroup()
 

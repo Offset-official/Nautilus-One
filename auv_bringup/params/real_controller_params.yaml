@@ -5,8 +5,8 @@ dumb_controller:
     publish_rate_ms: 50
 
     # Surge PWM changes
-    surge_low_pwm_change: 40
-    surge_medium_pwm_change: 50
+    surge_low_pwm_change: 50
+    surge_medium_pwm_change: 60
     surge_high_pwm_change: 75
 
     # Yaw PWM changes
