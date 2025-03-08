@@ -36,7 +36,7 @@ COPY ./auv_comms/ /auv_ws/src/auv_ros2/auv_comms/
 COPY ./auv_diagnostics/ /auv_ws/src/auv_ros2/auv_diagnostics/
 COPY ./auv_experiments/ /auv_ws/src/auv_ros2/auv_experiments/
 COPY ./auv_interfaces/ /auv_ws/src/auv_ros2/auv_interfaces/
-COPY ./auv_sensing/ /auv_ws/src/auv_ros2/auv_interfaces/
+COPY ./auv_sensing/ /auv_ws/src/auv_ros2/auv_sensing/
 
 WORKDIR /auv_ws
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
