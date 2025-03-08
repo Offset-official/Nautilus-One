@@ -7,6 +7,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # Get the path to your Next.js project
     nextjs_project_dir = os.path.expanduser("~/auv_ws/src/auv_ros2/auv_hud/dashboard")  # Change this to your actual path
+    root_dir = os.path.expanduser("~/auv_ws/")
     
     return LaunchDescription([
         # Start rosbridge websocket server
@@ -33,18 +34,11 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Start recorder launcher node
-        Node(
-            package='auv_camera',
-            executable='recorder_launcher',
-            name='recorder_launcher',
-            parameters=[{
-                'topics': [
-                    '/auv_camera_down/image_raw/compressed',
-                    '/auv_camera_front/image_raw/compressed',
-                    '/usb_cam_2/image_raw/compressed'
-                ]
-            }],
-            output='screen'
-        )
+        # Start the recording node
+        ExecuteProcess(
+            cmd=["ros2", "run", "auv_camera", "camera_recorder", "auv_camera_down", "auv_camera_front"],
+            cwd=root_dir,
+            shell=True,
+            output="screen"
+        ),
     ])
