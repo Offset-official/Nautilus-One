@@ -43,24 +43,11 @@ class DepthSensorCalibration(Node):
                 return False
         return True
 
-    def close_connection(self):
-        """Close the MAVLink connection if it's open."""
-        if self.mav_connection is not None:
-            try:
-                self.get_logger().info("Closing MAVLink connection...")
-                self.mav_connection.close()
-                self.mav_connection = None
-                self.get_logger().info("MAVLink connection closed successfully")
-            except Exception as e:
-                self.get_logger().error(f"Error closing connection: {e}")
-
     def calibrate_callback(self, request, response):
         """Service callback to handle depth sensor calibration requests."""
         # Setup connection
-        if not self.setup_connection():
-            response.success = False
-            response.message = "Failed to establish MAVLink connection"
-            return response
+        if self.mav_connection is None:
+            self.setup_connection()
 
         try:
             # Create command message structure
@@ -133,16 +120,10 @@ class DepthSensorCalibration(Node):
                 response.success = False
                 response.message = "No response from vehicle"
 
-            # Close the MAVLink connection after receiving a response
-            self.close_connection()
-
         except Exception as e:
             self.get_logger().error(f"Exception during calibration: {e}")
             response.success = False
             response.message = f"Error: {str(e)}"
-
-            # Close connection even in case of exception
-            self.close_connection()
 
         return response
 
@@ -157,8 +138,6 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        # Ensure connection is closed when shutting down
-        node.close_connection()
         node.get_logger().info("Shutting down")
         node.destroy_node()
         rclpy.shutdown()
