@@ -174,7 +174,7 @@ ros2 run auv_mav_utils heading_test --ros-args -p target_depth:=-0.8 -p linear_s
 ```
 To calibrate the depth sensor:
 ```bash
-ros2 service call /depth_sensor_calibration std_srvs/srv/Trigger
+ros2 service call /calibrate_depth_sensor std_srvs/srv/Trigger
 ```
 
 ### Arm Controller
