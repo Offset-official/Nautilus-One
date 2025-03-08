@@ -17,12 +17,12 @@ IsArmed::IsArmed(const std::string &xml_tag_name,
   config().blackboard->get("node", node_);
 
   mavros_sub_ = node_->create_subscription<mavros_msgs::msg::State>(
-      "/input_scan", 100, std::bind(&IsArmed::laser_callback, this, _1));
+      "/mavros/state", 100, std::bind(&IsArmed::mavros_state_callback, this, _1));
 
   last_reading_time_ = node_->now();
 }
 
-void IsArmed::laser_callback(mavros_msgs::msg::State::UniquePtr msg) {
+void IsArmed::mavros_state_callback(mavros_msgs::msg::State::UniquePtr msg) {
   last_state_ = std::move(msg);
 }
 
