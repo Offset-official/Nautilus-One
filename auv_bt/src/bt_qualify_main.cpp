@@ -25,10 +25,13 @@ int main(int argc, char *argv[]) {
   factory.registerFromPlugin(loader.getOSName("auv_set_led_color_bt_node"));
   factory.registerFromPlugin(loader.getOSName("auv_set_mode_bt_node"));
   factory.registerFromPlugin(loader.getOSName("auv_is_armed_bt_node"));
+  factory.registerFromPlugin(loader.getOSName("auv_is_depth_calibrated_bt_node"));
+  factory.registerFromPlugin(loader.getOSName("auv_calibrate_depth_bt_node"));
   factory.registerFromPlugin(loader.getOSName("auv_gate_bt_node"));
   factory.registerFromPlugin(loader.getOSName("auv_follow_gate_bt_node"));
   std::string pkgpath = ament_index_cpp::get_package_share_directory("auv_bt");
-  std::string xml_file = pkgpath + "/behavior_tree_xml/gate_detection_forward_follow_test.xml";
+  //std::string xml_file = pkgpath + "/behavior_tree_xml/gate_detection_forward_follow_test.xml";
+  std::string xml_file = pkgpath + "/behavior_tree_xml/depth_calibrate_test.xml";
 
   auto blackboard = BT::Blackboard::create();
   blackboard->set("node", node);
