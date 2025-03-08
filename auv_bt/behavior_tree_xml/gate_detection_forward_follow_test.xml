@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <SequenceStar>
+            <ReactiveFallback>
+                <Condition ID="IsArmed"/>
+                <Action ID="SetMode" arm="true"/>
+            </ReactiveFallback>
+            <Condition ID="Elapsed" seconds="10"/>
+            <Action ID="Descend" target_depth="-0.4"/>
+            <Condition ID="Gate" horizontal_error="0" num="{led_num}" target_size="0.2"/>
+            <Action ID="SetLEDColor" color="#0000ff" num="{led_num}"/>
+            <ReactiveFallback>
+                <Condition ID="Gate" horizontal_error="{h_error}" num="{led_num}" target_size="0.8"/>
+                <Parallel failure_threshold="2" success_threshold="2">
+                    <Action ID="FollowGate" error_threshold="20" forward_speed="0.5" horizontal_error="{h_error}" turn_speed="0.5"/>
+                    <Action ID="SetLEDColor" color="#0000ff" num="{led_num}"/>
+                </Parallel>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Gate" horizontal_error="0" num="1" target_size="0.25"/>
+                <Action ID="Turn" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Gate" horizontal_error="{h_error}" num="{led_num}" target_size="0.8"/>
+                <Parallel failure_threshold="2" success_threshold="2">
+                    <Action ID="FollowGate" error_threshold="20" forward_speed="0.5" horizontal_error="{h_error}" name="" turn_speed="0.5"/>
+                    <Action ID="SetLEDColor" color="#0000ff" num="{led_num}"/>
+                </Parallel>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Inverter>
+                    <Condition ID="IsArmed"/>
+                </Inverter>
+                <Action ID="SetMode" arm="false"/>
+            </ReactiveFallback>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="Descend">
+            <input_port default="-0.0" name="target_depth">Depth to descend to</input_port>
+        </Action>
+        <Condition ID="Elapsed">
+            <input_port default="1" name="seconds">time to wait</input_port>
+        </Condition>
+        <Action ID="FollowGate">
+            <input_port default="20" name="error_threshold">error threshold</input_port>
+            <input_port default="0.5" name="forward_speed">linear y velocity</input_port>
+            <input_port default="0" name="horizontal_error">gate horizontal error</input_port>
+            <input_port default="0.5" name="turn_speed">angular z velocity</input_port>
+        </Action>
+        <Action ID="Forward">
+            <input_port default="0.5" name="speed">linear z velocity</input_port>
+        </Action>
+        <Condition ID="Gate">
+            <output_port default="0" name="horizontal_error">difference between gate detection from center of the screen</output_port>
+            <output_port default="1" name="num">number of LEDs to turn on</output_port>
+            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
+        </Condition>
+        <Condition ID="IsArmed"/>
+        <Action ID="SetLEDColor">
+            <input_port default="#ffffff" name="color">Neopixel color to set</input_port>
+            <input_port default="0" name="num">number of pixels to turn on</input_port>
+        </Action>
+        <Action ID="SetMode">
+            <input_port default="false" name="arm">arm the robot?</input_port>
+        </Action>
+        <Action ID="Turn">
+            <input_port default="0.5" name="speed">angular z velocity</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>

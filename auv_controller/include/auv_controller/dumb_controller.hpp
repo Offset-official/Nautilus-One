@@ -33,6 +33,10 @@ public:
   DumbController();
 
 private:
+  void reset_velocities();
+  rclcpp::TimerBase::SharedPtr velocity_reset_timer_;
+  bool velocity_command_active_ = false;
+
   void send_calibration_request();
   void calibration_callback(
       rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future);

@@ -19,7 +19,9 @@ using namespace std::placeholders;
 DumbController::DumbController() : Node("dumb_controller") {
   rcl_interfaces::msg::ParameterDescriptor param_desc;
   param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
-
+  
+  velocity_reset_timer_ = nullptr;
+  velocity_command_active_ = false;
   // PWM parameters
   this->declare_parameter("neutral_pwm", 1500, param_desc);
 
@@ -204,7 +206,7 @@ void DumbController::compass_callback(
     const std_msgs::msg::Float64::SharedPtr msg) {
   current_yaw_ = msg->data;
 
-  RCLCPP_INFO(this->get_logger(), "GOT DATA FROM CAOMPASS");
+  RCLCPP_INFO(this->get_logger(), "GOT DATA FROM COMPASS");
   RCLCPP_INFO(this->get_logger(), "Current Heading: %.2f degrees", msg->data);
 }
 
@@ -213,10 +215,38 @@ void DumbController::current_depth_callback(
   current_depth_ = msg->data;
 }
 
+void DumbController::reset_velocities() {
+  // Reset all target velocities to zero
+  target_vel_surge = 0.0;
+  target_vel_yaw = 0.0;
+  
+  // Cancel the timer to avoid further resets
+  velocity_reset_timer_->cancel();
+  velocity_command_active_ = false;
+  
+  RCLCPP_DEBUG(this->get_logger(), "Velocities reset to zero after 50ms timeout");
+}
+
 void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
+  // Set target velocities
   target_vel_surge = msg.linear.y;
   target_vel_yaw = msg.angular.z;
   target_vel_heave = msg.linear.z;
+  
+  // Cancel any existing reset timer
+  if (velocity_reset_timer_) {
+    velocity_reset_timer_->cancel();
+  }
+  
+  // Set up a new timer to reset velocities after 50ms
+  velocity_command_active_ = true;
+  velocity_reset_timer_ = this->create_wall_timer(
+    std::chrono::milliseconds(40),
+    std::bind(&DumbController::reset_velocities, this));
+    
+  RCLCPP_DEBUG(this->get_logger(), 
+               "Setting temporary velocities [surge: %.2f, yaw: %.2f, heave: %.2f] for 50ms",
+               target_vel_surge, target_vel_yaw, target_vel_heave);
 }
 
 void DumbController::control_callback() {
