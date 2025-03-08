@@ -22,12 +22,13 @@
             </Parallel>
             <Parallel failure_threshold="2" success_threshold="1">
                 <Condition ID="Elapsed" seconds="10"/>
-                <Action ID="Turn" speed="0.5"/>
+                <Action ID="Turn" speed="1.0"/>
             </Parallel>
-            <Parallel failure_threshold="1" success_threshold="">
-                <Condition ID="Elapsed" seconds="10"/>
+            <Parallel failure_threshold="1" success_threshold="1">
+                <Condition ID="Elapsed" seconds="5"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
+            <Condition ID="Elapsed" seconds="3"/>
             <Action ID="Descend" target_depth="-0.0"/>
             <ReactiveFallback>
                 <Inverter>
