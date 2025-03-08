@@ -8,7 +8,8 @@ RUN rosdep update
 ## gstreamer install
 RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
 RUN apt-get install -y ros-humble-image-transport-plugins v4l-utils
-
+RUN apt-get install libcurl4-openssl-dev
+RUN apt-get install nlohmann-json3-dev
 ##fastdds config
 ENV ROS_DISCOVERY_SERVER=192.168.2.2:11811
 COPY nano_super_client_configuration_file.xml /nano_super_client_configuration_file.xml
