@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <SequenceStar>
+            <Action ID="SetLEDColor" color="#ff0000" num="0"/>
+            <ReactiveFallback>
+                <Condition ID="IsDepthCalibrated" depth_threshold="0.0"/>
+                <Action ID="CalibrateDepth"/>
+            </ReactiveFallback>
+            <Action ID="SetLEDColor" color="#4db4d7" num="0"/>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="CalibrateDepth"/>
+        <Action ID="Descend">
+            <input_port default="-0.0" name="target_depth">Depth to descend to</input_port>
+        </Action>
+        <Condition ID="Elapsed">
+            <input_port default="1" name="seconds">time to wait</input_port>
+        </Condition>
+        <Action ID="FollowGate">
+            <input_port default="20" name="error_threshold">error threshold</input_port>
+            <input_port default="0.5" name="forward_speed">linear y velocity</input_port>
+            <input_port default="0" name="horizontal_error">gate horizontal error</input_port>
+            <input_port default="0.5" name="turn_speed">angular z velocity</input_port>
+        </Action>
+        <Action ID="Forward">
+            <input_port default="0.5" name="speed">linear z velocity</input_port>
+        </Action>
+        <Condition ID="Gate">
+            <output_port default="0" name="horizontal_error">difference between gate detection from center of the screen</output_port>
+            <output_port default="1" name="num">number of LEDs to turn on</output_port>
+            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
+        </Condition>
+        <Condition ID="IsArmed"/>
+        <Condition ID="IsDepthCalibrated">
+            <input_port default="0.0" name="depth_threshold">error_tolerance for current depth value</input_port>
+        </Condition>
+        <Action ID="SetLEDColor">
+            <input_port default="#ffffff" name="color">Neopixel color to set</input_port>
+            <input_port default="0" name="num">number of pixels to turn on</input_port>
+        </Action>
+        <Action ID="SetMode">
+            <input_port default="false" name="arm">arm the robot?</input_port>
+        </Action>
+        <Action ID="Turn">
+            <input_port default="0.5" name="speed">angular z velocity</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
