@@ -70,10 +70,10 @@ void DumbController::execute(
   // Check if goal is done
   if (rclcpp::ok()) {
     result->final_depth = depth;
-    goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Goal succeeded");
     color_request->color = "#ffffff";
     req_ = led_color_client_->async_send_request(color_request);
     req_.wait();
+    goal_handle->succeed(result);
   }
 }
