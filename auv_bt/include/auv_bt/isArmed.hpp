@@ -18,7 +18,7 @@ public:
 
   static BT::PortsList providedPorts() { return BT::PortsList({}); }
 
-  void laser_callback(mavros_msgs::msg::State::UniquePtr msg);
+  void mavros_state_callback(mavros_msgs::msg::State::UniquePtr msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
