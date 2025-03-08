@@ -24,6 +24,7 @@ COPY ./auv_comms/package.xml /auv_ws/src/auv_ros2/auv_comms/package.xml
 COPY ./auv_diagnostics/package.xml /auv_ws/src/auv_ros2/auv_diagnostics/package.xml
 COPY ./auv_experiments/package.xml /auv_ws/src/auv_ros2/auv_experiments/package.xml
 COPY ./auv_interfaces/package.xml /auv_ws/src/auv_ros2/auv_interfaces/package.xml
+COPY ./auv_sensing/package.xml /auv_ws/src/auv_ros2/auv_sensing/package.xml
 
 WORKDIR /auv_ws
 RUN rosdep install --from-paths src --ignore-src -r -y
@@ -35,6 +36,7 @@ COPY ./auv_comms/ /auv_ws/src/auv_ros2/auv_comms/
 COPY ./auv_diagnostics/ /auv_ws/src/auv_ros2/auv_diagnostics/
 COPY ./auv_experiments/ /auv_ws/src/auv_ros2/auv_experiments/
 COPY ./auv_interfaces/ /auv_ws/src/auv_ros2/auv_interfaces/
+COPY ./auv_sensing/ /auv_ws/src/auv_ros2/auv_interfaces/
 
 WORKDIR /auv_ws
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
