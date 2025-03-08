@@ -1,4 +1,4 @@
-# Nautilus One AUV
+# OFFSET AUV MARK I
 
 ![build_test workflow](https://github.com/Offset-official/auv_ros2/actions/workflows/build_test.yaml/badge.svg?branch=main)
 
@@ -7,14 +7,14 @@
 > Rulebook Edition :book:: [Rulebook 5.1.4](http://web.archive.org/web/20241231081446/https://sauvc.org/rulebook/)
 
 Contains collection of [ROS2](https://www.ros.org/) packages that provide AUV functionality targeted 
-towards the SAUVC 2025 competition for **Nautilus One**.
+towards the SAUVC 2025 competition for **AUV MARK I**.
 
-Nautilus One uses [ArduSub](http://www.ardusub.com/) as the flight controller and
+AUV MARK I uses [ArduSub](http://www.ardusub.com/) as the flight controller and
 [mavros](https://github.com/mavlink/mavros) as the GCS.
 
-![Nautlius One Gazebo](images/nautilus_one.png)
+![AUV MARK I Gazebo](images/nautilus_one.png)
 
-Nautilus One runs in [Gazebo Garden](https://gazebosim.org/docs/garden/getstarted/) using the standard buoyancy, 
+AUV MARK I runs in [Gazebo Garden](https://gazebosim.org/docs/garden/getstarted/) using the standard buoyancy, 
 hydrodynamics and thruster
 plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo).
 
@@ -24,7 +24,21 @@ Check out the [installation file](INSTALL.md).
   
 The project assumes that you are using `zsh` like a sane human.
 
+To edit a BehaviorTree using Groot, install these dependencies:
 
+```bash
+sudo apt install qtbase5-dev libqt5svg5-dev libzmq3-dev libdw-dev
+```
+
+Get the source code for Groot
+```bash
+cd ~/auv_ws
+rosdep install --from-paths src --ignore-src -r -y
+cd ~/auv_ws/src/
+vcs import . < auv_ros2/third_parties.repos
+cd ~/auv_ws
+colcon build --symlink-install
+```
 ## Usage
 
 ### Manual Control with the real robot
