@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Parallel failure_threshold="2" success_threshold="1">
+            <Condition ID="Elapsed" seconds="15"/>
+            <Action ID="Forward" speed="0.5"/>
+        </Parallel>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Condition ID="Elapsed">
+            <input_port name="seconds" type="int"/>
+        </Condition>
+        <Action ID="Forward">
+            <input_port name="speed" type="double"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
