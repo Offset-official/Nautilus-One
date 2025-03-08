@@ -36,6 +36,9 @@ BT::NodeStatus IsDepthCalibrated::tick() {
   getInput("depth_threshold", depth_threshold);
   auto last_depth_value = last_depth_->data;
   if (abs(0 - last_depth_value) <= depth_threshold) {
+
+    RCLCPP_INFO(node_->get_logger(), "depth calibrated to %f",last_depth_value);
+
     return BT::NodeStatus::SUCCESS;
   } else {
     return BT::NodeStatus::FAILURE;
