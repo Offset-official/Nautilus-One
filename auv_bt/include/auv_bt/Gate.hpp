@@ -18,7 +18,7 @@ public:
 
   static BT::PortsList providedPorts() {
     return BT::PortsList({
-        BT::InputPort<double>("size"),
+        BT::InputPort<double>("target_size"),
         BT::InputPort<std::string>("mode"), // not working right now should either be max or min
         BT::OutputPort<int>("num"), // number of leds which should be lit up
         BT::OutputPort<int>("horizontal_error"), // the horizontal deviation from the center
