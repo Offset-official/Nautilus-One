@@ -20,6 +20,9 @@ void SetLEDColor::on_tick() {
   getInput("color", color);
   getInput("num", num);
 
+  if (num > 20)
+    num = 20;
+
   request_->color = color;
   request_->color_count = num;
 }
