@@ -1,4 +1,43 @@
-<root>
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <SequenceStar>
+            <Condition ID="Elapsed" seconds="5"/>
+            <Action ID="SetLEDColor" color="#ff0000" num="0"/>
+            <ReactiveFallback>
+                <Condition ID="IsDepthCalibrated" depth_threshold="0.0"/>
+                <Action ID="CalibrateDepth"/>
+            </ReactiveFallback>
+            <Action ID="SetLEDColor" color="#00ff22" num="0"/>
+            <ReactiveFallback>
+                <Condition ID="IsArmed"/>
+                <Action ID="SetMode" arm="true"/>
+            </ReactiveFallback>
+            <Condition ID="Elapsed" seconds="5"/>
+            <Action ID="Descend" target_depth="-0.5"/>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Turn" speed="0.5"/>
+            </ReactiveFallback>
+            <ReactiveFallback>
+                <Condition ID="Elapsed" seconds="10"/>
+                <Action ID="Forward" speed="0.5"/>
+            </ReactiveFallback>
+            <Action ID="Descend" target_depth="-0.0"/>
+            <ReactiveFallback>
+                <Inverter>
+                    <Condition ID="IsArmed"/>
+                </Inverter>
+                <Action ID="SetMode" arm="false"/>
+            </ReactiveFallback>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="CalibrateDepth"/>
         <Action ID="Descend">
@@ -26,8 +65,8 @@
             <input_port default="0.0" name="depth_threshold">error_tolerance for current depth value</input_port>
         </Condition>
         <Action ID="SetLEDColor">
-            <input_port type="double" name="color"/>
-            <input_port type="double" name="num"/>
+            <input_port name="color" type="double"/>
+            <input_port name="num" type="double"/>
         </Action>
         <Action ID="SetMode">
             <input_port default="false" name="arm">arm the robot?</input_port>
@@ -36,5 +75,5 @@
             <input_port default="0.5" name="speed">angular z velocity</input_port>
         </Action>
     </TreeNodesModel>
+    <!-- ////////// -->
 </root>
-
