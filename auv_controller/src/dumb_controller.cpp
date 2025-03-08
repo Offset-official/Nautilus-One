@@ -219,7 +219,6 @@ void DumbController::reset_velocities() {
   // Reset all target velocities to zero
   target_vel_surge = 0.0;
   target_vel_yaw = 0.0;
-  target_vel_heave = 0.0;
   
   // Cancel the timer to avoid further resets
   velocity_reset_timer_->cancel();
