@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   factory.registerFromPlugin(loader.getOSName("auv_follow_gate_bt_node"));
   std::string pkgpath = ament_index_cpp::get_package_share_directory("auv_bt");
   //std::string xml_file = pkgpath + "/behavior_tree_xml/gate_detection_forward_follow_test.xml";
-  std::string xml_file = pkgpath + "/behavior_tree_xml/basic_autonomy.xml";
+  std::string xml_file = pkgpath + "/behavior_tree_xml/gate_detection_test.xml";
 
   auto blackboard = BT::Blackboard::create();
   blackboard->set("node", node);

@@ -38,18 +38,27 @@ BT::NodeStatus FollowGate::tick() {
 
   if (horizontal_error > error_threshold) {
     // need to correct the heading
-    vel_msgs.angular.z = horizontal_error > 0 ? turn_speed : -turn_speed;
-    RCLCPP_INFO(node_->get_logger(), "correcting yaw with %f",vel_msgs.angular.z);
+    vel_msgs.angular.z = horizontal_error > 0 ? -turn_speed : turn_speed;
+    RCLCPP_INFO(node_->get_logger(), "correcting yaw with %f",
+                vel_msgs.angular.z);
 
   } else {
     vel_msgs.linear.y = forward_speed;
-    RCLCPP_INFO(node_->get_logger(), "heading straight with %f",vel_msgs.linear.y);
+    RCLCPP_INFO(node_->get_logger(), "heading straight with %f",
+                vel_msgs.linear.y);
   }
 
   vel_pub_->publish(vel_msgs);
 
   return BT::NodeStatus::RUNNING;
 }
+
+void FollowGate::halt(){
+  RCLCPP_INFO(node_->get_logger(), "FollowGate node halted. Sending 0 vel");
+  geometry_msgs::msg::Twist vel_msgs;
+  vel_pub_->publish(vel_msgs);
+}
+
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 BT_REGISTER_NODES(factory) {

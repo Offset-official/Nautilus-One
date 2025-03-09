@@ -4,8 +4,10 @@
     <BehaviorTree ID="BehaviorTree">
         <SequenceStar>
             <ReactiveFallback>
-                <Condition ID="IsArmed"/>
-                <Action ID="SetMode" arm="true"/>
+                <Inverter>
+                    <Condition ID="IsArmed"/>
+                </Inverter>
+                <Action ID="SetMode" arm="false"/>
             </ReactiveFallback>
             <Condition ID="Elapsed" seconds="10"/>
             <Condition ID="Gate" num="{led_num|" target_size="0.5"/>

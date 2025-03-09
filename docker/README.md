@@ -17,7 +17,7 @@ docker tag pi-ros-full ghcr.io/offset-official/pi-ros-full:latest
 ## Exporting the image
 To create a portable tar file of the image.
 ```bash
-docker save ghcr.io/offset-official/pi-ros-full:latest -o | gzip > pi-ros-full.tar.gz
+docker save ghcr.io/offset-official/pi-ros-full:latest | gzip > pi-ros-full.tar.gz
 ```
 
 ## Transfer the image

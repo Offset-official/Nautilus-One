@@ -33,7 +33,7 @@ public:
     node_ =
         config().blackboard->template get<typename NodeT::SharedPtr>("node");
 
-    server_timeout_ = 1s;
+    server_timeout_ = 5s;
 
     // Initialize the input and output messages
     goal_ = typename ActionT::Goal();
@@ -189,6 +189,7 @@ protected:
 
   void on_new_goal_received() {
     goal_result_available_ = false;
+    RCLCPP_INFO(node_->get_logger(), "!! recieved some goal update !!");
     auto send_goal_options =
         typename rclcpp_action::Client<ActionT>::SendGoalOptions();
     send_goal_options.result_callback =
@@ -245,7 +246,7 @@ protected:
 
   // The timeout value while waiting for response from a server when a
   // new action goal is sent or canceled
-  std::chrono::milliseconds server_timeout_;
+  std::chrono::milliseconds server_timeout_ = 5s;
 };
 
 #endif

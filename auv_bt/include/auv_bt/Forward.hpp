@@ -14,7 +14,7 @@ public:
   explicit Forward(const std::string &xml_tag_name,
                    const BT::NodeConfiguration &conf);
 
-  void halt() {}
+  void halt();
   BT::NodeStatus tick();
 
   static BT::PortsList providedPorts() {
