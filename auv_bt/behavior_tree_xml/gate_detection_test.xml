@@ -10,35 +10,31 @@
                 <Action ID="SetMode" arm="false"/>
             </ReactiveFallback>
             <Condition ID="Elapsed" seconds="10"/>
-            <Condition ID="Gate" num="{led_num|" target_size="0.5"/>
-            <Action ID="SetLEDColor" color="#0000ff" num="{led_num}"/>
+            <Parallel failure_threshold="1" success_threshold="2">
+                <Condition ID="Gate" horizontal_error="" mode="" num="{led_num}" target_size="0.8"/>
+                <Action ID="SetLEDColor" color="#00ff00" num="{led_num}"/>
+            </Parallel>
+            <Condition ID="Elapsed" seconds="10"/>
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <Action ID="Descend">
-            <input_port default="-0.0" name="target_depth">Depth to descend to</input_port>
-        </Action>
         <Condition ID="Elapsed">
-            <input_port default="1" name="seconds">time to wait</input_port>
+            <input_port name="seconds" type="int"/>
         </Condition>
-        <Action ID="Forward">
-            <input_port default="0.5" name="speed">linear z velocity</input_port>
-        </Action>
         <Condition ID="Gate">
-            <output_port default="1" name="num">number of LEDs to turn on</output_port>
-            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
+            <output_port name="horizontal_error" type="int"/>
+            <input_port name="mode" type="std::string"/>
+            <output_port name="num" type="int"/>
+            <input_port name="target_size" type="double"/>
         </Condition>
         <Condition ID="IsArmed"/>
         <Action ID="SetLEDColor">
-            <input_port default="#ffffff" name="color">Neopixel color to set</input_port>
-            <input_port default="0" name="num">number of pixels to turn on</input_port>
+            <input_port name="color" type="std::string"/>
+            <input_port name="num" type="int"/>
         </Action>
         <Action ID="SetMode">
-            <input_port default="false" name="arm">arm the robot?</input_port>
-        </Action>
-        <Action ID="Turn">
-            <input_port default="0.5" name="speed">angular z velocity</input_port>
+            <input_port name="arm" type="bool"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->
