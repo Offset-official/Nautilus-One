@@ -17,17 +17,17 @@ docker tag pi-ros-full ghcr.io/offset-official/pi-ros-full:latest
 ## Exporting the image
 To create a portable tar file of the image.
 ```bash
-docker save ghcr.io/offset-official/pi-ros-full:latest -o  pi-ros-full.tar
+docker save ghcr.io/offset-official/pi-ros-full:latest -o | gzip > pi-ros-full.tar.gz
 ```
 
 ## Transfer the image
 ```bash
-scp pi-ros-full.tar pi@192.168.2.2:~/docker_images
+scp pi-ros-full.tar.gz pi@192.168.2.2:~/docker_images
 ```
 ## Load the image
 > Run this command inside the raspberry pi
 ```bash
-ssh pi@192.168.2.2 "docker load -i ~/docker_images/pi-ros-full.tar"
+ssh pi@192.168.2.2 "docker load -i ~/docker_images/pi-ros-full.tar.gz"
 ```
 
 ## Run the container
@@ -55,17 +55,17 @@ docker tag nano-ros-full ghcr.io/offset-official/nano-ros-full:latest
 ## Exporting the image
 To create a portable tar file of the image.
 ```bash
-docker save ghcr.io/offset-official/nano-ros-full:latest -o  nano-ros-full.tar
+docker save ghcr.io/offset-official/nano-ros-full:latest -o | gzip > nano-ros-full.tar.gz
 ```
 
 ## Transfer the image
 ```bash
-scp nano-ros-full.tar nano@192.168.2.4:~/Documents
+scp nano-ros-full.tar.gz nano@192.168.2.4:~/Documents
 ```
 ## Load the image
 > Run this command inside the Jetson Nano
 ```bash
-ssh nano@192.168.2.4 "docker load -i ~/Documents/nano-ros-full.tar"
+ssh nano@192.168.2.4 "docker load -i ~/Documents/nano-ros-full.tar.gz"
 
 ```
 ## Run the nano container
