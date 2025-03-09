@@ -39,9 +39,9 @@ void Gate::detections_callback(
 
     // compute the area of the detection
     auto size = (x2 - x1) * (y2 - y1);
-    if (size > largest_size){
+    if (size > largest_size) {
       largest_size = size;
-      gate_center_x = (x2 + x1) /2;
+      gate_center_x = (x2 + x1) / 2;
     }
   }
 
@@ -68,13 +68,14 @@ BT::NodeStatus Gate::tick() {
   }
 
   double target_size = 0.5;
-  getInput("size", target_size);
+  getInput("target_size", target_size);
 
   auto num_leds = num_leds_to_turn_on(last_computed_ratio, target_size);
   setOutput("num", num_leds);
 
-  setOutput("horizontal_error",last_horizontal_error);
-
+  setOutput("horizontal_error", last_horizontal_error);
+  RCLCPP_INFO(node_->get_logger(), "Num: %d, h_error: %d", num_leds,
+              last_horizontal_error);
   if (last_computed_ratio > target_size) {
     return BT::NodeStatus::SUCCESS;
   } else {
