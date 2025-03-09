@@ -55,7 +55,7 @@ docker tag nano-ros-full ghcr.io/offset-official/nano-ros-full:latest
 ## Exporting the image
 To create a portable tar file of the image.
 ```bash
-docker save ghcr.io/offset-official/nano-ros-full:latest -o | gzip > nano-ros-full.tar.gz
+docker save ghcr.io/offset-official/nano-ros-full:latest | gzip > nano-ros-full.tar.gz
 ```
 
 ## Transfer the image
