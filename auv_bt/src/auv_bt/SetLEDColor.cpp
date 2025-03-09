@@ -21,8 +21,9 @@ void SetLEDColor::on_tick() {
   getInput("num", num);
 
   if (num > 20)
-    num = 20;
+    num = 0;
 
+  RCLCPP_INFO(node_->get_logger(), "Lighting up %d LEDs", num);
   request_->color = color;
   request_->color_count = num;
 }

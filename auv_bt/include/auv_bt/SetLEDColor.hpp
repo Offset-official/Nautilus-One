@@ -18,8 +18,8 @@ public:
   BT::NodeStatus on_success() override;
 
   static BT::PortsList providedPorts() {
-    return {BT::InputPort<double>("color"),
-            BT::InputPort<double>("num")};
+    return {BT::InputPort<std::string>("color"),
+            BT::InputPort<int>("num")};
   }
 };
 
