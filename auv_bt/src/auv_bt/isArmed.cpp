@@ -17,7 +17,8 @@ IsArmed::IsArmed(const std::string &xml_tag_name,
   config().blackboard->get("node", node_);
 
   mavros_sub_ = node_->create_subscription<mavros_msgs::msg::State>(
-      "/mavros/state", 100, std::bind(&IsArmed::mavros_state_callback, this, _1));
+      "/mavros/state", 10,
+      std::bind(&IsArmed::mavros_state_callback, this, _1));
 
   last_reading_time_ = node_->now();
 }
@@ -28,9 +29,10 @@ void IsArmed::mavros_state_callback(mavros_msgs::msg::State::UniquePtr msg) {
 
 BT::NodeStatus IsArmed::tick() {
   if (last_state_ == nullptr) {
-    return BT::NodeStatus::FAILURE;
+    return BT::NodeStatus::RUNNING;
   }
 
+  RCLCPP_INFO(node_->get_logger(), "isArmed!!: %d", last_state_->armed);
   if (last_state_->armed) {
     return BT::NodeStatus::SUCCESS;
   } else {
