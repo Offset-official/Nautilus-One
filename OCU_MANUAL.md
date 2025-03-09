@@ -137,6 +137,22 @@ Source the packages on all the running terminals
 source /auv_ws/install/setup.bash
 ```
 
+### ML Inference
+
+Attach to existing ultralytics docker contrainer using 
+
+```bash
+docker attach ecs.....
+``` 
+Then, start a tmux session using `tmux`.
+
+Then, navigate to `/models/ml_jetson` and run `uvicorn main:app --host 0.0.0.0`
+
+Inside the ROS container, run (in a different tmux window) 
+```bash
+ros2 launch auv_bringup qualify_inference_launch.py
+```
+
 ## Top Side Laptop Operation
 
 The top side laptop is used to control the AUV. The following commands are used to control the AUV.

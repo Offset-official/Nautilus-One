@@ -173,7 +173,7 @@ DumbController::DumbController() : Node("dumb_controller") {
 
   // Arm the vehicle
   send_calibration_request();
-  arm_vehicle(true);
+  // arm_vehicle(true);
   set_mode("MANUAL");
 
   // Set up timer
