@@ -12,7 +12,7 @@ dumb_controller:
     # Yaw PWM changes
     yaw_low_pwm_change: 40
     yaw_medium_pwm_change: 40
-    yaw_high_pwm_change: 40
+    yaw_high_pwm_change: 70
 
     # Heave PWM changes
     heave_low_pwm_change: 70
