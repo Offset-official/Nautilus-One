@@ -142,7 +142,7 @@ source /auv_ws/install/setup.bash
 Attach to existing ultralytics docker contrainer using 
 
 ```bash
-docker attach 
+docker attach ecs.....
 ``` 
 Then, start a tmux session using `tmux`.
 
