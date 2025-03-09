@@ -19,7 +19,7 @@ using namespace std::placeholders;
 DumbController::DumbController() : Node("dumb_controller") {
   rcl_interfaces::msg::ParameterDescriptor param_desc;
   param_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
-  
+
   velocity_reset_timer_ = nullptr;
   velocity_command_active_ = false;
   // PWM parameters
@@ -161,19 +161,19 @@ DumbController::DumbController() : Node("dumb_controller") {
       this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
   calibration_client_ =
       this->create_client<std_srvs::srv::Trigger>("/calibrate_depth_sensor");
-  led_color_client_ = this->create_client<auv_interfaces::srv::SetColor>("/set_color");
+  led_color_client_ =
+      this->create_client<auv_interfaces::srv::SetColor>("/set_color");
   // Set up angle correction service
   angle_correction_srv_ =
       this->create_service<auv_interfaces::srv::AngleCorrection>(
           "angle_correction",
           std::bind(&DumbController::handle_angle_correction, this, _1, _2));
-  soft_arm_srv_ = this->create_service<std_srvs::srv::SetBool>("soft_arm",
-          std::bind(&DumbController::soft_arm, this, _1, _2));
+  soft_arm_srv_ = this->create_service<std_srvs::srv::SetBool>(
+      "soft_arm", std::bind(&DumbController::soft_arm, this, _1, _2));
 
-  
   // Arm the vehicle
   send_calibration_request();
-  arm_vehicle(true);
+  // arm_vehicle(true);
   set_mode("MANUAL");
 
   // Set up timer
@@ -219,12 +219,13 @@ void DumbController::reset_velocities() {
   // Reset all target velocities to zero
   target_vel_surge = 0.0;
   target_vel_yaw = 0.0;
-  
+
   // Cancel the timer to avoid further resets
   velocity_reset_timer_->cancel();
   velocity_command_active_ = false;
-  
-  RCLCPP_DEBUG(this->get_logger(), "Velocities reset to zero after 50ms timeout");
+
+  RCLCPP_DEBUG(this->get_logger(),
+               "Velocities reset to zero after 50ms timeout");
 }
 
 void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
@@ -232,20 +233,21 @@ void DumbController::twist_callback(const geometry_msgs::msg::Twist &msg) {
   target_vel_surge = msg.linear.y;
   target_vel_yaw = msg.angular.z;
   target_vel_heave = msg.linear.z;
-  
+
   // Cancel any existing reset timer
   if (velocity_reset_timer_) {
     velocity_reset_timer_->cancel();
   }
-  
-  // Set up a new timer to reset velocities after 50ms
+
+  // Set up a new timer to reset velocities after 95ms
   velocity_command_active_ = true;
   velocity_reset_timer_ = this->create_wall_timer(
-    std::chrono::milliseconds(40),
-    std::bind(&DumbController::reset_velocities, this));
-    
-  RCLCPP_DEBUG(this->get_logger(), 
-               "Setting temporary velocities [surge: %.2f, yaw: %.2f, heave: %.2f] for 50ms",
+      std::chrono::milliseconds(95),
+      std::bind(&DumbController::reset_velocities, this));
+
+  RCLCPP_DEBUG(this->get_logger(),
+               "Setting temporary velocities [surge: %.2f, yaw: %.2f, heave: "
+               "%.2f] for 95ms",
                target_vel_surge, target_vel_yaw, target_vel_heave);
 }
 

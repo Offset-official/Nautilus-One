@@ -188,6 +188,11 @@ To run heading test with different params.
 ```bash
 ros2 run auv_mav_utils heading_test --ros-args -p target_depth:=-0.8 -p linear_speed:=1.5 -p enable_angle_correction:=false -p movement_duration:=15.0
 ```
+To calibrate the depth sensor:
+```bash
+ros2 service call /calibrate_depth_sensor std_srvs/srv/Trigger
+```
+
 ### Arm Controller
 
 To actuate the arm, run the following command
