@@ -17,7 +17,7 @@ Gate::Gate(const std::string &xml_tag_name, const BT::NodeConfiguration &conf)
 
   detections_sub_ =
       node_->create_subscription<auv_interfaces::msg::DetectionArray>(
-          "/auv_camera_front/detections", 100,
+          "/auv_camera_front/detections", 1,
           std::bind(&Gate::detections_callback, this, _1));
 
   last_reading_time_ = node_->now();
@@ -29,6 +29,9 @@ void Gate::detections_callback(
     auv_interfaces::msg::DetectionArray::UniquePtr msg) {
   last_detections_ = std::move(msg);
 
+  if (last_detections_->detections.size() < 1) {
+    return;
+  }
   auto largest_size = 0.0;
   auto gate_center_x = 0;
   for (auto detection : last_detections_->detections) {
@@ -47,12 +50,10 @@ void Gate::detections_callback(
 
   auto largest_ratio = (double)largest_size / (double)screen_area;
 
-  if (largest_ratio > last_computed_ratio) {
-    last_computed_ratio = largest_ratio;
-    last_horizontal_error = screen_width - gate_center_x;
-    RCLCPP_INFO(node_->get_logger(), "found new gate with ratio %f",
-                last_computed_ratio);
-  }
+  last_computed_ratio = largest_ratio;
+  last_horizontal_error = screen_width - gate_center_x;
+  // RCLCPP_INFO(node_->get_logger(), "found new gate with ratio %f",
+  // last_computed_ratio);
 }
 
 int Gate::num_leds_to_turn_on(double current_size, double target_size) {
@@ -64,7 +65,11 @@ int Gate::num_leds_to_turn_on(double current_size, double target_size) {
 
 BT::NodeStatus Gate::tick() {
   if (last_detections_ == nullptr) {
-    return BT::NodeStatus::FAILURE;
+    return BT::NodeStatus::RUNNING;
+  }
+
+  if (last_detections_->detections.size() < 1) {
+    return BT::NodeStatus::RUNNING;
   }
 
   double target_size = 0.5;
@@ -74,8 +79,10 @@ BT::NodeStatus Gate::tick() {
   setOutput("num", num_leds);
 
   setOutput("horizontal_error", last_horizontal_error);
-  RCLCPP_INFO(node_->get_logger(), "Num: %d, h_error: %d", num_leds,
-              last_horizontal_error);
+  // RCLCPP_INFO(node_->get_logger(), "Num: %d, h_error: %d", num_leds,
+  // last_horizontal_error);
+  //  RCLCPP_INFO(node_->get_logger(), "target ratio: %f, h_error: %d",
+  //  target_size, last_horizontal_error);
   if (last_computed_ratio > target_size) {
     return BT::NodeStatus::SUCCESS;
   } else {

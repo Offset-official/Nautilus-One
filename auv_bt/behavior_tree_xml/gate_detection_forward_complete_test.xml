@@ -9,41 +9,34 @@
                 </Inverter>
                 <Action ID="SetMode" arm="false"/>
             </ReactiveFallback>
-            <Action ID="SetLEDColor" color="#ff0000" num="0"/>
             <ReactiveFallback>
                 <Condition ID="IsDepthCalibrated" depth_threshold="0.01"/>
                 <Action ID="CalibrateDepth"/>
             </ReactiveFallback>
-            <Action ID="SetLEDColor" color="#00ff22" num="0"/>
             <ReactiveFallback>
                 <Condition ID="IsArmed"/>
                 <Action ID="SetMode" arm="true"/>
             </ReactiveFallback>
             <Condition ID="Elapsed" seconds="10"/>
             <Action ID="Descend" target_depth="-0.4"/>
-            <Condition ID="Gate" horizontal_error="0" num="{led_num}" target_size="0.2"/>
-            <Action ID="SetLEDColor" color="#0000ff" num="{led_num}"/>
+            <Condition ID="Elapsed" seconds="5"/>
+            <Condition ID="Gate" horizontal_error="0" mode="" num="0" target_size="0.2"/>
+            <Condition ID="Elapsed" seconds="5"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Gate" horizontal_error="0" num="{led_num}" target_size="0.8"/>
-                <Parallel failure_threshold="2" success_threshold="2">
-                    <Action ID="Forward" speed="0.5"/>
-                    <Action ID="SetLEDColor" color="#ffffff" num="{led_num}"/>
-                </Parallel>
+                <Condition ID="Gate" horizontal_error="{h_error}" mode="" num="0" target_size="0.8"/>
+                <Action ID="FollowGate" error_threshold="5" forward_speed="0.2" horizontal_error="{h_error}" turn_speed="-0.5"/>
             </Parallel>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="6"/>
+                <Condition ID="Elapsed" seconds="10"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Gate" horizontal_error="0" num="1" target_size="0.25"/>
-                <Action ID="Turn" speed="0.5"/>
+                <Condition ID="Gate" horizontal_error="0" mode="" num="1" target_size="0.25"/>
+                <Action ID="Turn" speed="1"/>
             </Parallel>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Gate" horizontal_error="0" num="1" target_size="0.8"/>
-                <Parallel failure_threshold="2" success_threshold="2">
-                    <Action ID="Forward" speed="0.5"/>
-                    <Action ID="SetLEDColor" color="#ffffff" num="{led_num}"/>
-                </Parallel>
+                <Condition ID="Gate" horizontal_error="{h_error}" mode="" num="1" target_size="0.8"/>
+                <Action ID="FollowGate" error_threshold="5" forward_speed="0.2" horizontal_error="0" turn_speed="-0.5"/>
             </Parallel>
             <Parallel failure_threshold="2" success_threshold="1">
                 <Condition ID="Elapsed" seconds="5"/>
@@ -59,45 +52,6 @@
         </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
-    <BehaviorTree ID="arm_auv">
-        <ReactiveFallback>
-            <Condition ID="IsArmed"/>
-            <Action ID="SetMode" arm="true"/>
-        </ReactiveFallback>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="calibrate depth sensor">
-        <ReactiveFallback>
-            <Condition ID="IsDepthCalibrated" depth_threshold="0.01"/>
-            <Action ID="CalibrateDepth"/>
-        </ReactiveFallback>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="disarm  auv">
-        <ReactiveFallback>
-            <Inverter>
-                <Condition ID="IsArmed"/>
-            </Inverter>
-            <Action ID="SetMode" arm="false"/>
-        </ReactiveFallback>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="disarm auv">
-        <ReactiveFallback>
-            <Inverter>
-                <Condition ID="IsArmed"/>
-            </Inverter>
-            <Action ID="SetMode" arm="false"/>
-        </ReactiveFallback>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="forward with progress">
-        <Parallel failure_threshold="2" success_threshold="2">
-            <Action ID="Forward" speed="0.5"/>
-            <Action ID="SetLEDColor" color="#ffffff" num="{led_num}"/>
-        </Parallel>
-    </BehaviorTree>
-    <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="CalibrateDepth"/>
         <Action ID="Descend">
@@ -107,38 +61,30 @@
             <input_port name="seconds" type="int"/>
         </Condition>
         <Action ID="FollowGate">
-            <input_port default="20" name="error_threshold">error threshold</input_port>
-            <input_port default="0.5" name="forward_speed">linear y velocity</input_port>
-            <input_port default="0" name="horizontal_error">gate horizontal error</input_port>
-            <input_port default="0.5" name="turn_speed">angular z velocity</input_port>
+            <input_port name="error_threshold" type="int"/>
+            <input_port name="forward_speed" type="double"/>
+            <input_port name="horizontal_error" type="int"/>
+            <input_port name="turn_speed" type="double"/>
         </Action>
         <Action ID="Forward">
             <input_port name="speed" type="double"/>
         </Action>
         <Condition ID="Gate">
-            <output_port default="0" name="horizontal_error">difference between gate detection from center of the screen</output_port>
-            <output_port default="1" name="num">number of LEDs to turn on</output_port>
-            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
+            <output_port name="horizontal_error" type="int"/>
+            <input_port name="mode" type="std::string"/>
+            <output_port name="num" type="int"/>
+            <input_port name="target_size" type="double"/>
         </Condition>
         <Condition ID="IsArmed"/>
         <Condition ID="IsDepthCalibrated">
             <input_port name="depth_threshold" type="double"/>
         </Condition>
-        <Action ID="SetLEDColor">
-            <input_port name="color" type="double"/>
-            <input_port name="num" type="double"/>
-        </Action>
         <Action ID="SetMode">
             <input_port name="arm" type="bool"/>
         </Action>
         <Action ID="Turn">
             <input_port name="speed" type="double"/>
         </Action>
-        <SubTree ID="arm_auv"/>
-        <SubTree ID="calibrate depth sensor"/>
-        <SubTree ID="disarm  auv"/>
-        <SubTree ID="disarm auv"/>
-        <SubTree ID="forward with progress"/>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

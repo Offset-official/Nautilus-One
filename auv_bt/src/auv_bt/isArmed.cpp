@@ -31,8 +31,6 @@ BT::NodeStatus IsArmed::tick() {
   if (last_state_ == nullptr) {
     return BT::NodeStatus::RUNNING;
   }
-
-  RCLCPP_INFO(node_->get_logger(), "isArmed!!: %d", last_state_->armed);
   if (last_state_->armed) {
     return BT::NodeStatus::SUCCESS;
   } else {
