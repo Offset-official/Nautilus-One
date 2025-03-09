@@ -16,13 +16,6 @@ export default function VideoStream() {
     "/usb_cam_2/image_raw/compressed": "",
   });
   
-  // State to track recording status for each camera
-  const [recording, setRecording] = useState<{ [key: string]: boolean }>({
-    "/auv_camera_down/image_raw/compressed": false,
-    "/auv_camera_front/image_raw/compressed": false,
-    "/usb_cam_2/image_raw/compressed": false,
-  });
-
   // State for the selected camera to view in full resolution
   const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
   
@@ -89,90 +82,6 @@ export default function VideoStream() {
     };
   }, []);
 
-  // Call the start_recording service for a specific camera topic
-  const startRecording = (topicName: string) => {
-    if (!rosRef.current || !rosRef.current.isConnected) {
-      console.error("ROS connection not available");
-      return;
-    }
-    
-    // Extract a service name from the topic name
-    const topicNameClean = topicName.replace(/\//g, '_').replace(/^_/, '');
-    const serviceName = `/frame_recorder_${topicNameClean}/start_recording`;
-    
-    // Create a service client for the start_recording service
-    const startRecordingClient = new ROSLIB.Service({
-      ros: rosRef.current,
-      name: serviceName,
-      serviceType: 'std_srvs/srv/Trigger'
-    });
-    
-    // Create a service request
-    const request = new ROSLIB.ServiceRequest({});
-    
-    console.log(`Calling service: ${serviceName}`);
-    
-    // Call the service
-    startRecordingClient.callService(request, 
-      (result) => {
-        console.log(`Start recording service response: ${result.success} - ${result.message}`);
-        if (result.success) {
-          setRecording((prev) => ({
-            ...prev,
-            [topicName]: true
-          }));
-        } else {
-          console.error(`Failed to start recording: ${result.message}`);
-        }
-      },
-      (error) => {
-        console.error("Service call failed:", error);
-      }
-    );
-  };
-
-  // Call the stop_recording service for a specific camera topic
-  const stopRecording = (topicName: string) => {
-    if (!rosRef.current || !rosRef.current.isConnected) {
-      console.error("ROS connection not available");
-      return;
-    }
-    
-    // Extract a service name from the topic name
-    const topicNameClean = topicName.replace(/\//g, '_').replace(/^_/, '');
-    const serviceName = `/frame_recorder_${topicNameClean}/stop_recording`;
-    
-    // Create a service client for the stop_recording service
-    const stopRecordingClient = new ROSLIB.Service({
-      ros: rosRef.current,
-      name: serviceName, 
-      serviceType: 'std_srvs/srv/Trigger'
-    });
-    
-    // Create a service request
-    const request = new ROSLIB.ServiceRequest({});
-    
-    console.log(`Calling service: ${serviceName}`);
-    
-    // Call the service
-    stopRecordingClient.callService(request,
-      (result) => {
-        console.log(`Stop recording service response: ${result.success} - ${result.message}`);
-        if (result.success) {
-          setRecording((prev) => ({
-            ...prev,
-            [topicName]: false
-          }));
-        } else {
-          console.error(`Failed to stop recording: ${result.message}`);
-        }
-      },
-      (error) => {
-        console.error("Service call failed:", error);
-      }
-    );
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
       <h1 className="text-3xl font-bold mb-4">Video Streams</h1>
@@ -201,21 +110,6 @@ export default function VideoStream() {
                 )}
                 
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {recording[topicName] ? (
-                    <button
-                      onClick={() => stopRecording(topicName)}
-                      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium"
-                    >
-                      Stop Recording
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => startRecording(topicName)}
-                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium"
-                    >
-                      Start Recording
-                    </button>
-                  )}
                   <button
                     onClick={() => setSelectedCamera(topicName)}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium"
