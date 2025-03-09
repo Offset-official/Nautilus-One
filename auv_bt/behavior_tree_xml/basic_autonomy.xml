@@ -24,17 +24,17 @@
             <Action ID="Descend" target_depth="-0.5"/>
             <Condition ID="Elapsed" seconds="5"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="10"/>
+                <Condition ID="Elapsed" seconds="45"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="2"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="8"/>
+                <Condition ID="Elapsed" seconds="10"/>
                 <Action ID="Turn" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="2"/>
             <Parallel failure_threshold="1" success_threshold="1">
-                <Condition ID="Elapsed" seconds="10"/>
+                <Condition ID="Elapsed" seconds="20"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="3"/>
@@ -59,13 +59,19 @@
         <Action ID="Forward">
             <input_port name="speed" type="double"/>
         </Action>
+        <Condition ID="Gate">
+            <output_port name="horizontal_error" type="int"/>
+            <input_port name="mode" type="std::string"/>
+            <output_port name="num" type="int"/>
+            <input_port name="target_size" type="double"/>
+        </Condition>
         <Condition ID="IsArmed"/>
         <Condition ID="IsDepthCalibrated">
             <input_port name="depth_threshold" type="double"/>
         </Condition>
         <Action ID="SetLEDColor">
-            <input_port name="color" type="double"/>
-            <input_port name="num" type="double"/>
+            <input_port name="color" type="std::string"/>
+            <input_port name="num" type="int"/>
         </Action>
         <Action ID="SetMode">
             <input_port name="arm" type="bool"/>
