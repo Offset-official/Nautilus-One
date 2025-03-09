@@ -18,7 +18,11 @@ Turn::Turn(const std::string &xml_tag_name, const BT::NodeConfiguration &conf)
       node_->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 100);
 }
 
-void Turn::halt() {}
+void Turn::halt() {
+  RCLCPP_INFO(node_->get_logger(), "Turn node halted. Sending 0 vel");
+  geometry_msgs::msg::Twist vel_msgs;
+  vel_pub_->publish(vel_msgs);
+}
 
 BT::NodeStatus Turn::tick() {
 

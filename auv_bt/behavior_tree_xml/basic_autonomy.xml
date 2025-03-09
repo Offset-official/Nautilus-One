@@ -3,6 +3,12 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <SequenceStar>
+            <ReactiveFallback>
+                <Inverter>
+                    <Condition ID="IsArmed"/>
+                </Inverter>
+                <Action ID="SetMode" arm="false"/>
+            </ReactiveFallback>
             <Condition ID="Elapsed" seconds="5"/>
             <Action ID="SetLEDColor" color="#ff0000" num="0"/>
             <ReactiveFallback>
@@ -16,20 +22,23 @@
             </ReactiveFallback>
             <Condition ID="Elapsed" seconds="5"/>
             <Action ID="Descend" target_depth="-0.5"/>
+            <Condition ID="Elapsed" seconds="5"/>
             <Parallel failure_threshold="2" success_threshold="1">
                 <Condition ID="Elapsed" seconds="10"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
+            <Condition ID="Elapsed" seconds="2"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="10"/>
-                <Action ID="Turn" speed="1.0"/>
+                <Condition ID="Elapsed" seconds="8"/>
+                <Action ID="Turn" speed="0.5"/>
             </Parallel>
+            <Condition ID="Elapsed" seconds="2"/>
             <Parallel failure_threshold="1" success_threshold="1">
-                <Condition ID="Elapsed" seconds="5"/>
+                <Condition ID="Elapsed" seconds="10"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="3"/>
-            <Action ID="Descend" target_depth="-0.0"/>
+            <Action ID="Descend" target_depth="-0.025"/>
             <ReactiveFallback>
                 <Inverter>
                     <Condition ID="IsArmed"/>
@@ -42,38 +51,27 @@
     <TreeNodesModel>
         <Action ID="CalibrateDepth"/>
         <Action ID="Descend">
-            <input_port default="-0.0" name="target_depth">Depth to descend to</input_port>
+            <input_port name="target_depth" type="double"/>
         </Action>
         <Condition ID="Elapsed">
             <input_port name="seconds" type="int"/>
         </Condition>
-        <Action ID="FollowGate">
-            <input_port default="20" name="error_threshold">error threshold</input_port>
-            <input_port default="0.5" name="forward_speed">linear y velocity</input_port>
-            <input_port default="0" name="horizontal_error">gate horizontal error</input_port>
-            <input_port default="0.5" name="turn_speed">angular z velocity</input_port>
-        </Action>
         <Action ID="Forward">
             <input_port name="speed" type="double"/>
         </Action>
-        <Condition ID="Gate">
-            <output_port default="0" name="horizontal_error">difference between gate detection from center of the screen</output_port>
-            <output_port default="1" name="num">number of LEDs to turn on</output_port>
-            <input_port default="0.5" name="target_size">the size of the detected gate</input_port>
-        </Condition>
         <Condition ID="IsArmed"/>
         <Condition ID="IsDepthCalibrated">
-            <input_port default="0.0" name="depth_threshold">error_tolerance for current depth value</input_port>
+            <input_port name="depth_threshold" type="double"/>
         </Condition>
         <Action ID="SetLEDColor">
             <input_port name="color" type="double"/>
             <input_port name="num" type="double"/>
         </Action>
         <Action ID="SetMode">
-            <input_port default="false" name="arm">arm the robot?</input_port>
+            <input_port name="arm" type="bool"/>
         </Action>
         <Action ID="Turn">
-            <input_port default="0.5" name="speed">angular z velocity</input_port>
+            <input_port name="speed" type="double"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->

@@ -30,6 +30,13 @@ BT::NodeStatus Forward::tick() {
 
   return BT::NodeStatus::RUNNING;
 }
+void Forward::halt() {
+  // send a 0 velocity message when closed
+
+  RCLCPP_INFO(node_->get_logger(), "Forward node halted. Sending 0 vel");
+  geometry_msgs::msg::Twist vel_msgs;
+  vel_pub_->publish(vel_msgs);
+}
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 BT_REGISTER_NODES(factory) { factory.registerNodeType<Forward>("Forward"); }
