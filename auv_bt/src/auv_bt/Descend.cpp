@@ -4,19 +4,16 @@
 #include <vector>
 
 #include "auv_bt/Descend.hpp"
-
 #include "auv_interfaces/action/depth_descent.hpp"
-#include "geometry_msgs/msg/pose_stamped.hpp"
-
 #include "behaviortree_cpp_v3/behavior_tree.h"
 
+using DepthDescent = auv_interfaces::action::DepthDescent;
 Descend::Descend(const std::string &xml_tag_name,
                  const std::string &action_name,
                  const BT::NodeConfiguration &conf)
-    : BtActionNode<auv_interfaces::action::DepthDescent>(xml_tag_name,
-                                                         action_name, conf) {}
+    : BtActionNode<DepthDescent>(xml_tag_name, action_name, conf) {}
 
-void Descend::on_tick() {
+void Descend::onNodeStart() {
   double target_depth;
   getInput("target_depth", target_depth);
 
@@ -25,7 +22,6 @@ void Descend::on_tick() {
 
 BT::NodeStatus Descend::on_success() {
   RCLCPP_INFO(node_->get_logger(), "depth descent Suceeded");
-
   return BT::NodeStatus::SUCCESS;
 }
 
