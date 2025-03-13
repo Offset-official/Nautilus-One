@@ -58,7 +58,7 @@ Password: `raspberry`
 ### Docker container
 To start the docker container, run the following command:
 ```bash
-docker run --rm --network host --name pi-ros-main -it ghcr.io/offset-official/pi-ros-full
+docker run --rm --network host --name pi-ros-main -it --mount type=bind,src=/home/pi/trees,dst=/trees ghcr.io/offset-official/pi-ros-full
 ```
 
 Sometimes an existing container may be running. To stop the container, run the following command:
