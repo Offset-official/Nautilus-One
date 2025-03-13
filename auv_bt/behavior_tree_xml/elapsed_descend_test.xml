@@ -3,7 +3,7 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <SequenceStar>
-            <Condition ID="Elapsed" seconds="15"/>
+            <Condition ID="Elapsed" seconds="5"/>
             <Action ID="Descend" target_depth="-0.0"/>
         </SequenceStar>
     </BehaviorTree>
