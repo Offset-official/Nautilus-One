@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   std::string xml_file;
 
   if (on_device) {
-    xml_file = pkgpath + "/trees/elapsed_descend_test.xml";
+    xml_file = pkgpath + "/trees/basic_autonomy.xml";
   } else {
     xml_file =
         pkgpath + "/behavior_tree_xml/gate_detection_forward_follow_test.xml";
