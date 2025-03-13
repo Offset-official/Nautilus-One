@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
   auto node = rclcpp::Node::make_shared("qualifying_node");
 
-  node->declare_parameter("on_device", false);
+  node->declare_parameter("on_device", true);
   auto on_device = node->get_parameter("on_device").as_bool();
 
   BT::BehaviorTreeFactory factory;
