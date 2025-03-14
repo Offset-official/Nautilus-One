@@ -24,44 +24,12 @@
             <Action ID="Descend" target_depth="-0.5"/>
             <Condition ID="Elapsed" seconds="5"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="7"/>
-                <Action ID="Forward" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="3"/>
-                <Action ID="Turn" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="7"/>
-                <Action ID="Forward" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="3"/>
-                <Action ID="Turn" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="7"/>
-                <Action ID="Forward" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="3"/>
-                <Action ID="Turn" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="7"/>
-                <Action ID="Forward" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="3"/>
-                <Action ID="Turn" speed="0.5"/>
-            </Parallel>
-            <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="7"/>
+                <Condition ID="Elapsed" seconds="45"/>
                 <Action ID="Forward" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="2"/>
             <Parallel failure_threshold="2" success_threshold="1">
-                <Condition ID="Elapsed" seconds="12"/>
+                <Condition ID="Elapsed" seconds="10"/>
                 <Action ID="Turn" speed="0.5"/>
             </Parallel>
             <Condition ID="Elapsed" seconds="2"/>
