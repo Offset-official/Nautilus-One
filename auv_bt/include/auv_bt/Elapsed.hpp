@@ -15,7 +15,7 @@ public:
   BT::NodeStatus tick();
 
   static BT::PortsList providedPorts() {
-    return BT::PortsList({BT::InputPort<int>("seconds")});
+    return BT::PortsList({BT::InputPort<float>("seconds")});
   }
 
 private:
