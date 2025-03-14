@@ -3,6 +3,8 @@
 This guide instructs the operational commands for the AUV. In the current configuration all
 nodes except inference nodes are running on the AUV.
 
+```secrets are cool```
+
 ## Prerequisites
 - Top side laptop should be configured to have static IP address of 192.168.2.1/24.
 - IP routing via Raspberry Pi to Jetson Nano should be configured.
