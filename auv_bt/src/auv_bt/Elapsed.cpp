@@ -22,8 +22,8 @@ BT::NodeStatus Elapsed::tick() {
   }
 
   float seconds = 1.0;
-  auto milli = (int) (seconds * 1000.0);
   getInput("seconds", seconds);
+  auto milli = (int) (seconds * 1000.0);
   std::chrono::milliseconds _seconds{milli};
 
   auto elapsed = node_->now() - start_time_;
