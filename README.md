@@ -1,4 +1,4 @@
-# OFFSET AUV MARK I
+# Nautilus One AUV
 
 ![build_test workflow](https://github.com/Offset-official/auv_ros2/actions/workflows/build_test.yaml/badge.svg?branch=main)
 
